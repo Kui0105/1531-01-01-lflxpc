@@ -196,6 +196,7 @@
 
 <script lang="ts" setup name="serviceOrderList">
 import { cloneDeep } from 'lodash-es'
+import { useRoute } from 'vue-router'
 
 import { exportCsv } from '@/utils/export-csv'
 
@@ -299,6 +300,19 @@ const openDetail = (row: ServiceOrderItem) => {
     currentItem.value = row
     detailVisible.value = true
 }
+
+// 支持从售后订单跳转，通过 orderNo 参数自动打开详情
+const route = useRoute()
+watch(
+    () => route.query.orderNo,
+    (orderNo) => {
+        if (orderNo && typeof orderNo === 'string') {
+            const target = data.find((item) => item.orderNo === orderNo)
+            if (target) openDetail(target)
+        }
+    },
+    { immediate: true }
+)
 
 const verifyVisible = ref(false)
 const verifyRecords = ref<ServiceOrderItem['verifications']>([])

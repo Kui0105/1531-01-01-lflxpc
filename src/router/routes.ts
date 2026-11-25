@@ -103,6 +103,15 @@ export const ORDER_ROUTE: RouteRecordRaw = {
                 title: '商品订单',
                 icon: 'el-icon-Box'
             }
+        },
+        {
+            path: 'aftersale',
+            name: Symbol('admin-order-aftersale'),
+            component: () => import('@/views/order/aftersale/index.vue'),
+            meta: {
+                title: '售后订单',
+                icon: 'el-icon-RefreshLeft'
+            }
         }
     ]
 }

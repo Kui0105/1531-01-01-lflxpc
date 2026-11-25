@@ -1,0 +1,238 @@
+/**
+ * 售后订单演示数据
+ * 后续可由后端接口替换
+ */
+
+export type AfterSaleStatus = 'pending' | 'agreed' | 'rejected'
+export type OriginOrderType = 'assess' | 'service' | 'goods'
+
+export interface AfterSaleItem {
+    id: number
+    afterSaleNo: string
+    originOrderNo: string
+    originOrderType: OriginOrderType
+    avatarColor: string
+    nickname: string
+    mobile: string
+    reason: string
+    remark: string
+    images: string[]
+    refundAmount: number
+    refundableAmount: number
+    refundRule: string
+    status: AfterSaleStatus
+    applyTime: string
+    rejectReason: string
+    originOrder: {
+        orderNo: string
+        serviceName: string
+        totalAmount: number
+        paidAmount: number
+        quantity: number
+        usedCount: number
+        orderTime: string
+        orderStatus: string
+    }
+}
+
+export const statusTabs = [
+    { label: '全部', value: '' },
+    { label: '待处理', value: 'pending' },
+    { label: '已同意', value: 'agreed' },
+    { label: '已拒绝', value: 'rejected' }
+] as const
+
+export const statusLabels: Record<AfterSaleStatus, string> = {
+    pending: '待处理',
+    agreed: '已同意',
+    rejected: '已拒绝'
+}
+
+export const statusTagTypes: Record<AfterSaleStatus, 'warning' | 'success' | 'danger'> = {
+    pending: 'warning',
+    agreed: 'success',
+    rejected: 'danger'
+}
+
+export const orderTypeLabels: Record<OriginOrderType, string> = {
+    assess: '评估订单',
+    service: '服务订单',
+    goods: '商品订单'
+}
+
+export const orderTypeTagTypes: Record<OriginOrderType, 'primary' | 'success' | 'warning'> = {
+    assess: 'primary',
+    service: 'success',
+    goods: 'warning'
+}
+
+export const afterSaleOrders: AfterSaleItem[] = [
+    {
+        id: 1,
+        afterSaleNo: 'AS20261125001',
+        originOrderNo: 'SO20261125001',
+        originOrderType: 'service',
+        avatarColor: '#4A5DFF',
+        nickname: '健康同行者',
+        mobile: '13800138001',
+        reason: '服务与描述不符',
+        remark: '康复师服务态度差，申请退还剩余次数费用',
+        images: ['凭证1', '凭证2'],
+        refundAmount: 542.67,
+        refundableAmount: 542.67,
+        refundRule: '实付金额 ¥814 ÷ 3 次 × 剩余 2 次 = ¥542.67',
+        status: 'pending',
+        applyTime: '2026-11-25 16:30',
+        rejectReason: '',
+        originOrder: {
+            orderNo: 'SO20261125001',
+            serviceName: '全身经络理疗',
+            totalAmount: 894,
+            paidAmount: 814,
+            quantity: 3,
+            usedCount: 1,
+            orderTime: '2026-11-25 09:20',
+            orderStatus: '服务中'
+        }
+    },
+    {
+        id: 2,
+        afterSaleNo: 'AS20261125002',
+        originOrderNo: 'GO20261124003',
+        originOrderType: 'goods',
+        avatarColor: '#e6a23c',
+        nickname: '春风化雨',
+        mobile: '13800138002',
+        reason: '商品破损',
+        remark: '收到的足浴包外包装破损，申请退款',
+        images: ['凭证1'],
+        refundAmount: 133.5,
+        refundableAmount: 133.5,
+        refundRule: '商品订单售后期限内，实付金额 ¥133.5 全额可退',
+        status: 'pending',
+        applyTime: '2026-11-25 14:15',
+        rejectReason: '',
+        originOrder: {
+            orderNo: 'GO20261124003',
+            serviceName: '中药足浴包',
+            totalAmount: 145.5,
+            paidAmount: 133.5,
+            quantity: 3,
+            usedCount: 0,
+            orderTime: '2026-11-24 11:10',
+            orderStatus: '待收货'
+        }
+    },
+    {
+        id: 3,
+        afterSaleNo: 'AS20261124003',
+        originOrderNo: 'SO20261123003',
+        originOrderType: 'service',
+        avatarColor: '#67c23a',
+        nickname: '康养达人',
+        mobile: '13800138003',
+        reason: '时间冲突',
+        remark: '预约时间与工作冲突，申请退还全部费用',
+        images: [],
+        refundAmount: 376,
+        refundableAmount: 376,
+        refundRule: '实付金额 ¥376 ÷ 2 次 × 剩余 2 次 = ¥376',
+        status: 'agreed',
+        applyTime: '2026-11-24 10:20',
+        rejectReason: '',
+        originOrder: {
+            orderNo: 'SO20261123003',
+            serviceName: '腰部舒缓护理',
+            totalAmount: 396,
+            paidAmount: 376,
+            quantity: 2,
+            usedCount: 0,
+            orderTime: '2026-11-23 14:00',
+            orderStatus: '待服务'
+        }
+    },
+    {
+        id: 4,
+        afterSaleNo: 'AS20261123004',
+        originOrderNo: 'GO20261122005',
+        originOrderType: 'goods',
+        avatarColor: '#9b59b6',
+        nickname: '阳光正好',
+        mobile: '13800138005',
+        reason: '不喜欢/效果不佳',
+        remark: '使用后感觉效果一般，申请退货退款',
+        images: ['凭证1', '凭证2', '凭证3'],
+        refundAmount: 96.2,
+        refundableAmount: 96.2,
+        refundRule: '商品订单售后期限内，实付金额 ¥96.2 全额可退',
+        status: 'rejected',
+        applyTime: '2026-11-23 09:40',
+        rejectReason: '商品已拆封使用，影响二次销售，不符合退款条件',
+        originOrder: {
+            orderNo: 'GO20261122005',
+            serviceName: '热敷眼罩',
+            totalAmount: 122,
+            paidAmount: 96.2,
+            quantity: 2,
+            usedCount: 0,
+            orderTime: '2026-11-22 10:05',
+            orderStatus: '已完成'
+        }
+    },
+    {
+        id: 5,
+        afterSaleNo: 'AS20261122005',
+        originOrderNo: 'SO20261120005',
+        originOrderType: 'assess',
+        avatarColor: '#f56c6c',
+        nickname: '安然自得',
+        mobile: '13800138006',
+        reason: '重复下单',
+        remark: '不小心重复购买了评估服务，申请退款',
+        images: [],
+        refundAmount: 68,
+        refundableAmount: 68,
+        refundRule: '实付金额 ¥68 ÷ 1 次 × 剩余 1 次 = ¥68',
+        status: 'pending',
+        applyTime: '2026-11-22 15:50',
+        rejectReason: '',
+        originOrder: {
+            orderNo: 'SO20261120005',
+            serviceName: '康复评估报告',
+            totalAmount: 98,
+            paidAmount: 68,
+            quantity: 1,
+            usedCount: 0,
+            orderTime: '2026-11-20 11:00',
+            orderStatus: '待评估'
+        }
+    },
+    {
+        id: 6,
+        afterSaleNo: 'AS20261121006',
+        originOrderNo: 'GO20261120006',
+        originOrderType: 'goods',
+        avatarColor: '#409eff',
+        nickname: '静待花开',
+        mobile: '13800138004',
+        reason: '收到的商品与下单不符',
+        remark: '下单的是咖色热敷包，收到的是灰色',
+        images: ['凭证1'],
+        refundAmount: 123.2,
+        refundableAmount: 123.2,
+        refundRule: '商品订单售后期限内，实付金额 ¥123.2 全额可退',
+        status: 'agreed',
+        applyTime: '2026-11-21 11:30',
+        rejectReason: '',
+        originOrder: {
+            orderNo: 'GO20261120006',
+            serviceName: '肩颈热敷包',
+            totalAmount: 136,
+            paidAmount: 123.2,
+            quantity: 1,
+            usedCount: 0,
+            orderTime: '2026-11-20 16:00',
+            orderStatus: '待收货'
+        }
+    }
+]

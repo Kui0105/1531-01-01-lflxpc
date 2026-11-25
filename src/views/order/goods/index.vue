@@ -314,6 +314,7 @@
 <script lang="ts" setup name="goodsOrderList">
 import { ElMessage } from 'element-plus'
 import { cloneDeep } from 'lodash-es'
+import { useRoute } from 'vue-router'
 import * as XLSX from 'xlsx'
 
 import { exportCsv } from '@/utils/export-csv'
@@ -415,6 +416,19 @@ const openDetail = (row: GoodsOrderItem) => {
     currentItem.value = row
     detailVisible.value = true
 }
+
+// 支持从售后订单跳转，通过 orderNo 参数自动打开详情
+const route = useRoute()
+watch(
+    () => route.query.orderNo,
+    (orderNo) => {
+        if (orderNo && typeof orderNo === 'string') {
+            const target = data.find((item) => item.orderNo === orderNo)
+            if (target) openDetail(target)
+        }
+    },
+    { immediate: true }
+)
 
 const shipVisible = ref(false)
 const shipItem = ref<GoodsOrderItem | null>(null)
