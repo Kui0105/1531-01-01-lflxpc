@@ -94,6 +94,15 @@ export const ORDER_ROUTE: RouteRecordRaw = {
                 title: '服务订单',
                 icon: 'el-icon-ShoppingBag'
             }
+        },
+        {
+            path: 'goods',
+            name: Symbol('admin-order-goods'),
+            component: () => import('@/views/order/goods/index.vue'),
+            meta: {
+                title: '商品订单',
+                icon: 'el-icon-Box'
+            }
         }
     ]
 }
