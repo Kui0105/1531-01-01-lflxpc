@@ -45,16 +45,20 @@
                 />
             </el-tabs>
 
-            <el-table class="order-table" :data="filteredList" style="width: 100%">
-                <el-table-column prop="orderNo" label="订单编号" min-width="150" align="center" show-overflow-tooltip />
-                <el-table-column label="订单类型" min-width="110" align="center">
+            <el-table class="order-table" :data="filteredList" style="width: 100%" :cell-style="{ padding: '12px 0' }">
+                <el-table-column label="订单编号" min-width="150" align="center">
+                    <template #default="{ row }">
+                        <el-button type="primary" link @click="openDetail(row)">{{ row.orderNo }}</el-button>
+                    </template>
+                </el-table-column>
+                <el-table-column label="订单类型" min-width="105" align="center">
                     <template #default="{ row }">
                         <el-tag :type="orderTypeTagTypes[row.orderType as OrderType]" size="small" effect="light">
                             {{ orderTypeLabels[row.orderType as OrderType] }}
                         </el-tag>
                     </template>
                 </el-table-column>
-                <el-table-column label="用户信息" min-width="200" align="center">
+                <el-table-column label="用户信息" min-width="250" align="center">
                     <template #default="{ row }">
                         <div class="user-cell">
                             <span class="avatar" :style="{ background: row.avatarColor }">
@@ -64,15 +68,20 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="订单信息" min-width="180" align="center">
+                <el-table-column label="订单信息" min-width="220" align="center">
                     <template #default="{ row }">
-                        <div class="cell-lines">
-                            <span>{{ row.serviceName }}</span>
-                            <span class="cell-sub">¥{{ money(row.price) }} × {{ row.quantity }}</span>
+                        <div class="order-info-cell">
+                            <span class="service-image" :style="{ background: row.avatarColor }">
+                                {{ row.serviceName.charAt(0) }}
+                            </span>
+                            <div class="cell-lines">
+                                <span>{{ row.serviceName }}</span>
+                                <span class="cell-sub">¥{{ money(row.price) }} × {{ row.quantity }}</span>
+                            </div>
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="优惠信息" min-width="180" align="center">
+                <el-table-column label="优惠信息" min-width="170" align="center">
                     <template #default="{ row }">
                         <div class="cell-lines">
                             <span>会员折扣 ¥{{ money(row.memberDiscount) }}</span>
@@ -82,7 +91,7 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="支付信息" min-width="150" align="center">
+                <el-table-column label="支付信息" min-width="140" align="center">
                     <template #default="{ row }">
                         <div class="cell-lines">
                             <span>订单 ¥{{ money(row.totalAmount) }}</span>
@@ -90,14 +99,14 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="订单状态" min-width="130" align="center">
+                <el-table-column label="订单状态" min-width="120" align="center">
                     <template #default="{ row }">
                         <el-tag :type="statusTagTypes[row.status as OrderStatus]" size="small" effect="light">
                             {{ statusLabels[row.status as OrderStatus] }}
                         </el-tag>
                     </template>
                 </el-table-column>
-                <el-table-column label="核销次数/总次数" min-width="130" align="center">
+                <el-table-column label="核销进度" min-width="110" align="center">
                     <template #default="{ row }">
                         <span :class="{ 'verify-active': row.verifyCount > 0 }">
                             {{ row.verifyCount }} / {{ row.totalCount }}
@@ -112,21 +121,6 @@
                     </template>
                 </el-table-column>
             </el-table>
-        </el-card>
-
-        <!-- 规则说明 -->
-        <el-card class="rule-card mt-4" shadow="never">
-            <template #header><span class="header-title">功能规则</span></template>
-            <ul class="rule-list">
-                <li>多次核销：购买 N 份的服务订单核销次数为 N，单次核销后若仍有未使用次数，订单保持服务中；所有次数核销且服务流程完成后才转为已完成。</li>
-                <li>核销规则：允许到店核销；若服务尚未完成，仍保留服务中，员工提交服务记录后，已核销订单转已完成，未核销订单待核销。</li>
-                <li>评估订单：评估报告与订单分别留痕；完成评估并提交资料后按核销情况进入待核销或已完成；评估和服务订单不得再退回待状态。</li>
-                <li>待服务订单：未进行核销订单处于待服务订单，该类型订单可直接取消订单，原路退还支付金额。</li>
-                <li>渠道来源：评估订单立即服务需选择服务项目、康复师、渠道来源并填写第三方券码。</li>
-                <li>第三方券码：提交时需校验重复，重复券码不可提交并提示券码已使用。</li>
-                <li>订单金额：评估/康复服务订单优惠券与积分抵扣两者不可同时使用，会员折扣可与其中任意一种叠加。</li>
-                <li>支付到账：评估/康复服务用户下单支付需要选择门店，支付金额到账对应门店账户，商品下单支付金额则全部到账平台。</li>
-            </ul>
         </el-card>
 
         <!-- 订单详情 -->
@@ -319,8 +313,7 @@ const openVerify = (row: ServiceOrderItem) => {
 }
 
 .list-card,
-.info-card,
-.rule-card {
+.info-card {
     border-radius: 8px;
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
 }
@@ -348,13 +341,11 @@ const openVerify = (row: ServiceOrderItem) => {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    max-width: 100%;
     white-space: nowrap;
 }
 
 .user-text {
-    overflow: hidden;
-    text-overflow: ellipsis;
+    color: #303133;
 }
 
 .avatar {
@@ -377,8 +368,8 @@ const openVerify = (row: ServiceOrderItem) => {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 2px;
-    line-height: 1.4;
+    gap: 4px;
+    line-height: 1.5;
 }
 
 .cell-sub {
@@ -386,21 +377,28 @@ const openVerify = (row: ServiceOrderItem) => {
     color: #909399;
 }
 
+.order-info-cell {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.service-image {
+    display: inline-flex;
+    flex: 0 0 40px;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #fff;
+    border-radius: 6px;
+}
+
 .verify-active {
     font-weight: 600;
     color: var(--el-color-primary);
-}
-
-.rule-list {
-    margin: 0;
-    padding-left: 20px;
-    font-size: 13px;
-    line-height: 1.9;
-    color: #606266;
-
-    li {
-        padding: 2px 0;
-    }
 }
 
 .info-grid {
