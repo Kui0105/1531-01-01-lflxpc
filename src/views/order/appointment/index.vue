@@ -35,11 +35,7 @@
             </el-tabs>
 
             <el-table class="appointment-table" :data="filteredList" style="width: 100%">
-                <el-table-column label="关联订单号" min-width="140" align="center" show-overflow-tooltip>
-                    <template #default="{ row }">
-                        <el-button type="primary" link @click="openDetail(row)">{{ row.orderNo }}</el-button>
-                    </template>
-                </el-table-column>
+                <el-table-column prop="orderNo" label="关联订单号" min-width="140" align="center" show-overflow-tooltip />
                 <el-table-column label="用户信息" min-width="220" align="center">
                     <template #default="{ row }">
                         <div class="user-cell">
@@ -66,6 +62,11 @@
                     </template>
                 </el-table-column>
                 <el-table-column prop="submitTime" label="提交时间" min-width="140" align="center" show-overflow-tooltip />
+                <el-table-column label="操作" min-width="100" align="center" fixed="right">
+                    <template #default="{ row }">
+                        <el-button type="primary" link size="small" @click="openDetail(row)">详情</el-button>
+                    </template>
+                </el-table-column>
             </el-table>
         </el-card>
 
