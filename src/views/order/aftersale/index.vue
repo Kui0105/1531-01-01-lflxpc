@@ -6,9 +6,8 @@
             <el-input v-model="orderNo" placeholder="订单编号" clearable class="!w-[160px]" />
             <el-input v-model="keyword" placeholder="用户昵称/手机号" clearable class="!w-[170px]" />
             <el-select v-model="afterType" placeholder="售后类型" clearable class="!w-[130px]">
-                <el-option label="评估订单" value="assess" />
-                <el-option label="服务订单" value="service" />
-                <el-option label="商品订单" value="goods" />
+                <el-option label="仅退款" value="refund" />
+                <el-option label="退货退款" value="return" />
             </el-select>
             <el-select v-model="status" placeholder="处理状态" clearable class="!w-[130px]">
                 <el-option
@@ -188,6 +187,7 @@ import { exportCsv } from '@/utils/export-csv'
 
 import {
     afterSaleOrders,
+    afterSaleTypeLabels,
     orderTypeLabels,
     orderTypeTagTypes,
     statusLabels,
@@ -223,7 +223,7 @@ const filteredList = computed(() =>
             item.originOrderNo.includes(query.orderNo)
         const matchKeyword =
             !query.keyword || item.nickname.includes(query.keyword) || item.mobile.includes(query.keyword)
-        const matchType = !query.afterType || item.originOrderType === query.afterType
+        const matchType = !query.afterType || item.afterSaleType === query.afterType
         const matchStatus = query.status
             ? item.status === query.status
             : !activeTab.value || item.status === activeTab.value
@@ -254,11 +254,12 @@ const resetSearch = () => {
 const exportList = () => {
     exportCsv(
         '售后订单',
-        ['售后单号', '原订单编号', '订单类型', '用户昵称', '手机号', '售后原因', '备注说明', '申请退款金额', '状态', '申请时间'],
+        ['售后单号', '原订单编号', '订单类型', '售后类型', '用户昵称', '手机号', '售后原因', '备注说明', '申请退款金额', '状态', '申请时间'],
         filteredList.value.map((row) => [
             row.afterSaleNo,
             row.originOrderNo,
             orderTypeLabels[row.originOrderType],
+            afterSaleTypeLabels[row.afterSaleType],
             row.nickname,
             row.mobile,
             row.reason,

@@ -5,12 +5,14 @@
 
 export type AfterSaleStatus = 'pending' | 'agreed' | 'rejected'
 export type OriginOrderType = 'assess' | 'service' | 'goods'
+export type AfterSaleType = 'refund' | 'return'
 
 export interface AfterSaleItem {
     id: number
     afterSaleNo: string
     originOrderNo: string
     originOrderType: OriginOrderType
+    afterSaleType: AfterSaleType
     avatarColor: string
     nickname: string
     mobile: string
@@ -66,12 +68,19 @@ export const orderTypeTagTypes: Record<OriginOrderType, 'primary' | 'success' | 
     goods: 'warning'
 }
 
+// 售后类型针对商品订单售后：仅退款 / 退货退款
+export const afterSaleTypeLabels: Record<AfterSaleType, string> = {
+    refund: '仅退款',
+    return: '退货退款'
+}
+
 export const afterSaleOrders: AfterSaleItem[] = [
     {
         id: 1,
         afterSaleNo: 'AS20261125001',
         originOrderNo: 'SO20261125001',
         originOrderType: 'service',
+        afterSaleType: 'refund',
         avatarColor: '#4A5DFF',
         nickname: '健康同行者',
         mobile: '13800138001',
@@ -100,6 +109,7 @@ export const afterSaleOrders: AfterSaleItem[] = [
         afterSaleNo: 'AS20261125002',
         originOrderNo: 'GO20261124003',
         originOrderType: 'goods',
+        afterSaleType: 'return',
         avatarColor: '#e6a23c',
         nickname: '春风化雨',
         mobile: '13800138002',
@@ -128,6 +138,7 @@ export const afterSaleOrders: AfterSaleItem[] = [
         afterSaleNo: 'AS20261124003',
         originOrderNo: 'SO20261123003',
         originOrderType: 'service',
+        afterSaleType: 'refund',
         avatarColor: '#67c23a',
         nickname: '康养达人',
         mobile: '13800138003',
@@ -156,6 +167,7 @@ export const afterSaleOrders: AfterSaleItem[] = [
         afterSaleNo: 'AS20261123004',
         originOrderNo: 'GO20261122005',
         originOrderType: 'goods',
+        afterSaleType: 'return',
         avatarColor: '#9b59b6',
         nickname: '阳光正好',
         mobile: '13800138005',
@@ -184,6 +196,7 @@ export const afterSaleOrders: AfterSaleItem[] = [
         afterSaleNo: 'AS20261122005',
         originOrderNo: 'SO20261120005',
         originOrderType: 'assess',
+        afterSaleType: 'refund',
         avatarColor: '#f56c6c',
         nickname: '安然自得',
         mobile: '13800138006',
@@ -212,6 +225,7 @@ export const afterSaleOrders: AfterSaleItem[] = [
         afterSaleNo: 'AS20261121006',
         originOrderNo: 'GO20261120006',
         originOrderType: 'goods',
+        afterSaleType: 'refund',
         avatarColor: '#409eff',
         nickname: '静待花开',
         mobile: '13800138004',
