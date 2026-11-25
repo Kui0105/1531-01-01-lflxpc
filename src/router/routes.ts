@@ -67,9 +67,32 @@ export const COMPLAINT_ROUTE: RouteRecordRaw = {
     ]
 }
 
+// 订单管理导航（静态注入到用户管理下方）
+export const ORDER_ROUTE: RouteRecordRaw = {
+    path: '/admin/order',
+    name: Symbol('admin-order'),
+    component: LAYOUT,
+    meta: {
+        title: '订单管理',
+        icon: 'el-icon-ShoppingCart'
+    },
+    children: [
+        {
+            path: 'appointment',
+            name: Symbol('admin-order-appointment'),
+            component: () => import('@/views/order/appointment/index.vue'),
+            meta: {
+                title: '预约列表',
+                icon: 'el-icon-Calendar'
+            }
+        }
+    ]
+}
+
 export const constantRoutes: Array<RouteRecordRaw> = [
     APPROISE_ROUTE,
     COMPLAINT_ROUTE,
+    ORDER_ROUTE,
     {
         path: '/admin/consumer/lists/detail',
         name: Symbol('admin-consumer-detail'),

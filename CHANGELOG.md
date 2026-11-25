@@ -1,5 +1,21 @@
 # 更新日志
 
+## v0.6.0 (2026-11-25)
+
+### 本次更新
+
+- 侧边栏新增「订单管理 → 预约列表」导航，路由 `/admin/order/appointment`
+- 预约列表页按需求实现：用户昵称/手机号/门店/康复师/预约日期/状态筛选、状态 TAB、预约信息列表、按筛选条件导出 CSV
+- 预约详情抽屉：门店信息、康复师信息、预约信息、关联订单、操作日志
+- 更换康复师：按服务关联职称筛选可选康复师，保存后记录操作人及操作内容
+- 页面展示时段锁定、职称关联、改期/取消限制等规则说明，全部使用 mock 数据
+
+### 说明
+
+- 修改文件：`src/views/order/appointment/index.vue`、新增 `data.ts`、`src/router/routes.ts`、`src/layout/default/components/sidebar/side.vue`，以及版本文件
+- 验证：类型检查通过（新增代码无报错）
+- 预览：http://localhost:5173/admin/order/appointment
+
 ## v0.5.3 (2026-11-25)
 
 ### 本次更新

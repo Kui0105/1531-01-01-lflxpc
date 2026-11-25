@@ -16,7 +16,7 @@
 <script setup lang="ts">
 import type { RouteRecordRaw } from 'vue-router'
 
-import { APPROISE_ROUTE, COMPLAINT_ROUTE } from '@/router/routes'
+import { APPROISE_ROUTE, COMPLAINT_ROUTE, ORDER_ROUTE } from '@/router/routes'
 import useAppStore from '@/stores/modules/app'
 import useSettingStore from '@/stores/modules/setting'
 import useUserStore from '@/stores/modules/user'
@@ -85,6 +85,14 @@ const routes = computed(() => {
         )
         const insertAt = userListIndex >= 0 ? userListIndex + 1 : list.length
         list.splice(insertAt, 0, COMPLAINT_ROUTE)
+    }
+    // 静态注入「订单管理」导航到用户管理下方
+    if (!list.some((item) => item.path === ORDER_ROUTE.path)) {
+        const userManageIndex = list.findIndex(
+            (item) => item.meta?.title === '用户管理' || item.path.includes('user')
+        )
+        const insertAt = userManageIndex >= 0 ? userManageIndex + 1 : list.length
+        list.splice(insertAt, 0, ORDER_ROUTE)
     }
     return list
 })
