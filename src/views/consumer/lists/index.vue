@@ -73,6 +73,14 @@
             </el-table>
         </el-card>
 
+        <!-- 用户详情：当前路由下切换，保留左侧导航 -->
+        <el-drawer v-model="detailVisible" size="1000px">
+            <template #header>
+                <span class="header-title">用户详情 - {{ currentDetailName }}</span>
+            </template>
+            <detail-panel v-if="currentDetailId" :user-id="currentDetailId" />
+        </el-drawer>
+
         <!-- 康复档案：时间轴 -->
         <el-drawer v-model="archiveVisible" size="900px">
             <template #header>
@@ -118,12 +126,10 @@
 </template>
 
 <script lang="ts" setup name="consumerLists">
-import { useRouter } from 'vue-router'
-
+import DetailPanel from './components/detail-panel.vue'
 import { detailData, users } from './data'
 import type { ArchiveRecord, UserItem } from './data'
 
-const router = useRouter()
 const keyword = ref('')
 const mobile = ref('')
 const startTime = ref('')
@@ -162,8 +168,15 @@ const levelTag = (level: string): TagType => {
     return map[level] || 'info'
 }
 
+// 用户详情改为当前路由下抽屉展示，保留左侧导航
+const detailVisible = ref(false)
+const currentDetailId = ref(0)
+const currentDetailName = computed(
+    () => users.find((item) => item.id === currentDetailId.value)?.nickname || ''
+)
 const openDetail = (row: UserItem) => {
-    router.push({ path: '/admin/consumer/lists/detail', query: { id: row.id } })
+    currentDetailId.value = row.id
+    detailVisible.value = true
 }
 
 const archiveVisible = ref(false)

@@ -1,5 +1,18 @@
 # 更新日志
 
+## v0.4.2 (2026-11-25)
+
+### 本次更新
+
+- 「查看详情」改为在用户列表当前路由下以抽屉展示，保留左侧导航，不再跳转独立页面
+- 详情主体抽成可复用组件 `detail-panel.vue`，原详情路由继续保留兼容
+
+### 说明
+
+- 修改文件：`src/views/consumer/lists/index.vue`、`detail.vue`、新增 `components/detail-panel.vue`，以及版本文件
+- 验证：类型检查通过（新增代码无报错）
+- 预览：http://localhost:5173/admin/consumer/lists
+
 ## v0.4.1 (2026-11-25)
 
 ### 本次更新
