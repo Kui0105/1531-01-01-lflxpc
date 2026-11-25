@@ -22,6 +22,7 @@
                 查询
             </el-button>
             <el-button @click="resetSearch">重置</el-button>
+            <el-button class="ml-auto" @click="exportList">导出</el-button>
         </div>
 
         <!-- 用户列表 -->
@@ -126,6 +127,8 @@
 </template>
 
 <script lang="ts" setup name="consumerLists">
+import { exportCsv } from '@/utils/export-csv'
+
 import DetailPanel from './components/detail-panel.vue'
 import { detailData, users } from './data'
 import type { ArchiveRecord, UserItem } from './data'
@@ -154,6 +157,22 @@ const resetSearch = () => {
     startTime.value = ''
     endTime.value = ''
     queryParams.keyword = ''
+}
+
+const exportList = () => {
+    exportCsv(
+        '用户列表',
+        ['用户ID', '用户昵称', '手机号码', '会员等级', '积分余额', '状态', '注册时间'],
+        filteredUsers.value.map((user) => [
+            user.id,
+            user.nickname,
+            user.mobile,
+            user.level,
+            user.points,
+            user.status === 'normal' ? '正常' : '已禁用',
+            user.registerTime
+        ])
+    )
 }
 
 type TagType = 'primary' | 'success' | 'warning' | 'danger' | 'info'

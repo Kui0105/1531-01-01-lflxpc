@@ -29,6 +29,7 @@
             </div>
             <el-button type="primary" @click="handleSearch">查询</el-button>
             <el-button @click="resetSearch">重置</el-button>
+            <el-button class="ml-auto" @click="exportList">导出</el-button>
         </div>
 
         <!-- 状态TAB + 列表 -->
@@ -257,6 +258,8 @@
 import { ElMessage } from 'element-plus'
 import { cloneDeep } from 'lodash-es'
 
+import { exportCsv } from '@/utils/export-csv'
+
 import {
     deliveryLabels,
     expressCompanies,
@@ -316,6 +319,36 @@ const resetSearch = () => {
     dateRange.value = []
     activeTab.value = ''
     handleSearch()
+}
+
+const exportList = () => {
+    exportCsv(
+        '商品订单',
+        [
+            '订单编号', '用户昵称', '手机号', '商品名称', '规格', '数量', '单价', '配送方式',
+            '自提门店', '分装服务', '会员折扣', '优惠券抵扣', '积分抵扣', '运费', '订单总额', '实付金额', '状态', '下单时间'
+        ],
+        filteredList.value.map((row) => [
+            row.orderNo,
+            row.nickname,
+            row.mobile,
+            row.goodsName,
+            row.goodsSpec,
+            row.goodsQuantity,
+            row.goodsPrice,
+            deliveryLabels[row.deliveryType as DeliveryType],
+            row.pickupStore || '-',
+            row.packagingService || '-',
+            row.memberDiscount,
+            row.couponDiscount,
+            row.pointDiscount,
+            row.freight,
+            row.goodsPrice * row.goodsQuantity + row.freight,
+            row.paidAmount,
+            statusLabels[row.status as OrderStatus],
+            row.orderTime
+        ])
+    )
 }
 
 const detailVisible = ref(false)

@@ -1,5 +1,19 @@
 # 更新日志
 
+## v0.8.3 (2026-11-25)
+
+### 本次更新
+
+- 用户列表、投诉反馈、服务订单、商品订单四个页面顶部筛选栏的「重置」按钮右侧新增「导出」按钮
+- 导出功能由新增的公共工具 `src/utils/export-csv.ts` 统一处理（带 BOM 兼容 Excel 中文，自动附加当天日期文件名）
+- 四个页面均按当前筛选结果导出 CSV：用户列表导出用户信息，投诉反馈导出投诉记录，服务订单导出订单及优惠/支付/核销信息，商品订单导出商品/配送/优惠/支付信息
+
+### 说明
+
+- 修改文件：新增 `src/utils/export-csv.ts`，修改 `src/views/consumer/lists/index.vue`、`src/views/consumer/complaint/index.vue`、`src/views/order/service/index.vue`、`src/views/order/goods/index.vue`，以及版本文件
+- 验证：类型检查通过（仅保留既有历史报错，新增代码无报错）
+- 预览：http://localhost:5173/admin/consumer/lists
+
 ## v0.8.2 (2026-11-25)
 
 ### 本次更新

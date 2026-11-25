@@ -32,6 +32,7 @@
             </div>
             <el-button type="primary" @click="handleSearch">查询</el-button>
             <el-button @click="resetSearch">重置</el-button>
+            <el-button class="ml-auto" @click="exportList">导出</el-button>
         </div>
 
         <!-- 状态TAB + 列表 -->
@@ -196,6 +197,8 @@
 <script lang="ts" setup name="serviceOrderList">
 import { cloneDeep } from 'lodash-es'
 
+import { exportCsv } from '@/utils/export-csv'
+
 import {
     orderTypeLabels,
     orderTypeTagTypes,
@@ -259,6 +262,35 @@ const resetSearch = () => {
     dateRange.value = []
     activeTab.value = ''
     handleSearch()
+}
+
+const exportList = () => {
+    exportCsv(
+        '服务订单',
+        [
+            '订单编号', '订单类型', '用户昵称', '手机号', '门店', '服务名称', '单价', '数量',
+            '会员折扣', '优惠券抵扣', '积分抵扣', '订单总额', '实付金额', '订单状态', '核销次数', '总次数', '下单时间'
+        ],
+        filteredList.value.map((row) => [
+            row.orderNo,
+            orderTypeLabels[row.orderType as OrderType],
+            row.nickname,
+            row.mobile,
+            row.store,
+            row.serviceName,
+            row.price,
+            row.quantity,
+            row.memberDiscount,
+            row.couponDiscount,
+            row.pointDiscount,
+            row.totalAmount,
+            row.paidAmount,
+            statusLabels[row.status as OrderStatus],
+            row.verifyCount,
+            row.totalCount,
+            row.orderTime
+        ])
+    )
 }
 
 const detailVisible = ref(false)

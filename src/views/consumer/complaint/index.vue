@@ -19,6 +19,7 @@
             </div>
             <el-button type="primary" @click="handleSearch">查询</el-button>
             <el-button @click="resetSearch">重置</el-button>
+            <el-button class="ml-auto" @click="exportList">导出</el-button>
         </div>
 
         <!-- 规则说明 -->
@@ -93,6 +94,8 @@
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { cloneDeep } from 'lodash-es'
 
+import { exportCsv } from '@/utils/export-csv'
+
 import { complaints, statusOptions, storeOptions } from './data'
 import type { ComplaintItem, ComplaintStatus } from './data'
 
@@ -126,6 +129,24 @@ const resetSearch = () => {
     startTime.value = ''
     endTime.value = ''
     handleSearch()
+}
+
+const exportList = () => {
+    exportCsv(
+        '投诉反馈',
+        ['用户ID', '用户昵称', '联系电话', '投诉门店', '投诉康复师', '投诉类型', '投诉内容', '状态', '投诉时间'],
+        filteredList.value.map((item) => [
+            item.userId,
+            item.nickname,
+            item.mobile,
+            item.store,
+            item.therapist,
+            item.type,
+            item.content,
+            statusLabel(item.status),
+            item.time
+        ])
+    )
 }
 
 const statusLabel = (value: ComplaintStatus) => {
