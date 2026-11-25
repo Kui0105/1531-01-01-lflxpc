@@ -14,6 +14,8 @@
 </template>
 
 <script setup lang="ts">
+import type { RouteRecordRaw } from 'vue-router'
+
 import { APPROISE_ROUTE, COMPLAINT_ROUTE } from '@/router/routes'
 import useAppStore from '@/stores/modules/app'
 import useSettingStore from '@/stores/modules/setting'
@@ -36,7 +38,10 @@ const sideTheme = computed(() => settingStore.sideTheme)
 const userStore = useUserStore()
 
 const routes = computed(() => {
-    const list = [...userStore.routes]
+    const list = userStore.routes.map((item) => ({
+        ...item,
+        children: item.children ? [...item.children] : undefined
+    })) as RouteRecordRaw[]
     // 静态注入「互评任务」导航：工作台下方、用户管理上方
     if (!list.some((item) => item.path === APPROISE_ROUTE.path)) {
         const workbenchIndex = list.findIndex(
@@ -49,8 +54,32 @@ const routes = computed(() => {
             workbenchIndex >= 0 ? workbenchIndex + 1 : userIndex >= 0 ? userIndex : list.length
         list.splice(insertAt, 0, APPROISE_ROUTE)
     }
-    // 静态注入「投诉反馈」导航到用户列表下方
-    if (!list.some((item) => item.path === COMPLAINT_ROUTE.path)) {
+
+    // 「投诉反馈」插入到「用户管理」目录下的「用户列表」下方
+    const complaintChild = {
+        path: 'complaint',
+        name: Symbol('admin-consumer-complaint'),
+        component: COMPLAINT_ROUTE.children?.[0]?.component,
+        meta: { title: '投诉反馈' }
+    } as RouteRecordRaw
+    let injected = false
+    for (const item of list) {
+        const children = item.children
+        if (!children?.length) continue
+        const userListIndex = children.findIndex(
+            (child) =>
+                child.meta?.title === '用户列表' || child.path?.includes('consumer/lists')
+        )
+        if (userListIndex >= 0) {
+            if (!children.some((child) => child.meta?.title === '投诉反馈')) {
+                children.splice(userListIndex + 1, 0, complaintChild)
+            }
+            injected = true
+            break
+        }
+    }
+    // 兼容菜单中「用户列表」为顶层的情况
+    if (!injected && !list.some((item) => item.path === COMPLAINT_ROUTE.path)) {
         const userListIndex = list.findIndex(
             (item) => item.meta?.title === '用户列表' || item.path.includes('consumer/lists')
         )
