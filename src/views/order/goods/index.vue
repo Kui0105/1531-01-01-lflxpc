@@ -30,6 +30,7 @@
             <el-button type="primary" @click="handleSearch">查询</el-button>
             <el-button @click="resetSearch">重置</el-button>
             <el-button class="ml-auto" @click="exportList">导出</el-button>
+            <el-button type="primary" plain @click="openBatchShip">批量发货</el-button>
         </div>
 
         <!-- 状态TAB + 列表 -->
@@ -251,12 +252,69 @@
                 <el-button type="primary" @click="submitShip">确认发货</el-button>
             </template>
         </el-dialog>
+
+        <!-- 批量发货 -->
+        <el-dialog v-model="batchShipVisible" title="批量发货" width="560px">
+            <div class="batch-ship">
+                <div class="batch-step">
+                    <span class="batch-step-no">1</span>
+                    <span class="batch-step-text">下载模板并填写</span>
+                    <el-button type="primary" link @click="downloadTemplate">下载模板文件</el-button>
+                </div>
+                <div class="batch-hint">
+                    模板表头为「订单号、快递公司、物流单号」，其中快递公司、物流单号需人工填写后上传。
+                </div>
+                <div class="batch-step">
+                    <span class="batch-step-no">2</span>
+                    <span class="batch-step-text">上传填写好的文件</span>
+                </div>
+                <el-upload
+                    class="batch-upload"
+                    accept=".xlsx,.xls"
+                    :auto-upload="false"
+                    :show-file-list="false"
+                    :limit="1"
+                    :on-change="handleBatchFile"
+                >
+                    <el-button type="primary" plain>选择 Excel 文件</el-button>
+                </el-upload>
+                <div v-if="batchFileName" class="batch-file-name">
+                    已选择：{{ batchFileName }}
+                </div>
+                <div v-if="batchRows.length" class="batch-preview">
+                    <div class="batch-preview-title">解析结果（共 {{ batchRows.length }} 条）</div>
+                    <el-table :data="batchRows" style="width: 100%" max-height="220">
+                        <el-table-column prop="orderNo" label="订单号" min-width="140" align="center" />
+                        <el-table-column prop="expressCompany" label="快递公司" min-width="120" align="center" />
+                        <el-table-column prop="trackingNo" label="物流单号" min-width="140" align="center" />
+                        <el-table-column label="匹配状态" min-width="120" align="center">
+                            <template #default="{ row }">
+                                <el-tag :type="row.matched ? 'success' : 'danger'" size="small" effect="light">
+                                    {{ row.matched ? '可发货' : row.message }}
+                                </el-tag>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                </div>
+            </div>
+            <template #footer>
+                <el-button @click="batchShipVisible = false">取消</el-button>
+                <el-button
+                    type="primary"
+                    :disabled="!batchRows.length"
+                    @click="submitBatchShip"
+                >
+                    确认批量发货
+                </el-button>
+            </template>
+        </el-dialog>
     </div>
 </template>
 
 <script lang="ts" setup name="goodsOrderList">
 import { ElMessage } from 'element-plus'
 import { cloneDeep } from 'lodash-es'
+import * as XLSX from 'xlsx'
 
 import { exportCsv } from '@/utils/export-csv'
 
@@ -392,6 +450,110 @@ const submitShip = () => {
     })
     shipVisible.value = false
     ElMessage.success('发货成功，订单状态已更新为待收货')
+}
+
+// 批量发货
+interface BatchShipRow {
+    orderNo: string
+    expressCompany: string
+    trackingNo: string
+    matched: boolean
+    message: string
+}
+
+const batchShipVisible = ref(false)
+const batchFileName = ref('')
+const batchRows = ref<BatchShipRow[]>([])
+
+const openBatchShip = () => {
+    batchFileName.value = ''
+    batchRows.value = []
+    batchShipVisible.value = true
+}
+
+// 下载批量发货模板（仅表头，快递公司与物流单号留空人工填写）
+const downloadTemplate = () => {
+    const header = ['订单号', '快递公司', '物流单号']
+    const worksheet = XLSX.utils.aoa_to_sheet([header])
+    worksheet['!cols'] = [{ wch: 20 }, { wch: 16 }, { wch: 24 }]
+    const workbook = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(workbook, worksheet, '批量发货')
+    XLSX.writeFile(workbook, '批量发货模板.xlsx')
+    ElMessage.success('模板已下载')
+}
+
+// 读取上传的 Excel 并解析
+const handleBatchFile = (uploadFile: { raw?: File }) => {
+    const file = uploadFile.raw
+    if (!file) return
+    batchFileName.value = file.name
+    const reader = new FileReader()
+    reader.onload = (e) => {
+        try {
+            const binary = e.target?.result
+            const workbook = XLSX.read(binary, { type: 'array' })
+            const sheet = workbook.Sheets[workbook.SheetNames[0]]
+            const rows = XLSX.utils.sheet_to_json<Record<string, any>>(sheet, { defval: '' })
+            batchRows.value = rows.map((row) => {
+                const orderNo = String(row['订单号'] ?? '').trim()
+                const expressCompany = String(row['快递公司'] ?? '').trim()
+                const trackingNo = String(row['物流单号'] ?? '').trim()
+                const target = data.find((item) => item.orderNo === orderNo)
+                let matched = false
+                let message = '可发货'
+                if (!orderNo) {
+                    message = '订单号为空'
+                } else if (!target) {
+                    message = '订单不存在'
+                } else if (target.status !== 'pending_ship') {
+                    message = '非待发货'
+                } else if (!expressCompany || !trackingNo) {
+                    message = '信息不全'
+                } else {
+                    matched = true
+                }
+                return { orderNo, expressCompany, trackingNo, matched, message }
+            })
+            if (!batchRows.value.length) {
+                ElMessage.warning('文件中未读取到有效数据')
+            }
+        } catch (error) {
+            batchRows.value = []
+            ElMessage.error('文件解析失败，请检查格式')
+        }
+    }
+    reader.readAsArrayBuffer(file)
+}
+
+// 确认批量发货
+const submitBatchShip = () => {
+    const validRows = batchRows.value.filter((row) => row.matched)
+    if (!validRows.length) {
+        ElMessage.warning('没有可发货的订单')
+        return
+    }
+    const now = new Date()
+    const pad = (n: number) => String(n).padStart(2, '0')
+    const time = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}`
+    let count = 0
+    validRows.forEach((row) => {
+        const target = data.find((item) => item.orderNo === row.orderNo)
+        if (!target || target.status !== 'pending_ship') return
+        target.status = 'pending_receive'
+        target.expressCompany = row.expressCompany
+        target.trackingNo = row.trackingNo
+        target.shipTime = time
+        target.logs.unshift({
+            operator: '管理员',
+            action: `批量发货（${row.expressCompany} ${row.trackingNo}）`,
+            time
+        })
+        count++
+    })
+    batchShipVisible.value = false
+    batchRows.value = []
+    batchFileName.value = ''
+    ElMessage.success(`批量发货成功，共发货 ${count} 单`)
 }
 </script>
 
@@ -599,6 +761,60 @@ const submitShip = () => {
 
 .ship-value {
     font-size: 14px;
+    color: #303133;
+}
+
+.batch-step {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.batch-step-no {
+    display: inline-flex;
+    flex: 0 0 22px;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    font-size: 12px;
+    color: #fff;
+    background: var(--el-color-primary);
+    border-radius: 50%;
+}
+
+.batch-step-text {
+    font-size: 14px;
+    font-weight: 600;
+    color: #303133;
+}
+
+.batch-hint {
+    margin: 0 0 16px 32px;
+    font-size: 12px;
+    line-height: 1.7;
+    color: #909399;
+}
+
+.batch-upload {
+    margin-left: 32px;
+}
+
+.batch-file-name {
+    margin: 10px 0 0 32px;
+    font-size: 13px;
+    color: #606266;
+}
+
+.batch-preview {
+    margin-top: 16px;
+}
+
+.batch-preview-title {
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 600;
     color: #303133;
 }
 
