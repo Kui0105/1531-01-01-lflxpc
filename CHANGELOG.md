@@ -1,5 +1,17 @@
 # 更新日志
 
+## v0.5.2 (2026-11-25)
+
+### 本次更新
+
+- 为「互评任务」「任务列表」「投诉反馈」导航补充图标，与其它导航保持一致
+
+### 说明
+
+- 修改文件：`src/router/routes.ts`、`src/layout/default/components/sidebar/side.vue`，以及版本文件
+- 验证：类型检查通过（新增代码无报错）
+- 预览：http://localhost:5173/admin/consumer/lists
+
 ## v0.5.1 (2026-11-25)
 
 ### 本次更新

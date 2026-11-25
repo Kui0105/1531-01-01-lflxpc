@@ -28,7 +28,8 @@ export const APPROISE_ROUTE: RouteRecordRaw = {
     name: Symbol('admin-appraise'),
     component: LAYOUT,
     meta: {
-        title: '互评任务'
+        title: '互评任务',
+        icon: 'el-icon-DocumentChecked'
     },
     children: [
         {
@@ -36,7 +37,8 @@ export const APPROISE_ROUTE: RouteRecordRaw = {
             name: Symbol('admin-appraise-task'),
             component: () => import('@/views/appraise/task/index.vue'),
             meta: {
-                title: '任务列表'
+                title: '任务列表',
+                icon: 'el-icon-Tickets'
             }
         }
     ]
@@ -48,7 +50,8 @@ export const COMPLAINT_ROUTE: RouteRecordRaw = {
     name: Symbol('admin-consumer-complaint'),
     component: LAYOUT,
     meta: {
-        title: '投诉反馈'
+        title: '投诉反馈',
+        icon: 'el-icon-ChatDotRound'
     },
     children: [
         {
@@ -57,7 +60,8 @@ export const COMPLAINT_ROUTE: RouteRecordRaw = {
             component: () => import('@/views/consumer/complaint/index.vue'),
             meta: {
                 title: '投诉反馈',
-                hidden: true
+                hidden: true,
+                icon: 'el-icon-ChatDotRound'
             }
         }
     ]

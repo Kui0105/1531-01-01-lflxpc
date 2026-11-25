@@ -60,7 +60,7 @@ const routes = computed(() => {
         path: 'complaint',
         name: Symbol('admin-consumer-complaint'),
         component: COMPLAINT_ROUTE.children?.[0]?.component,
-        meta: { title: '投诉反馈' }
+        meta: { title: '投诉反馈', icon: 'el-icon-ChatDotRound' }
     } as RouteRecordRaw
     let injected = false
     for (const item of list) {
