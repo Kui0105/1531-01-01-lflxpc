@@ -45,6 +45,16 @@ export const APPROISE_ROUTE: RouteRecordRaw = {
 export const constantRoutes: Array<RouteRecordRaw> = [
     APPROISE_ROUTE,
     {
+        path: '/admin/consumer/lists/detail',
+        name: Symbol('admin-consumer-detail'),
+        component: () => import('@/views/consumer/lists/detail.vue'),
+        meta: {
+            title: '用户详情',
+            hidden: true,
+            activeMenu: '/admin/consumer/lists'
+        }
+    },
+    {
         path: '/:pathMatch(.*)*',
         component: () => import('@/views/error/404.vue')
     },
