@@ -61,6 +61,10 @@ const resolvePath = (path: string) => {
     if (isExternal(path)) {
         return path
     }
+    // 绝对路径直接使用，不再拼接父级路径
+    if (path.startsWith('/')) {
+        return getNormalPath(path)
+    }
     const newPath = getNormalPath(`${props.routePath}/${path}`)
     return newPath
 }

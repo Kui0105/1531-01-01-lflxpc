@@ -1,5 +1,17 @@
 # 更新日志
 
+## v0.5.3 (2026-11-25)
+
+### 本次更新
+
+- 修复点击「投诉反馈」导航显示 404 的问题：菜单项改用绝对路径，菜单组件支持绝对路径不再拼接父级
+
+### 说明
+
+- 修改文件：`src/layout/default/components/sidebar/menu-item.vue`、`side.vue`，以及版本文件
+- 验证：类型检查通过（新增代码无报错）
+- 预览：http://localhost:5173/admin/consumer/complaint
+
 ## v0.5.2 (2026-11-25)
 
 ### 本次更新

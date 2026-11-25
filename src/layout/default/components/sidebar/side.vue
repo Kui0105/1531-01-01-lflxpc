@@ -57,7 +57,7 @@ const routes = computed(() => {
 
     // 「投诉反馈」插入到「用户管理」目录下的「用户列表」下方
     const complaintChild = {
-        path: 'complaint',
+        path: COMPLAINT_ROUTE.path,
         name: Symbol('admin-consumer-complaint'),
         component: COMPLAINT_ROUTE.children?.[0]?.component,
         meta: { title: '投诉反馈', icon: 'el-icon-ChatDotRound' }
