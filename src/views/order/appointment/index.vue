@@ -53,12 +53,9 @@
                 <el-table-column prop="store" label="预约门店" min-width="140" align="center" />
                 <el-table-column prop="therapist" label="预约康复师" min-width="140" align="center" />
                 <el-table-column prop="service" label="预约服务/评估项目" min-width="140" align="center" show-overflow-tooltip />
-                <el-table-column label="预约日期/时段" min-width="160" align="center">
+                <el-table-column label="预约日期/时段" min-width="160" align="center" show-overflow-tooltip>
                     <template #default="{ row }">
-                        <div class="datetime-cell">
-                            <span class="datetime-date">{{ row.date }}</span>
-                            <span class="datetime-timeslot">{{ row.timeslot }}</span>
-                        </div>
+                        {{ row.date }} {{ row.timeslot }}
                     </template>
                 </el-table-column>
                 <el-table-column label="状态" min-width="140" align="center">
@@ -108,7 +105,7 @@
                         <div class="info-item"><span class="info-label">提交时间</span><span class="info-value">{{ currentItem.submitTime }}</span></div>
                     </div>
                     <div class="rule-tip">
-                        预约时段为半小时，同一时段并发提交时锁定该时段，已被预约的时段不可被员工手动占用；
+                        预约以整点、半点为时段起点，每段半小时，仅记录开始时间（如 10:00）；同一时段并发提交时锁定该时段，已被预约的时段不可被员工手动占用；
                         预约时间前 ≤1 小时不可改期/取消，员工端与管理端操作口径一致。
                     </div>
                 </el-card>
@@ -311,24 +308,6 @@ const exportList = () => {
         border-radius: 2px;
         content: '';
     }
-}
-
-.datetime-cell {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 2px;
-    line-height: 1.4;
-}
-
-.datetime-date {
-    font-size: 13px;
-    color: #303133;
-}
-
-.datetime-timeslot {
-    font-size: 12px;
-    color: #909399;
 }
 
 .user-cell {
