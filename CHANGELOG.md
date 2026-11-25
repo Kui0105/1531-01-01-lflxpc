@@ -1,5 +1,20 @@
 # 更新日志
 
+## v0.5.0 (2026-11-25)
+
+### 本次更新
+
+- 侧边栏用户列表下方新增「投诉反馈」导航，路由 `/admin/consumer/complaint`
+- 投诉反馈页按需求实现：门店/状态/自定义时间段筛选、投诉信息列表（用户ID、头像、昵称、联系电话、投诉门店、投诉康复师、投诉类型、投诉内容、状态、投诉时间）
+- 新增标记扣分/取消扣分操作，点击弹窗二次确认后生效；仅当月投诉可操作，超出当月不展示按钮
+- 页面展示扣分核算、处理结果提醒、订阅消息等规则说明，全部使用 mock 数据
+
+### 说明
+
+- 修改文件：`src/views/consumer/complaint/index.vue`、新增 `data.ts`、`src/router/routes.ts`、`src/layout/default/components/sidebar/side.vue`，以及版本文件
+- 验证：类型检查通过（新增代码无报错）
+- 预览：http://localhost:5173/admin/consumer/complaint
+
 ## v0.4.3 (2026-11-25)
 
 ### 本次更新

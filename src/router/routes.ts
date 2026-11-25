@@ -42,8 +42,30 @@ export const APPROISE_ROUTE: RouteRecordRaw = {
     ]
 }
 
+// 投诉反馈导航（静态注入到用户列表下方）
+export const COMPLAINT_ROUTE: RouteRecordRaw = {
+    path: '/admin/consumer/complaint',
+    name: Symbol('admin-consumer-complaint'),
+    component: LAYOUT,
+    meta: {
+        title: '投诉反馈'
+    },
+    children: [
+        {
+            path: '',
+            name: Symbol('admin-consumer-complaint-list'),
+            component: () => import('@/views/consumer/complaint/index.vue'),
+            meta: {
+                title: '投诉反馈',
+                hidden: true
+            }
+        }
+    ]
+}
+
 export const constantRoutes: Array<RouteRecordRaw> = [
     APPROISE_ROUTE,
+    COMPLAINT_ROUTE,
     {
         path: '/admin/consumer/lists/detail',
         name: Symbol('admin-consumer-detail'),

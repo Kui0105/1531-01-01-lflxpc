@@ -58,22 +58,33 @@ function findToken() {
 const TOKEN = findToken()
 
 async function api(url, options = {}) {
-    const response = await fetch(`${API}${url}`, {
-        ...options,
-        headers: {
-            Authorization: `Bearer ${TOKEN}`,
-            Accept: 'application/vnd.github+json',
-            'Content-Type': 'application/json',
-            'X-GitHub-Api-Version': '2022-11-28',
-            ...(options.headers || {})
+    let lastError
+    for (let attempt = 1; attempt <= 3; attempt++) {
+        try {
+            const response = await fetch(`${API}${url}`, {
+                ...options,
+                headers: {
+                    Authorization: `Bearer ${TOKEN}`,
+                    Accept: 'application/vnd.github+json',
+                    'Content-Type': 'application/json',
+                    'X-GitHub-Api-Version': '2022-11-28',
+                    ...(options.headers || {})
+                }
+            })
+            const text = await response.text()
+            const data = text ? JSON.parse(text) : null
+            if (!response.ok) {
+                throw new Error(`${url} -> ${response.status} ${data?.message || text}`)
+            }
+            return data
+        } catch (error) {
+            lastError = error
+            if (attempt < 3) {
+                await new Promise((resolve) => setTimeout(resolve, 800 * attempt))
+            }
         }
-    })
-    const text = await response.text()
-    const data = text ? JSON.parse(text) : null
-    if (!response.ok) {
-        throw new Error(`${url} -> ${response.status} ${data?.message || text}`)
     }
-    return data
+    throw new Error(`${url} -> ${lastError?.cause?.code || lastError?.message || '未知错误'}`)
 }
 
 function collectFiles(dir, base = '', output = []) {
@@ -141,7 +152,7 @@ async function main() {
     }
 
     console.log(`需上传文件数：${toUpload.length}`)
-    const concurrency = 8
+    const concurrency = 3
     for (let i = 0; i < toUpload.length; i += concurrency) {
         const batch = toUpload.slice(i, i + concurrency)
         await Promise.all(

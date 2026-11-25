@@ -14,7 +14,7 @@
 </template>
 
 <script setup lang="ts">
-import { APPROISE_ROUTE } from '@/router/routes'
+import { APPROISE_ROUTE, COMPLAINT_ROUTE } from '@/router/routes'
 import useAppStore from '@/stores/modules/app'
 import useSettingStore from '@/stores/modules/setting'
 import useUserStore from '@/stores/modules/user'
@@ -48,6 +48,14 @@ const routes = computed(() => {
         const insertAt =
             workbenchIndex >= 0 ? workbenchIndex + 1 : userIndex >= 0 ? userIndex : list.length
         list.splice(insertAt, 0, APPROISE_ROUTE)
+    }
+    // 静态注入「投诉反馈」导航到用户列表下方
+    if (!list.some((item) => item.path === COMPLAINT_ROUTE.path)) {
+        const userListIndex = list.findIndex(
+            (item) => item.meta?.title === '用户列表' || item.path.includes('consumer/lists')
+        )
+        const insertAt = userListIndex >= 0 ? userListIndex + 1 : list.length
+        list.splice(insertAt, 0, COMPLAINT_ROUTE)
     }
     return list
 })
