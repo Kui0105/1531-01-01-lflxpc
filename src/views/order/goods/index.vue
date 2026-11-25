@@ -117,7 +117,14 @@
                         </el-tag>
                     </template>
                 </el-table-column>
-                <el-table-column prop="orderTime" label="下单时间" min-width="150" align="center" show-overflow-tooltip />
+                <el-table-column label="下单时间" min-width="150" align="center">
+                    <template #default="{ row }">
+                        <div class="cell-lines">
+                            <span>{{ row.orderTime.slice(0, 10) }}</span>
+                            <span class="cell-sub">{{ row.orderTime.slice(11) }}</span>
+                        </div>
+                    </template>
+                </el-table-column>
                 <el-table-column label="操作" min-width="140" align="center" fixed="right">
                     <template #default="{ row }">
                         <el-button
