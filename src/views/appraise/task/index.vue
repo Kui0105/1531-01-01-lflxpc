@@ -41,7 +41,17 @@
         <!-- 任务列表 -->
         <el-card class="list-card mt-4" shadow="never">
             <template #header>
-                <span class="header-title">任务列表</span>
+                <div class="card-header">
+                    <span class="header-title">任务列表</span>
+                    <div class="header-actions">
+                        <span class="config-summary">
+                            {{ nodeLabel }} · 每月 {{ taskConfig.day }} 日生成
+                        </span>
+                        <el-button type="primary" plain size="small" @click="openConfig">
+                            任务配置
+                        </el-button>
+                    </div>
+                </div>
             </template>
             <el-table :data="currentData.stores" style="width: 100%">
                 <el-table-column prop="name" label="门店名称" min-width="140" />
@@ -183,6 +193,35 @@
                 <el-button type="primary" @click="submitEvaluate">提交</el-button>
             </template>
         </el-dialog>
+
+        <!-- 任务配置 -->
+        <el-dialog v-model="configVisible" title="任务配置" width="480px">
+            <div class="form-row">
+                <span class="form-label">生成节点</span>
+                <el-radio-group v-model="taskConfig.node">
+                    <el-radio value="current">生成本月互评任务</el-radio>
+                    <el-radio value="last">生成上月互评任务</el-radio>
+                </el-radio-group>
+            </div>
+            <div class="form-row form-row--top">
+                <span class="form-label">生成时间</span>
+                <div>
+                    <el-select v-model="taskConfig.day" class="!w-[160px]">
+                        <el-option
+                            v-for="day in 30"
+                            :key="day"
+                            :label="`${day} 日`"
+                            :value="day"
+                        />
+                    </el-select>
+                    <div class="config-tip">按自然月 30 日选择，每月 1~30 任意一天进行生成</div>
+                </div>
+            </div>
+            <template #footer>
+                <el-button @click="configVisible = false">取消</el-button>
+                <el-button type="primary" @click="saveConfig">保存配置</el-button>
+            </template>
+        </el-dialog>
     </div>
 </template>
 
@@ -197,6 +236,20 @@ const data = reactive(cloneDeep(taskData))
 const month = ref('2026-11')
 // 管理后端人员显示「立即评价」按钮；超管账号不需要评价
 const isAdmin = ref(true)
+
+// 任务配置（mock 数据，保存在页面状态中）
+const configVisible = ref(false)
+const taskConfig = reactive({ node: 'current' as 'current' | 'last', day: 15 })
+const nodeLabel = computed(() =>
+    taskConfig.node === 'current' ? '生成本月互评任务' : '生成上月互评任务'
+)
+const openConfig = () => {
+    configVisible.value = true
+}
+const saveConfig = () => {
+    configVisible.value = false
+    ElMessage.success('任务配置已保存')
+}
 
 const statColors = ['#4A5DFF', '#e6a23c', '#f56c6c', '#67c23a', '#409eff', '#9b59b6']
 
@@ -353,6 +406,24 @@ const submitEvaluate = () => {
 }
 
 .header-scope {
+    font-size: 12px;
+    color: #909399;
+}
+
+.header-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+}
+
+.config-summary {
+    font-size: 12px;
+    color: #909399;
+}
+
+.config-tip {
+    margin-top: 6px;
     font-size: 12px;
     color: #909399;
 }
