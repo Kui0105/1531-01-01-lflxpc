@@ -1,5 +1,19 @@
 # 更新日志
 
+## v0.4.1 (2026-11-25)
+
+### 本次更新
+
+- 用户列表搜索栏背景改为纯白，移除渐变
+- 时间段搜索组件宽度固定为 400px
+- 用户列表字段统一最小宽度并平均分布
+
+### 说明
+
+- 修改文件：`src/views/consumer/lists/index.vue`、`package.json`、`VERSION`、`CHANGELOG.md`
+- 验证：类型检查通过（新增代码无报错）
+- 预览：http://localhost:5173/admin/consumer/lists
+
 ## v0.4.0 (2026-11-25)
 
 ### 本次更新

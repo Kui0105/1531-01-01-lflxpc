@@ -15,7 +15,9 @@
                 clearable
                 class="!w-[200px]"
             />
-            <daterange-picker v-model:startTime="startTime" v-model:endTime="endTime" />
+            <div class="date-range-wrap">
+                <daterange-picker v-model:startTime="startTime" v-model:endTime="endTime" />
+            </div>
             <el-button type="primary" @click="queryParams.keyword = keyword.trim()">
                 查询
             </el-button>
@@ -28,29 +30,29 @@
                 <span class="header-title">用户列表</span>
             </template>
             <el-table :data="filteredUsers" style="width: 100%">
-                <el-table-column prop="id" label="用户ID" width="100" />
-                <el-table-column label="用户头像" width="90" align="center">
+                <el-table-column prop="id" label="用户ID" min-width="140" align="center" />
+                <el-table-column label="用户头像" min-width="140" align="center">
                     <template #default="{ row }">
                         <span class="avatar" :style="{ background: row.avatarColor }">
                             {{ row.nickname.charAt(0) }}
                         </span>
                     </template>
                 </el-table-column>
-                <el-table-column prop="nickname" label="用户昵称" min-width="130" />
-                <el-table-column prop="mobile" label="手机号码" min-width="130" />
-                <el-table-column label="会员等级" width="110" align="center">
+                <el-table-column prop="nickname" label="用户昵称" min-width="140" align="center" />
+                <el-table-column prop="mobile" label="手机号码" min-width="140" align="center" />
+                <el-table-column label="会员等级" min-width="140" align="center">
                     <template #default="{ row }">
                         <el-tag :type="levelTag(row.level)" size="small" effect="light">
                             {{ row.level }}
                         </el-tag>
                     </template>
                 </el-table-column>
-                <el-table-column label="积分余额" width="110" align="right">
+                <el-table-column label="积分余额" min-width="140" align="center">
                     <template #default="{ row }">
                         <span class="points">{{ row.points.toLocaleString('zh-CN') }}</span>
                     </template>
                 </el-table-column>
-                <el-table-column label="状态" width="100" align="center">
+                <el-table-column label="状态" min-width="140" align="center">
                     <template #default="{ row }">
                         <el-tag
                             :type="row.status === 'normal' ? 'success' : 'info'"
@@ -61,8 +63,8 @@
                         </el-tag>
                     </template>
                 </el-table-column>
-                <el-table-column prop="registerTime" label="注册时间" min-width="160" />
-                <el-table-column label="操作" width="180" align="center" fixed="right">
+                <el-table-column prop="registerTime" label="注册时间" min-width="140" align="center" />
+                <el-table-column label="操作" min-width="140" align="center">
                     <template #default="{ row }">
                         <el-button type="primary" link @click="openDetail(row)">查看详情</el-button>
                         <el-button type="primary" link @click="openArchive(row)">康复档案</el-button>
@@ -197,10 +199,18 @@ const openReport = (row: ArchiveRecord) => {
     align-items: center;
     gap: 12px;
     padding: 14px 18px;
-    background: linear-gradient(90deg, #f5f7ff 0%, #fff 60%);
+    background: #fff;
     border: 1px solid #e8ebf5;
     border-radius: 8px;
     box-shadow: 0 2px 12px rgba(74, 93, 255, 0.04);
+}
+
+.date-range-wrap {
+    width: 400px;
+
+    :deep(.el-date-editor) {
+        width: 100% !important;
+    }
 }
 
 .filter-title {
