@@ -24,7 +24,7 @@ export const INDEX_ROUTE_NAME = Symbol()
 
 // 互评任务导航（静态注入到工作台与用户管理之间）
 export const APPROISE_ROUTE: RouteRecordRaw = {
-    path: '/admin/appraise',
+    path: '/appraise',
     name: Symbol('admin-appraise'),
     component: LAYOUT,
     meta: {
@@ -46,7 +46,7 @@ export const APPROISE_ROUTE: RouteRecordRaw = {
 
 // 投诉反馈导航（静态注入到用户列表下方）
 export const COMPLAINT_ROUTE: RouteRecordRaw = {
-    path: '/admin/consumer/complaint',
+    path: '/consumer/complaint',
     name: Symbol('admin-consumer-complaint'),
     component: LAYOUT,
     meta: {
@@ -69,7 +69,7 @@ export const COMPLAINT_ROUTE: RouteRecordRaw = {
 
 // 订单管理导航（静态注入到用户管理下方）
 export const ORDER_ROUTE: RouteRecordRaw = {
-    path: '/admin/order',
+    path: '/order',
     name: Symbol('admin-order'),
     component: LAYOUT,
     meta: {
@@ -94,13 +94,13 @@ export const constantRoutes: Array<RouteRecordRaw> = [
     COMPLAINT_ROUTE,
     ORDER_ROUTE,
     {
-        path: '/admin/consumer/lists/detail',
+        path: '/consumer/lists/detail',
         name: Symbol('admin-consumer-detail'),
         component: () => import('@/views/consumer/lists/detail.vue'),
         meta: {
             title: '用户详情',
             hidden: true,
-            activeMenu: '/admin/consumer/lists'
+            activeMenu: '/consumer/lists'
         }
     },
     {

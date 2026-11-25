@@ -1,5 +1,22 @@
 # 更新日志
 
+## v0.6.1 (2026-11-25)
+
+### 本次更新
+
+- 预约列表：列表首列「预约单号」改为「关联订单号」，点击仍可打开预约详情
+- 预约列表：移除「渠道来源」字段，导出 CSV 同步移除该列并改用关联订单号
+- 预约列表：修复用户信息头像显示不完全，头像固定 32×32 且不压缩，用户列加宽至 220px
+- 修复侧边栏菜单链接无条件拼接 `?` 导致地址出现 `?undefined` 的问题
+- 修复静态路由重复叠加 `/admin` 前缀导致地址出现 `/admin/admin/...` 的问题（Vite base 已包含 `/admin/`）
+- 增强「订单管理」菜单注入：后端已存在该菜单时只补充「预约列表」子菜单，避免重复
+
+### 说明
+
+- 修改文件：`src/views/order/appointment/index.vue`、`src/layout/default/components/sidebar/menu-item.vue`、`src/layout/default/components/sidebar/side.vue`、`src/router/routes.ts`，以及版本文件
+- 验证：类型检查通过（仅保留既有历史报错，新增代码无报错）
+- 预览：http://localhost:5173/admin/order/appointment
+
 ## v0.6.0 (2026-11-25)
 
 ### 本次更新

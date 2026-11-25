@@ -1,6 +1,6 @@
 <template>
     <template v-if="!route.meta?.hidden">
-        <app-link v-if="!hasShowChild" :to="`${routePath}?${queryStr}`">
+        <app-link v-if="!hasShowChild" :to="queryStr ? `${routePath}?${queryStr}` : routePath">
             <el-menu-item :index="routePath">
                 <icon
                     class="menu-item-icon"
@@ -70,6 +70,7 @@ const resolvePath = (path: string) => {
 }
 const queryStr = computed<string>(() => {
     const query = props.route.meta?.query as string
+    if (!query) return ''
     try {
         const queryObj = JSON.parse(query)
         return objectToQuery(queryObj)

@@ -35,18 +35,18 @@
             </el-tabs>
 
             <el-table class="appointment-table" :data="filteredList" style="width: 100%">
-                <el-table-column label="预约单号" min-width="140" align="center" show-overflow-tooltip>
+                <el-table-column label="关联订单号" min-width="140" align="center" show-overflow-tooltip>
                     <template #default="{ row }">
-                        <el-button type="primary" link @click="openDetail(row)">{{ row.no }}</el-button>
+                        <el-button type="primary" link @click="openDetail(row)">{{ row.orderNo }}</el-button>
                     </template>
                 </el-table-column>
-                <el-table-column label="用户信息" min-width="140" align="center" show-overflow-tooltip>
+                <el-table-column label="用户信息" min-width="220" align="center">
                     <template #default="{ row }">
                         <div class="user-cell">
                             <span class="avatar" :style="{ background: row.avatarColor }">
                                 {{ row.nickname.charAt(0) }}
                             </span>
-                            <span>{{ row.nickname }} / {{ row.mobile }}</span>
+                            <span class="user-text">{{ row.nickname }} / {{ row.mobile }}</span>
                         </div>
                     </template>
                 </el-table-column>
@@ -58,7 +58,6 @@
                         {{ row.date }} {{ row.timeslot }}
                     </template>
                 </el-table-column>
-                <el-table-column prop="source" label="渠道来源" min-width="140" align="center" />
                 <el-table-column label="状态" min-width="140" align="center">
                     <template #default="{ row }">
                         <el-tag :type="getStatusTag(row.status)" size="small" effect="light">
@@ -232,16 +231,15 @@ const submitChange = () => {
 }
 
 const exportList = () => {
-    const headers = ['预约单号', '用户昵称', '手机号', '预约门店', '预约康复师', '预约服务', '预约日期/时段', '渠道来源', '状态', '提交时间']
+    const headers = ['关联订单号', '用户昵称', '手机号', '预约门店', '预约康复师', '预约服务', '预约日期/时段', '状态', '提交时间']
     const rows = filteredList.value.map((item) => [
-        item.no,
+        item.orderNo,
         item.nickname,
         item.mobile,
         item.store,
         item.therapist,
         item.service,
         `${item.date} ${item.timeslot}`,
-        item.source,
         getStatusLabel(item.status),
         item.submitTime
     ])
@@ -313,21 +311,30 @@ const exportList = () => {
 }
 
 .user-cell {
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    justify-content: center;
-    gap: 6px;
+    gap: 8px;
+    max-width: 100%;
+    white-space: nowrap;
+}
+
+.user-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .avatar {
     display: inline-flex;
-    flex: 0 0 28px;
+    flex: 0 0 32px;
     align-items: center;
     justify-content: center;
-    width: 28px;
-    height: 28px;
+    width: 32px;
+    min-width: 32px;
+    height: 32px;
+    min-height: 32px;
     font-size: 13px;
     font-weight: 600;
+    line-height: 1;
     color: #fff;
     border-radius: 50%;
 }

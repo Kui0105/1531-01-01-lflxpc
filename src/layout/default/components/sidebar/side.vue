@@ -86,8 +86,19 @@ const routes = computed(() => {
         const insertAt = userListIndex >= 0 ? userListIndex + 1 : list.length
         list.splice(insertAt, 0, COMPLAINT_ROUTE)
     }
-    // 静态注入「订单管理」导航到用户管理下方
-    if (!list.some((item) => item.path === ORDER_ROUTE.path)) {
+    // 静态注入「订单管理 → 预约列表」导航到用户管理下方
+    const orderParent = list.find((item) => item.path === ORDER_ROUTE.path)
+    if (orderParent) {
+        // 后端已存在「订单管理」时，仅补充缺少的「预约列表」子菜单
+        if (!orderParent.children?.some((child) => child.path?.includes('appointment'))) {
+            orderParent.children = [
+                ...(orderParent.children || []),
+                ...(ORDER_ROUTE.children || [])
+            ]
+        }
+    } else if (
+        !list.some((item) => item.children?.some((child) => child.path?.includes('order/appointment')))
+    ) {
         const userManageIndex = list.findIndex(
             (item) => item.meta?.title === '用户管理' || item.path.includes('user')
         )
