@@ -86,15 +86,16 @@ const routes = computed(() => {
         const insertAt = userListIndex >= 0 ? userListIndex + 1 : list.length
         list.splice(insertAt, 0, COMPLAINT_ROUTE)
     }
-    // 静态注入「订单管理 → 预约列表」导航到用户管理下方
+    // 静态注入「订单管理 → 预约列表 / 服务订单」导航到用户管理下方
     const orderParent = list.find((item) => item.path === ORDER_ROUTE.path)
     if (orderParent) {
-        // 后端已存在「订单管理」时，仅补充缺少的「预约列表」子菜单
-        if (!orderParent.children?.some((child) => child.path?.includes('appointment'))) {
-            orderParent.children = [
-                ...(orderParent.children || []),
-                ...(ORDER_ROUTE.children || [])
-            ]
+        // 后端已存在「订单管理」时，逐项补充缺少的子菜单
+        const existingPaths = new Set(orderParent.children?.map((child) => child.path) || [])
+        const missingChildren = (ORDER_ROUTE.children || []).filter(
+            (child) => !existingPaths.has(child.path)
+        )
+        if (missingChildren.length) {
+            orderParent.children = [...(orderParent.children || []), ...missingChildren]
         }
     } else if (
         !list.some((item) => item.children?.some((child) => child.path?.includes('order/appointment')))

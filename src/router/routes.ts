@@ -85,6 +85,15 @@ export const ORDER_ROUTE: RouteRecordRaw = {
                 title: '预约列表',
                 icon: 'el-icon-Calendar'
             }
+        },
+        {
+            path: 'service',
+            name: Symbol('admin-order-service'),
+            component: () => import('@/views/order/service/index.vue'),
+            meta: {
+                title: '服务订单',
+                icon: 'el-icon-ShoppingBag'
+            }
         }
     ]
 }
