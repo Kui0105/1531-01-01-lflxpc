@@ -35,8 +35,11 @@ export interface OrderRecord {
     store: string
     amount: number
     coupon: string
+    couponAmount: number
     pointDeduct: string
+    pointAmount: number
     discount: string
+    discountAmount: number
     paid: number
     status: string
     time: string
@@ -99,9 +102,9 @@ const commonPoints: PointRecord[] = [
 ]
 
 const commonOrders: OrderRecord[] = [
-    { no: 'SO20261120001', type: '服务订单', name: '全身经络理疗', store: '天河店', amount: 680, coupon: '满500减50', pointDeduct: '150分', discount: '会员9折', paid: 462, status: '已完成', time: '2026-11-20 16:05' },
-    { no: 'GO20261108002', type: '商品订单', name: '艾草礼盒', store: '越秀店', amount: 268, coupon: '无', pointDeduct: '80分', discount: '会员95折', paid: 174.6, status: '已完成', time: '2026-11-08 14:22' },
-    { no: 'SO20261125003', type: '服务订单', name: '康复评估服务', store: '海珠店', amount: 380, coupon: '无', pointDeduct: '无', discount: '无', paid: 380, status: '待服务', time: '2026-11-25 09:40' }
+    { no: 'SO20261120001', type: '服务订单', name: '全身经络理疗', store: '天河店', amount: 680, coupon: '满500减50', couponAmount: 50, pointDeduct: '150分', pointAmount: 150, discount: '会员9折', discountAmount: 68, paid: 412, status: '已完成', time: '2026-11-20 16:05' },
+    { no: 'GO20261108002', type: '商品订单', name: '艾草礼盒', store: '越秀店', amount: 268, coupon: '无', couponAmount: 0, pointDeduct: '80分', pointAmount: 80, discount: '会员95折', discountAmount: 13.4, paid: 174.6, status: '已完成', time: '2026-11-08 14:22' },
+    { no: 'SO20261125003', type: '服务订单', name: '康复评估服务', store: '海珠店', amount: 380, coupon: '无', couponAmount: 0, pointDeduct: '无', pointAmount: 0, discount: '无', discountAmount: 0, paid: 380, status: '待服务', time: '2026-11-25 09:40' }
 ]
 
 const commonAppointments: AppointmentRecord[] = [

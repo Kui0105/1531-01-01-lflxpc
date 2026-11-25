@@ -1,5 +1,18 @@
 # 更新日志
 
+## v0.4.3 (2026-11-25)
+
+### 本次更新
+
+- 用户详情四个标签页的表格字段统一列宽、平均分布，单元格内容不换行，超长内容悬停显示
+- 订单记录与订单详情弹窗的优惠信息改为显示实际优惠金额（券/积分/折扣及合计），并同步修正 mock 数据的实付金额
+
+### 说明
+
+- 修改文件：`src/views/consumer/lists/components/detail-panel.vue`、`src/views/consumer/lists/data.ts`，以及版本文件
+- 验证：类型检查通过（新增代码无报错）
+- 预览：http://localhost:5173/admin/consumer/lists
+
 ## v0.4.2 (2026-11-25)
 
 ### 本次更新

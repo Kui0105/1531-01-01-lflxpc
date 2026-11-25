@@ -21,64 +21,68 @@
         <el-card class="data-card mt-4" shadow="never">
             <el-tabs v-model="activeTab">
                 <el-tab-pane label="积分明细" name="points">
-                    <el-table :data="detail.points" style="width: 100%">
-                        <el-table-column prop="time" label="记录时间" min-width="150" />
-                        <el-table-column label="变动值" width="100" align="center">
+                    <el-table class="detail-table" :data="detail.points" style="width: 100%">
+                        <el-table-column prop="time" label="记录时间" min-width="170" align="center" show-overflow-tooltip />
+                        <el-table-column label="变动值" min-width="170" align="center">
                             <template #default="{ row }">
                                 <span :class="row.change > 0 ? 'text-success' : 'text-danger'">
                                     {{ row.change > 0 ? '+' : '' }}{{ row.change }}
                                 </span>
                             </template>
                         </el-table-column>
-                        <el-table-column prop="balance" label="变动后余额" width="110" align="right" />
-                        <el-table-column prop="reason" label="变动原因" min-width="180" />
-                        <el-table-column prop="remark" label="备注" min-width="160" />
+                        <el-table-column prop="balance" label="变动后余额" min-width="170" align="center" />
+                        <el-table-column prop="reason" label="变动原因" min-width="170" align="center" show-overflow-tooltip />
+                        <el-table-column prop="remark" label="备注" min-width="170" align="center" show-overflow-tooltip />
                     </el-table>
                 </el-tab-pane>
 
                 <el-tab-pane label="订单记录" name="orders">
-                    <el-table :data="detail.orders" style="width: 100%">
-                        <el-table-column label="订单编号" min-width="150">
+                    <el-table class="detail-table" :data="detail.orders" style="width: 100%">
+                        <el-table-column label="订单编号" min-width="140" align="center" show-overflow-tooltip>
                             <template #default="{ row }">
                                 <el-button type="primary" link @click="openOrder(row)">
                                     {{ row.no }}
                                 </el-button>
                             </template>
                         </el-table-column>
-                        <el-table-column prop="type" label="订单类型" width="100" />
-                        <el-table-column prop="name" label="服务/商品名称" min-width="150" />
-                        <el-table-column prop="store" label="门店名称" min-width="100" />
-                        <el-table-column prop="amount" label="订单金额" width="100" align="right" />
-                        <el-table-column label="优惠信息" min-width="180">
+                        <el-table-column prop="type" label="订单类型" min-width="140" align="center" />
+                        <el-table-column prop="name" label="服务/商品名称" min-width="140" align="center" show-overflow-tooltip />
+                        <el-table-column prop="store" label="门店名称" min-width="140" align="center" />
+                        <el-table-column label="订单金额" min-width="140" align="center">
                             <template #default="{ row }">
-                                {{ row.coupon }} / {{ row.pointDeduct }} / {{ row.discount }}
+                                ¥{{ row.amount }}
                             </template>
                         </el-table-column>
-                        <el-table-column prop="paid" label="实付金额" width="100" align="right">
+                        <el-table-column label="优惠信息" min-width="140" align="center" show-overflow-tooltip>
+                            <template #default="{ row }">
+                                券¥{{ row.couponAmount }} / 积分¥{{ row.pointAmount }} / 折扣¥{{ row.discountAmount }}
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="实付金额" min-width="140" align="center">
                             <template #default="{ row }">
                                 <span class="text-danger">¥{{ row.paid }}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column prop="status" label="状态" width="90" />
-                        <el-table-column prop="time" label="下单时间" min-width="150" />
+                        <el-table-column prop="status" label="状态" min-width="140" align="center" />
+                        <el-table-column prop="time" label="下单时间" min-width="140" align="center" show-overflow-tooltip />
                     </el-table>
                 </el-tab-pane>
 
                 <el-tab-pane label="预约记录" name="appointments">
-                    <el-table :data="detail.appointments" style="width: 100%">
-                        <el-table-column prop="name" label="服务名称" min-width="150" />
-                        <el-table-column label="预约门店/康复师" min-width="160">
+                    <el-table class="detail-table" :data="detail.appointments" style="width: 100%">
+                        <el-table-column prop="name" label="服务名称" min-width="170" align="center" show-overflow-tooltip />
+                        <el-table-column label="预约门店/康复师" min-width="170" align="center">
                             <template #default="{ row }">
                                 {{ row.store }} / {{ row.therapist }}
                             </template>
                         </el-table-column>
-                        <el-table-column label="预约日期/时间段" min-width="180">
+                        <el-table-column label="预约日期/时间段" min-width="170" align="center">
                             <template #default="{ row }">
                                 {{ row.date }} {{ row.timeslot }}
                             </template>
                         </el-table-column>
-                        <el-table-column prop="status" label="状态" width="90" />
-                        <el-table-column prop="submitTime" label="提交时间" min-width="150" />
+                        <el-table-column prop="status" label="状态" min-width="170" align="center" />
+                        <el-table-column prop="submitTime" label="提交时间" min-width="170" align="center" />
                     </el-table>
                 </el-tab-pane>
 
@@ -86,24 +90,24 @@
                     <div class="drawer-tip">
                         待服务订单统计未完成核销的评估/服务订单，共 {{ detail.serviceOrders.length }} 笔。
                     </div>
-                    <el-table :data="detail.serviceOrders" style="width: 100%">
-                        <el-table-column label="订单编号" min-width="150">
+                    <el-table class="detail-table" :data="detail.serviceOrders" style="width: 100%">
+                        <el-table-column label="订单编号" min-width="150" align="center" show-overflow-tooltip>
                             <template #default="{ row }">
                                 <el-button type="primary" link @click="openOrder(row)">
                                     {{ row.no }}
                                 </el-button>
                             </template>
                         </el-table-column>
-                        <el-table-column prop="name" label="服务名称" min-width="180" />
-                        <el-table-column prop="store" label="下单门店" min-width="100" />
+                        <el-table-column prop="name" label="服务名称" min-width="150" align="center" show-overflow-tooltip />
+                        <el-table-column prop="store" label="下单门店" min-width="150" align="center" />
                         <el-table-column label="核销次数/剩余次数" min-width="150" align="center">
                             <template #default="{ row }">
                                 {{ row.used }} / {{ row.remain }}
                             </template>
                         </el-table-column>
-                        <el-table-column prop="status" label="状态" width="90" />
-                        <el-table-column prop="valid" label="有效期" width="110" />
-                        <el-table-column prop="submitTime" label="提交时间" min-width="150" />
+                        <el-table-column prop="status" label="状态" min-width="150" align="center" />
+                        <el-table-column prop="valid" label="有效期" min-width="150" align="center" />
+                        <el-table-column prop="submitTime" label="提交时间" min-width="150" align="center" />
                     </el-table>
                 </el-tab-pane>
             </el-tabs>
@@ -216,7 +220,10 @@ const orderItems = computed(() => {
         { label: '服务/商品名称', value: order.name },
         { label: '门店名称', value: order.store },
         { label: '订单金额', value: `¥${order.amount}` },
-        { label: '优惠信息', value: `${order.coupon} / ${order.pointDeduct} / ${order.discount}` },
+        {
+            label: '优惠信息',
+            value: `券¥${order.couponAmount} / 积分¥${order.pointAmount} / 折扣¥${order.discountAmount}（合计 ¥${order.couponAmount + order.pointAmount + order.discountAmount}）`
+        },
         { label: '实付金额', value: `¥${order.paid}` },
         { label: '状态', value: order.status },
         { label: '下单时间', value: order.time }
@@ -336,5 +343,9 @@ const openOrder = (row: OrderRecord) => {
     padding-top: 6px;
     font-size: 14px;
     color: #606266;
+}
+
+:deep(.detail-table .el-table__cell .cell) {
+    white-space: nowrap;
 }
 </style>
