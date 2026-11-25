@@ -53,9 +53,12 @@
                 <el-table-column prop="store" label="预约门店" min-width="140" align="center" />
                 <el-table-column prop="therapist" label="预约康复师" min-width="140" align="center" />
                 <el-table-column prop="service" label="预约服务/评估项目" min-width="140" align="center" show-overflow-tooltip />
-                <el-table-column label="预约日期/时段" min-width="140" align="center">
+                <el-table-column label="预约日期/时段" min-width="160" align="center">
                     <template #default="{ row }">
-                        {{ row.date }} {{ row.timeslot }}
+                        <div class="datetime-cell">
+                            <span class="datetime-date">{{ row.date }}</span>
+                            <span class="datetime-timeslot">{{ row.timeslot }}</span>
+                        </div>
                     </template>
                 </el-table-column>
                 <el-table-column label="状态" min-width="140" align="center">
@@ -308,6 +311,24 @@ const exportList = () => {
         border-radius: 2px;
         content: '';
     }
+}
+
+.datetime-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    line-height: 1.4;
+}
+
+.datetime-date {
+    font-size: 13px;
+    color: #303133;
+}
+
+.datetime-timeslot {
+    font-size: 12px;
+    color: #909399;
 }
 
 .user-cell {
