@@ -102,9 +102,12 @@
                         ¥{{ money(row.freight) }}
                     </template>
                 </el-table-column>
-                <el-table-column label="实付金额" min-width="110" align="center">
+                <el-table-column label="实付金额" min-width="150" align="center">
                     <template #default="{ row }">
-                        <span class="paid-amount">¥{{ money(row.paidAmount) }}</span>
+                        <div class="cell-lines">
+                            <span>订单总额 ¥{{ money(row.goodsPrice * row.goodsQuantity + row.freight) }}</span>
+                            <span class="cell-sub paid-amount">实付 ¥{{ money(row.paidAmount) }}</span>
+                        </div>
                     </template>
                 </el-table-column>
                 <el-table-column label="状态" min-width="110" align="center">
