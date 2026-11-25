@@ -89,10 +89,6 @@
                         <div class="info-item"><span class="info-label">康复师</span><span class="info-value">{{ currentItem.therapist }}</span></div>
                         <div class="info-item"><span class="info-label">职称</span><span class="info-value">{{ currentItem.therapistTitle }}</span></div>
                         <div class="info-item"><span class="info-label">联系电话</span><span class="info-value">020-8888xxxx</span></div>
-                        <div class="info-item">
-                            <span class="info-label">操作</span>
-                            <el-button type="primary" link size="small" @click="openChange">更换康复师</el-button>
-                        </div>
                     </div>
                 </el-card>
                 <el-card class="info-card mt-4" shadow="never">
@@ -120,26 +116,6 @@
                 </el-card>
             </template>
         </el-drawer>
-
-        <!-- 更换康复师 -->
-        <el-dialog v-model="changeVisible" title="更换康复师" width="460px">
-            <div class="form-row">
-                <span class="form-label">康复师</span>
-                <el-select v-model="selectedTherapist" class="!w-[260px]" placeholder="请选择康复师">
-                    <el-option
-                        v-for="item in availableTherapists"
-                        :key="item.name"
-                        :label="`${item.name}（${item.title}）`"
-                        :value="item.name"
-                    />
-                </el-select>
-            </div>
-            <div class="change-tip">根据服务关联职称筛选可更换的康复师，保存后同步记录操作人及操作内容。</div>
-            <template #footer>
-                <el-button @click="changeVisible = false">取消</el-button>
-                <el-button type="primary" @click="submitChange">确认更换</el-button>
-            </template>
-        </el-dialog>
     </div>
 </template>
 
@@ -196,39 +172,6 @@ const currentItem = ref<AppointmentItem | null>(null)
 const openDetail = (row: AppointmentItem) => {
     currentItem.value = row
     detailVisible.value = true
-}
-
-const changeVisible = ref(false)
-const selectedTherapist = ref('')
-const availableTherapists = computed(() => {
-    if (!currentItem.value) return []
-    return currentItem.value.serviceTitle === 'chief'
-        ? therapists.filter((item) => item.title === '首席康复师')
-        : therapists
-})
-const openChange = () => {
-    selectedTherapist.value = currentItem.value?.therapist || ''
-    changeVisible.value = true
-}
-const submitChange = () => {
-    if (!currentItem.value || !selectedTherapist.value) return
-    if (selectedTherapist.value === currentItem.value.therapist) {
-        ElMessage.warning('康复师未变更')
-        return
-    }
-    const now = new Date()
-    const pad = (n: number) => String(n).padStart(2, '0')
-    const time = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}`
-    currentItem.value.therapist = selectedTherapist.value
-    currentItem.value.therapistTitle =
-        therapists.find((item) => item.name === selectedTherapist.value)?.title || ''
-    currentItem.value.logs.unshift({
-        time,
-        operator: '管理员',
-        action: `更换康复师为 ${selectedTherapist.value}`
-    })
-    changeVisible.value = false
-    ElMessage.success('康复师已更换')
 }
 
 const exportList = () => {
@@ -371,24 +314,6 @@ const exportList = () => {
     background: #f5f7ff;
     border: 1px solid #e8ebf5;
     border-radius: 6px;
-}
-
-.form-row {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.form-label {
-    flex: 0 0 70px;
-    font-size: 14px;
-    color: #606266;
-}
-
-.change-tip {
-    margin-top: 14px;
-    font-size: 12px;
-    color: #909399;
 }
 
 :deep(.appointment-table .el-table__cell .cell) {
