@@ -14,6 +14,7 @@
 </template>
 
 <script setup lang="ts">
+import { APPROISE_ROUTE } from '@/router/routes'
 import useAppStore from '@/stores/modules/app'
 import useSettingStore from '@/stores/modules/setting'
 import useUserStore from '@/stores/modules/user'
@@ -34,7 +35,22 @@ const settingStore = useSettingStore()
 const sideTheme = computed(() => settingStore.sideTheme)
 const userStore = useUserStore()
 
-const routes = computed(() => userStore.routes)
+const routes = computed(() => {
+    const list = [...userStore.routes]
+    // 静态注入「互评任务」导航：工作台下方、用户管理上方
+    if (!list.some((item) => item.path === APPROISE_ROUTE.path)) {
+        const workbenchIndex = list.findIndex(
+            (item) => item.meta?.title === '工作台' || item.path.includes('workbench')
+        )
+        const userIndex = list.findIndex(
+            (item) => item.meta?.title === '用户管理' || item.path.includes('user')
+        )
+        const insertAt =
+            workbenchIndex >= 0 ? workbenchIndex + 1 : userIndex >= 0 ? userIndex : list.length
+        list.splice(insertAt, 0, APPROISE_ROUTE)
+    }
+    return list
+})
 
 const sideStyle = computed(() => {
     return sideTheme.value == 'dark'

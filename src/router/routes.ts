@@ -22,7 +22,28 @@ export const LAYOUT = () => Promise.resolve(Layout)
 
 export const INDEX_ROUTE_NAME = Symbol()
 
+// 互评任务导航（静态注入到工作台与用户管理之间）
+export const APPROISE_ROUTE: RouteRecordRaw = {
+    path: '/admin/appraise',
+    name: Symbol('admin-appraise'),
+    component: LAYOUT,
+    meta: {
+        title: '互评任务'
+    },
+    children: [
+        {
+            path: 'task',
+            name: Symbol('admin-appraise-task'),
+            component: () => import('@/views/appraise/task/index.vue'),
+            meta: {
+                title: '任务列表'
+            }
+        }
+    ]
+}
+
 export const constantRoutes: Array<RouteRecordRaw> = [
+    APPROISE_ROUTE,
     {
         path: '/:pathMatch(.*)*',
         component: () => import('@/views/error/404.vue')
