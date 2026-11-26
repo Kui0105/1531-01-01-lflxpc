@@ -3,6 +3,8 @@
  * 后续可由后端接口替换
  */
 
+import { distributionLevels } from '@/views/distribution/level/data'
+
 export type DistributionStatus = 'on' | 'off' // 启用 / 停用
 export type SourceType = 'consume' | 'manual' // 权限来源：下单消费 / 管理端指定
 
@@ -55,7 +57,8 @@ export interface DistributionItem {
     commissions: CommissionRecord[] // 佣金明细
 }
 
-export const distributionLevelOptions = ['一级分销', '二级分销', '三级分销']
+// 分销等级选项：从分销等级数据动态读取（保持联动）
+export const distributionLevelOptions = () => distributionLevels.filter((item) => item.status === 'on').map((item) => item.name)
 
 // 生成头像占位图
 const avatar = (label: string, color: string) => {

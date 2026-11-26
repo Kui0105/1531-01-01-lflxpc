@@ -279,6 +279,12 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="24">
+                        <el-form-item label="参与分销">
+                            <el-switch v-model="form.joinDistribution" active-text="是" inactive-text="否" />
+                            <div class="form-hint">开启后该服务参与分销，推广可获得佣金</div>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="24">
                         <el-form-item label="服务须知">
                             <el-input v-model="form.notice" type="textarea" :rows="3" placeholder="请输入服务须知" />
                         </el-form-item>
@@ -493,6 +499,7 @@ const emptyForm = (): ServiceItem => ({
     intro: '',
     detail: '',
     notice: '',
+    joinDistribution: true,
     giftCoupons: []
 })
 const form = reactive<ServiceItem>(emptyForm())

@@ -6,7 +6,7 @@
             <el-input v-model="query.name" placeholder="用户昵称" clearable class="!w-[160px]" />
             <el-input v-model="query.phone" placeholder="手机号" clearable class="!w-[160px]" />
             <el-select v-model="query.level" placeholder="分销等级" clearable class="!w-[140px]">
-                <el-option v-for="item in distributionLevelOptions" :key="item" :label="item" :value="item" />
+                <el-option v-for="item in distributionLevelOptions()" :key="item" :label="item" :value="item" />
             </el-select>
             <el-select v-model="query.status" placeholder="状态" clearable class="!w-[120px]">
                 <el-option label="启用" value="on" />
@@ -78,7 +78,7 @@
                 </el-form-item>
                 <el-form-item label="分销等级" required>
                     <el-select v-model="assignForm.level" placeholder="请选择分销等级" class="!w-full">
-                        <el-option v-for="item in distributionLevelOptions" :key="item" :label="item" :value="item" />
+                        <el-option v-for="item in distributionLevelOptions()" :key="item" :label="item" :value="item" />
                     </el-select>
                 </el-form-item>
                 <el-form-item label="权限说明">
@@ -97,7 +97,7 @@
             <el-form :model="adjustForm" label-width="100px" class="mt-4">
                 <el-form-item label="分销等级" required>
                     <el-select v-model="adjustForm.level" placeholder="请选择分销等级" class="!w-full">
-                        <el-option v-for="item in distributionLevelOptions" :key="item" :label="item" :value="item" />
+                        <el-option v-for="item in distributionLevelOptions()" :key="item" :label="item" :value="item" />
                     </el-select>
                 </el-form-item>
                 <el-form-item label="等级规则">

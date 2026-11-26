@@ -337,6 +337,10 @@
                     </el-tab-pane>
 
                     <el-tab-pane label="购买送券" name="coupon">
+                        <el-form-item label="参与分销">
+                            <el-switch v-model="form.joinDistribution" active-text="是" inactive-text="否" />
+                            <div class="form-hint">开启后该商品参与分销，推广可获得佣金</div>
+                        </el-form-item>
                         <div class="coupon-tip">购买指定商品满对应金额后发放优惠券，优惠券仅可选择「购买赠送」发放类型（如满1000发券A、满2000发券B）</div>
                         <div class="coupon-list">
                             <div v-for="(coupon, index) in form.giftCoupons" :key="coupon.id" class="coupon-row">
@@ -571,6 +575,7 @@ const emptyForm = (): GoodsItem => ({
     packingService: false,
     packingDesc: '',
     giftCoupons: [],
+    joinDistribution: true,
     afterSaleDays: 7,
     detail: ''
 })

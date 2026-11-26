@@ -1,5 +1,23 @@
 # 更新日志
 
+## v0.23.0 (2026-11-26)
+
+### 本次更新
+
+- 服务列表、商品列表的新增编辑弹窗增加「参与分销」开关（数据模型新增 joinDistribution 字段，mock 同步）
+- 完成「分销等级」页面（按截图需求，替换占位页）：
+  - 等级列表：等级名称、等级图标、佣金返利比例、积分返利比例、状态、排序值（按排序值降序展示）
+  - 新增/编辑弹窗：等级名称、等级图标（本地 PNG/JPG 上传可替换删除）、佣金返利比例、积分返利比例、排序值、状态，取消/确认
+  - 停用二次确认，已有分销用户使用该等级时不可停用
+  - 修改排序值保存后同步更新等级展示顺序；功能规则通过字段提示体现（实付金额×比例、售后退款返利失效、多等级不同比例）
+- 分销列表的等级选项改为从分销等级数据动态读取（仅启用的等级），与分销等级页联动
+
+### 说明
+
+- 修改文件：`src/views/service/list/{index.vue,data.ts}`、`src/views/goods/list/{index.vue,data.ts}`、`src/views/distribution/level/{index.vue,data.ts}`、`src/views/distribution/list/{index.vue,data.ts}`，以及版本文件
+- 验证：类型检查通过（仅保留既有历史报错，新增代码无报错），四个页面编译均返回 HTTP 200
+- 预览：http://localhost:5173/admin/distribution/level 、http://localhost:5173/admin/service/list 、http://localhost:5173/admin/goods/list
+
 ## v0.22.1 (2026-11-26)
 
 ### 本次更新
