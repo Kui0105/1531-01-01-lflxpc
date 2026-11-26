@@ -13,7 +13,15 @@
             <el-table :data="sortedList" style="width: 100%" :cell-style="{ padding: '12px 0' }">
                 <el-table-column label="分类图标" min-width="100" align="center">
                     <template #default="{ row }">
-                        <span class="category-icon" :style="{ background: row.color }">{{ row.icon }}</span>
+                        <el-image
+                            v-if="row.icon"
+                            :src="row.icon"
+                            :preview-src-list="[row.icon]"
+                            fit="contain"
+                            class="category-icon"
+                            preview-teleported
+                        />
+                        <span v-else class="cell-sub">-</span>
                     </template>
                 </el-table-column>
                 <el-table-column label="分类名称" min-width="160" align="center">
@@ -76,20 +84,18 @@
                 <el-form-item label="分类名称" required>
                     <el-input v-model="form.name" placeholder="请输入分类名称" />
                 </el-form-item>
-                <el-form-item label="分类图标">
+                <el-form-item label="分类图标" required>
                     <div class="icon-form">
-                        <el-input v-model="form.icon" class="icon-input" maxlength="2" placeholder="图标字符" />
-                        <span class="icon-preview" :style="{ background: form.color }">{{ form.icon }}</span>
-                        <el-select v-model="form.color" class="icon-color">
-                            <el-option
-                                v-for="c in iconColors"
-                                :key="c"
-                                :label="c"
-                                :value="c"
-                            >
-                                <span class="color-dot" :style="{ background: c }" />
-                            </el-option>
-                        </el-select>
+                        <el-upload
+                            accept=".png,.jpg,.jpeg"
+                            :auto-upload="false"
+                            :show-file-list="false"
+                            :on-change="handleIconChange"
+                        >
+                            <img v-if="form.icon" :src="form.icon" class="icon-preview" />
+                            <div v-else class="icon-upload-box">点击上传</div>
+                        </el-upload>
+                        <div class="icon-hint">仅支持 PNG、JPG 格式，建议 64×64 正方形</div>
                     </div>
                 </el-form-item>
                 <el-form-item label="排序值">
@@ -119,23 +125,26 @@ interface CategoryItem {
     name: string
     level: number // 1 一级分类 / 2 二级分类
     parentName: string
-    icon: string
-    color: string
+    icon: string // 图标图片（PNG/JPG，data URI）
     sort: number
     enabled: boolean
 }
 
-const iconColors = ['#4A5DFF', '#67c23a', '#e6a23c', '#f56c6c', '#9b59b6', '#17a2b8']
+// mock 图标占位图（SVG data URI 作为演示图片），上传时替换为真实 PNG/JPG
+const mockIcon = (label: string, color: string) => {
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64"><rect width="64" height="64" rx="12" fill="${color}"/><text x="32" y="32" font-size="22" fill="#fff" text-anchor="middle" dominant-baseline="middle" font-family="sans-serif">${label}</text></svg>`
+    return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`
+}
 
 const categoryList = reactive<CategoryItem[]>([
-    { id: 1, name: '康复理疗', level: 1, parentName: '', icon: '理', color: '#4A5DFF', sort: 30, enabled: true },
-    { id: 2, name: '肩颈理疗', level: 2, parentName: '康复理疗', icon: '肩', color: '#67c23a', sort: 25, enabled: true },
-    { id: 3, name: '腰背理疗', level: 2, parentName: '康复理疗', icon: '腰', color: '#e6a23c', sort: 20, enabled: true },
-    { id: 4, name: '康复评估', level: 1, parentName: '', icon: '评', color: '#9b59b6', sort: 28, enabled: true },
-    { id: 5, name: '体态评估', level: 2, parentName: '康复评估', icon: '态', color: '#17a2b8', sort: 22, enabled: true },
-    { id: 6, name: '护理服务', level: 1, parentName: '', icon: '护', color: '#f56c6c', sort: 18, enabled: true },
-    { id: 7, name: '经络护理', level: 2, parentName: '护理服务', icon: '经', color: '#4A5DFF', sort: 15, enabled: true },
-    { id: 8, name: '舒缓护理', level: 2, parentName: '护理服务', icon: '舒', color: '#67c23a', sort: 10, enabled: false }
+    { id: 1, name: '康复理疗', level: 1, parentName: '', icon: mockIcon('理', '#4A5DFF'), sort: 30, enabled: true },
+    { id: 2, name: '肩颈理疗', level: 2, parentName: '康复理疗', icon: mockIcon('肩', '#67c23a'), sort: 25, enabled: true },
+    { id: 3, name: '腰背理疗', level: 2, parentName: '康复理疗', icon: mockIcon('腰', '#e6a23c'), sort: 20, enabled: true },
+    { id: 4, name: '康复评估', level: 1, parentName: '', icon: mockIcon('评', '#9b59b6'), sort: 28, enabled: true },
+    { id: 5, name: '体态评估', level: 2, parentName: '康复评估', icon: mockIcon('态', '#17a2b8'), sort: 22, enabled: true },
+    { id: 6, name: '护理服务', level: 1, parentName: '', icon: mockIcon('护', '#f56c6c'), sort: 18, enabled: true },
+    { id: 7, name: '经络护理', level: 2, parentName: '护理服务', icon: mockIcon('经', '#4A5DFF'), sort: 15, enabled: true },
+    { id: 8, name: '舒缓护理', level: 2, parentName: '护理服务', icon: mockIcon('舒', '#67c23a'), sort: 10, enabled: false }
 ])
 
 // 列表按排序值降序，用户端 TAB 同步此顺序
@@ -161,10 +170,29 @@ const form = reactive<CategoryItem>({
     level: 1,
     parentName: '',
     icon: '',
-    color: '#4A5DFF',
     sort: 0,
     enabled: true
 })
+
+// 上传图标：校验 PNG/JPG 格式与大小，读取为 base64
+const handleIconChange = (uploadFile: { raw?: File }) => {
+    const file = uploadFile.raw
+    if (!file) return
+    const isPngOrJpg = ['image/png', 'image/jpeg'].includes(file.type)
+    if (!isPngOrJpg) {
+        ElMessage.error('分类图标仅支持 PNG、JPG 格式')
+        return
+    }
+    if (file.size > 2 * 1024 * 1024) {
+        ElMessage.error('图标大小不能超过 2MB')
+        return
+    }
+    const reader = new FileReader()
+    reader.onload = (e) => {
+        form.icon = String(e.target?.result || '')
+    }
+    reader.readAsDataURL(file)
+}
 
 const openAdd = () => {
     isEdit.value = false
@@ -175,7 +203,6 @@ const openAdd = () => {
         level: 1,
         parentName: '',
         icon: '',
-        color: '#4A5DFF',
         sort: 0,
         enabled: true
     })
@@ -192,8 +219,8 @@ const submitForm = () => {
         ElMessage.warning('请输入分类名称')
         return
     }
-    if (!form.icon.trim()) {
-        ElMessage.warning('请输入分类图标')
+    if (!form.icon) {
+        ElMessage.warning('请上传分类图标')
         return
     }
     if (categoryList.some((item) => item.name === form.name.trim() && item.id !== editingId.value)) {
@@ -303,53 +330,55 @@ const deleteCategory = (row: CategoryItem) => {
 }
 
 .category-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-    font-size: 14px;
-    font-weight: 600;
-    color: #fff;
-    border-radius: 6px;
+    width: 36px;
+    height: 36px;
 }
 
 .disabled-name {
     color: #c0c4cc;
 }
 
+.cell-sub {
+    font-size: 12px;
+    color: #909399;
+}
+
 .icon-form {
     display: flex;
     align-items: center;
-    gap: 10px;
-}
-
-.icon-input {
-    width: 140px;
+    gap: 12px;
 }
 
 .icon-preview {
-    display: inline-flex;
+    width: 48px;
+    height: 48px;
+    object-fit: cover;
+    border: 1px solid #ebeef5;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.icon-upload-box {
+    display: flex;
     align-items: center;
     justify-content: center;
-    width: 32px;
-    height: 32px;
-    font-size: 14px;
-    font-weight: 600;
-    color: #fff;
+    width: 48px;
+    height: 48px;
+    font-size: 12px;
+    color: #909399;
+    border: 1px dashed #dcdfe6;
     border-radius: 6px;
+    cursor: pointer;
+
+    &:hover {
+        color: var(--el-color-primary);
+        border-color: var(--el-color-primary);
+    }
 }
 
-.icon-color {
-    width: 130px;
-}
-
-.color-dot {
-    display: inline-block;
-    width: 16px;
-    height: 16px;
-    vertical-align: middle;
-    border-radius: 50%;
+.icon-hint {
+    font-size: 12px;
+    color: #909399;
 }
 
 .form-hint {
