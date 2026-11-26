@@ -148,7 +148,7 @@ const filteredUsers = computed(() =>
         const matchStart = !startTime.value || day >= startTime.value
         const matchEnd = !endTime.value || day <= endTime.value
         return matchKeyword && matchMobile && matchStart && matchEnd
-    })
+    }).sort((a, b) => b.registerTime.localeCompare(a.registerTime))
 )
 
 const resetSearch = () => {

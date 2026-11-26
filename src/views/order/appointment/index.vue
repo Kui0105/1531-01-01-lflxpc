@@ -147,7 +147,7 @@ const filteredList = computed(() =>
         const matchDate = !query.date || item.date === query.date
         const matchStatus = !activeTab.value || item.status === activeTab.value
         return matchKeyword && matchMobile && matchStore && matchTherapist && matchDate && matchStatus
-    })
+    }).sort((a, b) => `${b.date} ${b.timeslot}`.localeCompare(`${a.date} ${a.timeslot}`))
 )
 
 const handleSearch = () => {

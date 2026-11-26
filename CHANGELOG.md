@@ -1,5 +1,19 @@
 # 更新日志
 
+## v0.25.0 (2026-11-26)
+
+### 本次更新
+
+- 以下 8 个列表按时间倒序排列（最新在前）：
+  - 用户列表（注册时间）、投诉反馈（time）、预约列表（日期+时段）、服务订单（下单时间）、商品订单（下单时间）、售后订单（申请时间）、订单评价（评价时间）、分销列表（成为时间）
+- 分销列表「注册时间」列改名为「成为时间」（详情推广团队内的成员注册时间保持不变）
+
+### 说明
+
+- 修改文件：`src/views/consumer/{lists,complaint}/index.vue`、`src/views/order/{appointment,service,goods,aftersale,review}/index.vue`、`src/views/distribution/list/index.vue`，以及版本文件
+- 验证：类型检查通过（仅保留既有历史报错，新增代码无报错），八个页面编译均返回 HTTP 200
+- 预览：用户列表 / 投诉反馈 / 预约列表 / 服务订单 / 商品订单 / 售后订单 / 订单评价 / http://localhost:5173/admin/distribution/list
+
 ## v0.24.4 (2026-11-26)
 
 ### 本次更新

@@ -51,7 +51,7 @@
                         </el-tag>
                     </template>
                 </el-table-column>
-                <el-table-column prop="createdAt" label="注册时间" min-width="150" align="center" />
+                <el-table-column prop="createdAt" label="成为时间" min-width="150" align="center" />
                 <el-table-column label="操作" min-width="230" align="center" class-name="operation-cell">
                     <template #default="{ row }">
                         <el-button type="primary" link size="small" @click="openDetail(row)">查看详情</el-button>
@@ -209,7 +209,7 @@ const filteredList = computed(() =>
         const matchLevel = !query.level || item.level === query.level
         const matchStatus = !query.status || item.status === query.status
         return matchName && matchPhone && matchLevel && matchStatus
-    })
+    }).sort((a, b) => b.createdAt.localeCompare(a.createdAt))
 )
 const handleSearch = () => {}
 const resetQuery = () => {

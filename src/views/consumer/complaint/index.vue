@@ -114,7 +114,7 @@ const filteredList = computed(() =>
         const matchStart = !query.startTime || day >= query.startTime
         const matchEnd = !query.endTime || day <= query.endTime
         return matchStore && matchStatus && matchStart && matchEnd
-    })
+    }).sort((a, b) => b.time.localeCompare(a.time))
 )
 
 const handleSearch = () => {

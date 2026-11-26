@@ -238,7 +238,7 @@ const filteredList = computed(() =>
         const matchStart = !query.startDate || item.reviewTime.slice(0, 10) >= query.startDate
         const matchEnd = !query.endDate || item.reviewTime.slice(0, 10) <= query.endDate
         return matchKeyword && matchStore && matchTherapist && matchService && matchRating && matchStatus && matchStart && matchEnd
-    })
+    }).sort((a, b) => b.reviewTime.localeCompare(a.reviewTime))
 )
 
 const handleSearch = () => {

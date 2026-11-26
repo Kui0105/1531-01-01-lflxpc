@@ -330,7 +330,7 @@ const filteredList = computed(() =>
         const matchStart = !query.startDate || item.applyTime.slice(0, 10) >= query.startDate
         const matchEnd = !query.endDate || item.applyTime.slice(0, 10) <= query.endDate
         return matchOrderNo && matchKeyword && matchType && matchStatus && matchStart && matchEnd
-    })
+    }).sort((a, b) => b.applyTime.localeCompare(a.applyTime))
 )
 
 const handleSearch = () => {
