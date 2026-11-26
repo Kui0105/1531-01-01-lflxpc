@@ -18,11 +18,7 @@
                     </div>
                 </el-form-item>
                 <el-form-item label="返利规则">
-                    <div class="form-hint rule-hint">
-                        <span>评估/服务订单：到店核销后到账，核销后结算佣金</span>
-                        <span>商品订单：完成且超出售后期后返利到账，推广订单变更为已到账状态</span>
-                        <span>订单售后退款则佣金失效</span>
-                    </div>
+                    <div class="form-hint">评估/服务订单到店核销后到账，商品订单完成且超出售后期后到账，订单售后退款则佣金失效</div>
                 </el-form-item>
             </el-form>
 
@@ -67,14 +63,26 @@
             <!-- 提现配置 -->
             <div class="section-title">提现配置</div>
             <el-form :model="form" label-width="150px" class="config-form">
+                <el-form-item label="单日最高提现金额">
+                    <el-input-number v-model="form.dailyMaxWithdraw" :min="0" :precision="2" class="config-input" />
+                    <span class="unit">元</span>
+                </el-form-item>
+                <el-form-item label="单笔最高提现金额">
+                    <el-input-number v-model="form.singleMaxWithdraw" :min="0" :precision="2" class="config-input" />
+                    <span class="unit">元</span>
+                </el-form-item>
                 <el-form-item label="最低提现金额">
                     <el-input-number v-model="form.minWithdraw" :min="0" :precision="2" class="config-input" />
                     <span class="unit">元</span>
                 </el-form-item>
                 <el-form-item label="提现手续费">
-                    <el-input-number v-model="form.withdrawFee" :min="0" :max="100" :precision="2" class="config-input" />
-                    <span class="unit">%</span>
-                    <div class="form-hint">按提现金额收取的手续费比例</div>
+                    <div class="input-with-hint">
+                        <div class="input-row">
+                            <el-input-number v-model="form.withdrawFee" :min="0" :max="100" :precision="2" class="config-input" />
+                            <span class="unit">%</span>
+                        </div>
+                        <div class="form-hint">按提现金额收取的手续费比例</div>
+                    </div>
                 </el-form-item>
             </el-form>
 
@@ -93,6 +101,8 @@ import { cloneDeep } from 'lodash-es'
 interface ConfigForm {
     enabled: boolean // 分销开关
     poster: string // 推广海报背景图（data URI）
+    dailyMaxWithdraw: number // 单日最高提现金额（元）
+    singleMaxWithdraw: number // 单笔最高提现金额（元）
     minWithdraw: number // 最低提现金额（元）
     withdrawFee: number // 提现手续费（%）
 }
@@ -107,6 +117,8 @@ const posterPlaceholder = () => {
 const savedConfig = reactive<ConfigForm>({
     enabled: true,
     poster: posterPlaceholder(),
+    dailyMaxWithdraw: 50000,
+    singleMaxWithdraw: 10000,
     minWithdraw: 10,
     withdrawFee: 0
 })
@@ -209,11 +221,17 @@ const saveConfig = () => {
     color: #606266;
 }
 
-.switch-with-hint {
+.switch-with-hint,
+.input-with-hint {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     gap: 4px;
+}
+
+.input-row {
+    display: flex;
+    align-items: center;
 }
 
 .form-hint {
@@ -221,10 +239,6 @@ const saveConfig = () => {
     font-size: 12px;
     line-height: 1.5;
     color: #909399;
-}
-
-.rule-hint span {
-    display: block;
 }
 
 .poster-form {
