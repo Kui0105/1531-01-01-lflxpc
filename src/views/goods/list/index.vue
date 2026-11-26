@@ -109,6 +109,7 @@
         <!-- 新增/编辑弹窗 -->
         <el-dialog
             v-model="formVisible"
+            class="goods-edit-dialog"
             :title="isEdit ? '编辑商品' : '新增商品'"
             width="940px"
             top="5vh"
@@ -321,11 +322,6 @@
                                         <el-option v-for="item in freightTemplates" :key="item.name" :label="item.name" :value="item.name" />
                                     </el-select>
                                 </el-form-item>
-                            </el-col>
-                            <el-col v-if="form.deliveryType === 'express' && form.freightTemplate" :span="24">
-                                <div class="template-desc">
-                                    模板说明：{{ freightTemplates.find((t) => t.name === form.freightTemplate)?.desc }}
-                                </div>
                             </el-col>
                             <el-col :span="24">
                                 <el-form-item label="分装服务">
@@ -1183,14 +1179,6 @@ const openDetail = (row: GoodsItem) => {
     border-radius: 6px;
 }
 
-.template-desc {
-    margin: -6px 0 12px;
-    padding: 8px 12px;
-    font-size: 12px;
-    color: #606266;
-    background: #f5f7ff;
-    border-radius: 4px;
-}
 
 .coupon-tip {
     margin-bottom: 14px;
@@ -1288,5 +1276,34 @@ const openDetail = (row: GoodsItem) => {
     justify-content: center;
     align-items: center;
     gap: 6px 4px;
+}
+</style>
+
+<!-- 弹窗渲染在 body 上，需用全局样式控制内部滚动 -->
+<style lang="scss">
+.goods-edit-dialog {
+    display: flex;
+    flex-direction: column;
+    max-height: 90vh;
+    margin-bottom: 2vh;
+    overflow: hidden;
+
+    .el-dialog__header {
+        flex: 0 0 auto;
+        padding-bottom: 12px;
+    }
+
+    .el-dialog__body {
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow-y: auto;
+        padding-top: 8px;
+    }
+
+    .el-dialog__footer {
+        flex: 0 0 auto;
+        padding-top: 12px;
+        border-top: 1px solid #e8ebf5;
+    }
 }
 </style>
