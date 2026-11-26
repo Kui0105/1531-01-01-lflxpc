@@ -175,7 +175,7 @@
                     </el-col>
                     <el-col :span="24">
                         <el-form-item label="服务详情">
-                            <editor v-model="form.detail" />
+                            <editor v-model="form.detail" :height="420" />
                         </el-form-item>
                     </el-col>
                 </el-row>
@@ -204,7 +204,7 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="8">
-                        <el-form-item label="有效服务人次系数">
+                        <el-form-item label="有效服务人次">
                             <el-input-number v-model="form.validCountFactor" :min="0" :precision="1" class="!w-full" />
                         </el-form-item>
                     </el-col>
