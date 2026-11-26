@@ -10,9 +10,13 @@
 
             <el-form :model="form" label-width="180px" class="config-form">
                 <el-form-item label="积分抵扣比例">
-                    <el-input-number v-model="form.pointRatio" :min="0" :max="100" :precision="2" class="config-input" />
-                    <span class="unit">%</span>
-                    <div class="form-hint">每笔订单可用积分按此比例抵扣金额</div>
+                    <div class="input-with-hint">
+                        <div class="input-row">
+                            <el-input-number v-model="form.pointRatio" :min="0" :max="100" :precision="2" class="config-input" />
+                            <span class="unit">%</span>
+                        </div>
+                        <div class="form-hint">每笔订单可用积分按此比例抵扣金额</div>
+                    </div>
                 </el-form-item>
                 <el-form-item label="单笔订单最高抵扣比例">
                     <el-input-number v-model="form.maxOrderRatio" :min="0" :max="100" :precision="2" class="config-input" />
@@ -112,6 +116,18 @@ const saveConfig = () => {
 .unit {
     margin-left: 8px;
     color: #606266;
+}
+
+.input-with-hint {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+}
+
+.input-row {
+    display: flex;
+    align-items: center;
 }
 
 .form-hint {
