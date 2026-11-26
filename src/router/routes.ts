@@ -112,6 +112,15 @@ export const ORDER_ROUTE: RouteRecordRaw = {
                 title: '售后订单',
                 icon: 'el-icon-RefreshLeft'
             }
+        },
+        {
+            path: 'review',
+            name: Symbol('admin-order-review'),
+            component: () => import('@/views/order/review/index.vue'),
+            meta: {
+                title: '订单评价',
+                icon: 'el-icon-Star'
+            }
         }
     ]
 }
