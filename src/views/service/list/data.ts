@@ -29,6 +29,7 @@ export interface ServiceItem {
     intro: string // 服务简介
     detail: string // 服务详情（富文本）
     notice: string // 服务须知
+    deleted?: boolean // 是否已删除（进入回收站）
 }
 
 // 一级/二级分类联动

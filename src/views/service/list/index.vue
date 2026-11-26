@@ -14,10 +14,6 @@
                 <el-option label="评估服务" value="assess" />
                 <el-option label="康复服务" value="recover" />
             </el-select>
-            <el-select v-model="onSale" placeholder="上架状态" clearable class="!w-[120px]">
-                <el-option label="上架" value="on" />
-                <el-option label="下架" value="off" />
-            </el-select>
             <el-button type="primary" @click="handleSearch">查询</el-button>
             <el-button @click="resetSearch">重置</el-button>
             <el-button class="ml-auto" @click="exportList">导出</el-button>
@@ -26,6 +22,12 @@
 
         <!-- 列表 -->
         <el-card class="list-card mt-4" shadow="never">
+            <el-tabs v-model="activeTab">
+                <el-tab-pane label="全部" name="all" />
+                <el-tab-pane label="上架" name="on" />
+                <el-tab-pane label="下架" name="off" />
+                <el-tab-pane label="回收站" name="recycle" />
+            </el-tabs>
             <el-table class="service-table" :data="filteredList" style="width: 100%" :cell-style="{ padding: '12px 0' }">
                 <el-table-column label="服务封面图" min-width="110" align="center">
                     <template #default="{ row }">
@@ -89,19 +91,26 @@
                         </el-tag>
                     </template>
                 </el-table-column>
-                <el-table-column label="操作" min-width="220" align="center" fixed="right">
+                <el-table-column label="操作" min-width="230" align="center" fixed="right">
                     <template #default="{ row }">
-                        <el-button type="primary" link size="small" @click="openEdit(row)">编辑</el-button>
-                        <el-button
-                            :type="row.onSale === 'on' ? 'warning' : 'success'"
-                            link
-                            size="small"
-                            @click="toggleSale(row)"
-                        >
-                            {{ row.onSale === 'on' ? '下架' : '上架' }}
-                        </el-button>
-                        <el-button type="primary" link size="small" @click="openTitle(row)">关联职称</el-button>
-                        <el-button type="primary" link size="small" @click="openDetail(row)">查看详情</el-button>
+                        <template v-if="activeTab === 'recycle'">
+                            <el-button type="primary" link size="small" @click="restoreService(row)">恢复</el-button>
+                            <el-button type="danger" link size="small" @click="permanentDelete(row)">彻底删除</el-button>
+                        </template>
+                        <template v-else>
+                            <el-button type="primary" link size="small" @click="openEdit(row)">编辑</el-button>
+                            <el-button
+                                :type="row.onSale === 'on' ? 'warning' : 'success'"
+                                link
+                                size="small"
+                                @click="toggleSale(row)"
+                            >
+                                {{ row.onSale === 'on' ? '下架' : '上架' }}
+                            </el-button>
+                            <el-button type="primary" link size="small" @click="openTitle(row)">关联职称</el-button>
+                            <el-button type="primary" link size="small" @click="openDetail(row)">查看详情</el-button>
+                            <el-button type="danger" link size="small" @click="deleteService(row)">删除</el-button>
+                        </template>
                     </template>
                 </el-table-column>
             </el-table>
@@ -115,7 +124,8 @@
             top="5vh"
         >
             <el-form :model="form" label-width="120px" class="service-form">
-                <div class="form-section-title">基础信息</div>
+                <el-tabs v-model="formTab" class="form-tabs">
+                    <el-tab-pane label="基础信息" name="base">
                 <el-row :gutter="16">
                     <el-col :span="12">
                         <el-form-item label="服务名称" required>
@@ -169,8 +179,9 @@
                         </el-form-item>
                     </el-col>
                 </el-row>
+                    </el-tab-pane>
 
-                <div class="form-section-title">价格与规则</div>
+                    <el-tab-pane label="价格与规则" name="price">
                 <el-row :gutter="16">
                     <el-col :span="8">
                         <el-form-item label="时长（分钟）">
@@ -216,6 +227,11 @@
                             </el-select>
                         </el-form-item>
                     </el-col>
+                </el-row>
+                    </el-tab-pane>
+
+                    <el-tab-pane label="营销设置" name="market">
+                <el-row :gutter="16">
                     <el-col :span="8">
                         <el-form-item label="标签">
                             <el-select v-model="form.tags" multiple allow-create filterable default-first-option placeholder="请输入标签" class="!w-full" />
@@ -236,10 +252,12 @@
                     </el-col>
                     <el-col :span="24">
                         <el-form-item label="服务须知">
-                            <el-input v-model="form.notice" type="textarea" :rows="2" placeholder="请输入服务须知" />
+                            <el-input v-model="form.notice" type="textarea" :rows="3" placeholder="请输入服务须知" />
                         </el-form-item>
                     </el-col>
                 </el-row>
+                    </el-tab-pane>
+                </el-tabs>
             </el-form>
             <template #footer>
                 <el-button @click="formVisible = false">取消</el-button>
@@ -334,8 +352,8 @@ const keyword = ref('')
 const category1 = ref('')
 const category2 = ref('')
 const serviceType = ref('')
-const onSale = ref('')
-const query = reactive({ keyword: '', category1: '', category2: '', type: '', onSale: '' })
+const activeTab = ref('all')
+const query = reactive({ keyword: '', category1: '', category2: '', type: '' })
 
 const category2Options = computed(() => (category1.value ? categoryOptions[category1.value] || [] : []))
 const handleCategory1Change = () => {
@@ -343,14 +361,21 @@ const handleCategory1Change = () => {
 }
 
 const filteredList = computed(() =>
-    data.filter((item) => {
-        const matchKeyword = !query.keyword || item.name.includes(query.keyword)
-        const matchC1 = !query.category1 || item.category1 === query.category1
-        const matchC2 = !query.category2 || item.category2 === query.category2
-        const matchType = !query.type || item.type === query.type
-        const matchSale = !query.onSale || item.onSale === query.onSale
-        return matchKeyword && matchC1 && matchC2 && matchType && matchSale
-    })
+    data
+        .filter((item) => {
+            const matchKeyword = !query.keyword || item.name.includes(query.keyword)
+            const matchC1 = !query.category1 || item.category1 === query.category1
+            const matchC2 = !query.category2 || item.category2 === query.category2
+            const matchType = !query.type || item.type === query.type
+            // 状态 TAB：全部/上架/下架/回收站
+            let matchTab = true
+            if (activeTab.value === 'recycle') matchTab = !!item.deleted
+            else if (activeTab.value === 'on') matchTab = !item.deleted && item.onSale === 'on'
+            else if (activeTab.value === 'off') matchTab = !item.deleted && item.onSale === 'off'
+            else matchTab = !item.deleted
+            return matchKeyword && matchC1 && matchC2 && matchType && matchTab
+        })
+        .sort((a, b) => b.sort - a.sort) // 排序值大的排前面
 )
 
 const handleSearch = () => {
@@ -358,14 +383,13 @@ const handleSearch = () => {
     query.category1 = category1.value
     query.category2 = category2.value
     query.type = serviceType.value
-    query.onSale = onSale.value
 }
 const resetSearch = () => {
     keyword.value = ''
     category1.value = ''
     category2.value = ''
     serviceType.value = ''
-    onSale.value = ''
+    activeTab.value = 'all'
     handleSearch()
 }
 
@@ -392,6 +416,7 @@ const exportList = () => {
 
 // 新增/编辑表单
 const formVisible = ref(false)
+const formTab = ref('base')
 const isEdit = ref(false)
 const editingId = ref(0)
 const formCategory2Options = computed(() => (form.category1 ? categoryOptions[form.category1] || [] : []))
@@ -427,12 +452,14 @@ const form = reactive<ServiceItem>(emptyForm())
 const openAdd = () => {
     isEdit.value = false
     editingId.value = 0
+    formTab.value = 'base'
     Object.assign(form, emptyForm())
     formVisible.value = true
 }
 const openEdit = (row: ServiceItem) => {
     isEdit.value = true
     editingId.value = row.id
+    formTab.value = 'base'
     Object.assign(form, cloneDeep(row))
     formVisible.value = true
 }
@@ -501,6 +528,45 @@ const currentItem = ref<ServiceItem | null>(null)
 const openDetail = (row: ServiceItem) => {
     currentItem.value = row
     detailVisible.value = true
+}
+
+// 删除（进入回收站）
+const deleteService = (row: ServiceItem) => {
+    ElMessageBox.confirm(
+        `确认删除服务「${row.name}」？删除后可在回收站恢复或彻底删除。`,
+        '删除二次确认',
+        { type: 'warning' }
+    )
+        .then(() => {
+            row.deleted = true
+            ElMessage.success('服务已移入回收站')
+        })
+        .catch(() => {})
+}
+
+// 恢复
+const restoreService = (row: ServiceItem) => {
+    ElMessageBox.confirm(`确认恢复服务「${row.name}」？`, '恢复二次确认', { type: 'info' })
+        .then(() => {
+            row.deleted = false
+            ElMessage.success('服务已恢复')
+        })
+        .catch(() => {})
+}
+
+// 彻底删除
+const permanentDelete = (row: ServiceItem) => {
+    ElMessageBox.confirm(
+        `确认彻底删除服务「${row.name}」？删除后不可恢复。`,
+        '彻底删除二次确认',
+        { type: 'warning' }
+    )
+        .then(() => {
+            const index = data.findIndex((item) => item.id === row.id)
+            if (index > -1) data.splice(index, 1)
+            ElMessage.success('服务已彻底删除')
+        })
+        .catch(() => {})
 }
 </script>
 
@@ -594,19 +660,14 @@ const openDetail = (row: ServiceItem) => {
     text-decoration: line-through;
 }
 
-.form-section-title {
-    margin: 8px 0 16px;
-    padding-left: 10px;
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--el-color-primary);
-    border-left: 3px solid var(--el-color-primary);
+.service-form {
+    min-height: 380px;
 }
 
-.service-form {
-    max-height: 68vh;
-    overflow-y: auto;
-    padding-right: 8px;
+.form-tabs {
+    :deep(.el-tabs__content) {
+        padding-top: 18px;
+    }
 }
 
 .image-upload-list {
