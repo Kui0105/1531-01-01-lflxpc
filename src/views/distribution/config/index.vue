@@ -18,7 +18,10 @@
                     </div>
                 </el-form-item>
                 <el-form-item label="返利规则">
-                    <div class="form-hint">评估/服务订单到店核销后到账，商品订单完成且超出售后期后到账，订单售后退款则佣金失效</div>
+                    <div class="form-hint rule-hint">
+                        <span>评估/服务订单到店核销后到账；</span>
+                        <span>商品订单完成且超出售后期后到账，订单售后退款则佣金失效；</span>
+                    </div>
                 </el-form-item>
             </el-form>
 
@@ -239,6 +242,10 @@ const saveConfig = () => {
     font-size: 12px;
     line-height: 1.5;
     color: #909399;
+}
+
+.rule-hint span {
+    display: block;
 }
 
 .poster-form {
