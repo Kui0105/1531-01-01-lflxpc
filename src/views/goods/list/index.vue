@@ -48,33 +48,8 @@
                 <el-table-column label="售价" min-width="90" align="center">
                     <template #default="{ row }"><span class="price">¥{{ money(row.price) }}</span></template>
                 </el-table-column>
-                <el-table-column label="原价" min-width="90" align="center">
-                    <template #default="{ row }"><span class="origin-price">¥{{ money(row.originPrice) }}</span></template>
-                </el-table-column>
                 <el-table-column prop="sold" label="已售" min-width="80" align="center" />
-                <el-table-column label="库存" min-width="90" align="center">
-                    <template #default="{ row }">
-                        <span :class="{ 'stock-zero': row.stock === 0 }">{{ row.stock }}</span>
-                    </template>
-                </el-table-column>
-                <el-table-column label="重量(kg)" min-width="100" align="center">
-                    <template #default="{ row }">{{ row.weight }}</template>
-                </el-table-column>
-                <el-table-column label="规格" min-width="120" align="center">
-                    <template #default="{ row }">
-                        <span>{{ row.spec }}</span>
-                        <el-tag size="small" effect="plain" class="ml-1">{{ row.specType === 'multi' ? '多' : '单' }}</el-tag>
-                    </template>
-                </el-table-column>
                 <el-table-column prop="sort" label="排序值" min-width="90" align="center" />
-                <el-table-column label="商品标签" min-width="120" align="center">
-                    <template #default="{ row }">
-                        <div class="tag-list">
-                            <el-tag v-for="tag in row.tags" :key="tag" size="small" effect="plain">{{ tag }}</el-tag>
-                            <span v-if="!row.tags.length" class="cell-sub">无</span>
-                        </div>
-                    </template>
-                </el-table-column>
                 <el-table-column prop="createdAt" label="创建时间" min-width="150" align="center" />
                 <el-table-column label="上架状态" min-width="100" align="center">
                     <template #default="{ row }">

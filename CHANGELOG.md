@@ -1,5 +1,18 @@
 # 更新日志
 
+## v0.25.2 (2026-11-26)
+
+### 本次更新
+
+- 服务列表隐藏「有效服务人次系数」「关联康复师职称」「标签」三个字段列（热门标签保留）
+- 商品列表隐藏「原价」「库存」「重量」「规格」「商品标签」五个字段列（售价、已售保留）
+
+### 说明
+
+- 修改文件：`src/views/service/list/index.vue`、`src/views/goods/list/index.vue`，以及版本文件
+- 验证：两个页面编译均返回 HTTP 200
+- 预览：http://localhost:5173/admin/service/list 、http://localhost:5173/admin/goods/list
+
 ## v0.25.1 (2026-11-26)
 
 ### 本次更新

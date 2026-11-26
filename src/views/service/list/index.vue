@@ -65,25 +65,6 @@
                 <el-table-column label="原价" min-width="100" align="center">
                     <template #default="{ row }"><span class="origin-price">¥{{ money(row.originPrice) }}</span></template>
                 </el-table-column>
-                <el-table-column label="标签" min-width="120" align="center">
-                    <template #default="{ row }">
-                        <div class="tag-list">
-                            <el-tag v-for="tag in row.tags" :key="tag" size="small" effect="plain">{{ tag }}</el-tag>
-                            <span v-if="!row.tags.length" class="cell-sub">无</span>
-                        </div>
-                    </template>
-                </el-table-column>
-                <el-table-column label="关联康复师职称" min-width="150" align="center">
-                    <template #default="{ row }">
-                        <div class="tag-list">
-                            <el-tag v-for="t in row.therapistTitle" :key="t" size="small" effect="plain">{{ t }}</el-tag>
-                            <span v-if="!row.therapistTitle.length" class="cell-sub">-</span>
-                        </div>
-                    </template>
-                </el-table-column>
-                <el-table-column label="有效服务人次系数" min-width="140" align="center">
-                    <template #default="{ row }">{{ row.validCountFactor }}</template>
-                </el-table-column>
                 <el-table-column prop="sort" label="排序值" min-width="90" align="center" />
                 <el-table-column label="热门标签" min-width="100" align="center">
                     <template #default="{ row }">
