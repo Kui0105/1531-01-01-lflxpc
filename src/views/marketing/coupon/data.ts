@@ -55,6 +55,14 @@ export const issueMethodLabels: Record<IssueMethod, string> = {
     manager: '店长发放'
 }
 
+// 购买赠送类型的优惠券选项（供服务/商品的「购买送券」选择，仅允许发放方式为「购买赠送」的券）
+export const giftCouponOptions = () =>
+    couponList
+        .filter((item) => item.issueMethod === 'gift' && item.status === 'on')
+        .map((item) => ({ id: String(item.id), name: item.name }))
+
+export const giftCouponName = (id: string) => giftCouponOptions().find((item) => item.id === id)?.name || '-'
+
 export const couponList: CouponItem[] = [
     {
         id: 1,
@@ -205,5 +213,80 @@ export const couponList: CouponItem[] = [
         commissionEnabled: true,
         commissionRate: 8,
         createdAt: '2026-05-06 15:40'
+    },
+    {
+        id: 7,
+        name: '购买满200赠养生茶5元券',
+        type: 'no_threshold',
+        faceValue: 5,
+        threshold: 0,
+        applyScope: 'goods',
+        issueMethod: 'gift',
+        totalCount: 1000,
+        claimedCount: 0,
+        usedCount: 0,
+        validStart: '2026-06-01',
+        validEnd: '2026-12-31',
+        status: 'on',
+        serviceIds: [],
+        goodsIds: [3],
+        birthdayBenefit: false,
+        newUserBenefit: false,
+        autoDay: 1,
+        generateAmount: 200,
+        managerConfirm: false,
+        commissionEnabled: false,
+        commissionRate: 0,
+        createdAt: '2026-06-01 10:00'
+    },
+    {
+        id: 8,
+        name: '购买服务赠满50减10券',
+        type: 'reduction',
+        faceValue: 10,
+        threshold: 50,
+        applyScope: 'all_service',
+        issueMethod: 'gift',
+        totalCount: 2000,
+        claimedCount: 0,
+        usedCount: 0,
+        validStart: '2026-06-01',
+        validEnd: '2026-12-31',
+        status: 'on',
+        serviceIds: [],
+        goodsIds: [],
+        birthdayBenefit: false,
+        newUserBenefit: false,
+        autoDay: 1,
+        generateAmount: 100,
+        managerConfirm: false,
+        commissionEnabled: false,
+        commissionRate: 0,
+        createdAt: '2026-06-02 11:30'
+    },
+    {
+        id: 9,
+        name: '购买礼盒赠8折券',
+        type: 'discount',
+        faceValue: 8,
+        threshold: 0,
+        applyScope: 'goods',
+        issueMethod: 'gift',
+        totalCount: 500,
+        claimedCount: 0,
+        usedCount: 0,
+        validStart: '2026-06-01',
+        validEnd: '2026-12-31',
+        status: 'on',
+        serviceIds: [],
+        goodsIds: [3],
+        birthdayBenefit: false,
+        newUserBenefit: false,
+        autoDay: 1,
+        generateAmount: 300,
+        managerConfirm: false,
+        commissionEnabled: false,
+        commissionRate: 0,
+        createdAt: '2026-06-03 09:20'
     }
 ]

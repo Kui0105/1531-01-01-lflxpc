@@ -1,5 +1,21 @@
 # 更新日志
 
+## v0.21.0 (2026-11-26)
+
+### 本次更新
+
+- 优惠券弹窗提成类型说明文字改为按钮**下方**展示（switch 与说明纵向排列，不再显示在按钮右侧）
+- 服务列表新增「购买送券」TAB：按金额门槛配置发放优惠券，表单与详情抽屉同步展示；数据结构 ServiceItem 增加 giftCoupons 字段
+- 优惠券选择范围收口：服务/商品「购买送券」的优惠券下拉仅显示**发放方式为「购买赠送」且启用**的优惠券（新增 giftCouponOptions()/giftCouponName() 从营销优惠券数据动态筛选）
+  - 优惠券 mock 补充 4 张购买赠送类型券（满200赠5元券、购买服务赠满50减10券、礼盒赠8折券等）
+  - 商品/服务 mock 的 giftCoupons 引用同步更新为新券 ID
+
+### 说明
+
+- 修改文件：`src/views/marketing/coupon/{index.vue,data.ts}`、`src/views/service/list/{index.vue,data.ts}`、`src/views/goods/list/{index.vue,data.ts}`，以及版本文件
+- 验证：类型检查通过（仅保留既有历史报错，新增代码无报错），三个页面编译均返回 HTTP 200
+- 预览：http://localhost:5173/admin/marketing/coupon 、http://localhost:5173/admin/service/list 、http://localhost:5173/admin/goods/list
+
 ## v0.20.2 (2026-11-26)
 
 ### 本次更新

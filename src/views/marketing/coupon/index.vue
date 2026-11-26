@@ -235,10 +235,12 @@
                 <el-row :gutter="16">
                     <el-col :span="24">
                         <el-form-item label="提成类型">
-                            <el-switch v-model="form.commissionEnabled" active-text="启用" inactive-text="不启用" />
-                            <div class="form-hint commission-hint">
-                                <span>券被使用后按券面额提成给到康复师</span>
-                                <span>店长获得订单总额 2% 提成；提成比例由管理端配置</span>
+                            <div class="switch-with-hint">
+                                <el-switch v-model="form.commissionEnabled" active-text="启用" inactive-text="不启用" />
+                                <div class="form-hint commission-hint">
+                                    <span>券被使用后按券面额提成给到康复师</span>
+                                    <span>店长获得订单总额 2% 提成；提成比例由管理端配置</span>
+                                </div>
                             </div>
                         </el-form-item>
                     </el-col>
@@ -512,8 +514,15 @@ const deleteCoupon = (row: CouponItem) => {
     color: #909399;
 }
 
-.commission-hint span {
-    display: block;
+.switch-with-hint {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+}
+
+.commission-hint {
+    margin-top: 0;
 }
 
 .method-tip {

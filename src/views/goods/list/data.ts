@@ -3,6 +3,8 @@
  * 后续可由后端接口替换
  */
 
+import { giftCouponName, giftCouponOptions } from '@/views/marketing/coupon/data'
+
 export type OnSaleStatus = 'on' | 'off'
 export type DeliveryType = 'express' | 'pickup'
 export type SpecType = 'single' | 'multi' // 单规格 / 多规格
@@ -79,16 +81,10 @@ export const freightTemplates = [
     { name: '门店自提', desc: '仅支持到店自提，无运费' }
 ]
 
-// 优惠券选项（购买送券选择项）
-export const couponOptions = [
-    { id: 'CP001', name: '满100减10优惠券' },
-    { id: 'CP002', name: '满200减30优惠券' },
-    { id: 'CP003', name: '新客专享5元券' },
-    { id: 'CP004', name: '会员专属20元券' },
-    { id: 'CP005', name: '满500减80优惠券' }
-]
+// 优惠券选项：仅「购买赠送」发放类型的优惠券（动态从营销优惠券数据筛选）
+export const couponOptions = giftCouponOptions()
 
-export const couponName = (id: string) => couponOptions.find((item) => item.id === id)?.name || '-'
+export const couponName = (id: string) => giftCouponName(id)
 
 export const goodsList: GoodsItem[] = [
     {
@@ -119,7 +115,7 @@ export const goodsList: GoodsItem[] = [
         freightTemplate: '按重量计费',
         packingService: true,
         packingDesc: '可按单次用量分装，方便携带',
-        giftCoupons: [{ id: 1, threshold: 100, couponId: 'CP001' }],
+        giftCoupons: [{ id: 1, threshold: 100, couponId: '5' }],
         afterSaleDays: 7,
         detail: '<p>精选多种中药材搭配而成，温水冲泡即可使用，缓解疲劳、改善睡眠。</p>'
     },
@@ -182,8 +178,8 @@ export const goodsList: GoodsItem[] = [
         packingService: true,
         packingDesc: '支持礼盒分装及贺卡定制',
         giftCoupons: [
-            { id: 1, threshold: 100, couponId: 'CP001' },
-            { id: 2, threshold: 200, couponId: 'CP002' }
+            { id: 1, threshold: 100, couponId: '7' },
+            { id: 2, threshold: 200, couponId: '8' }
         ],
         afterSaleDays: 15,
         detail: '<p>多款养生茶组合礼盒，适合送礼与自用，品质保证。</p>'

@@ -337,7 +337,7 @@
                     </el-tab-pane>
 
                     <el-tab-pane label="购买送券" name="coupon">
-                        <div class="coupon-tip">配置购买指定商品发放优惠券及订单金额门槛（如满1000发券A、满2000发券B）</div>
+                        <div class="coupon-tip">购买指定商品满对应金额后发放优惠券，优惠券仅可选择「购买赠送」发放类型（如满1000发券A、满2000发券B）</div>
                         <div class="coupon-list">
                             <div v-for="(coupon, index) in form.giftCoupons" :key="coupon.id" class="coupon-row">
                                 <span class="coupon-label">订单满</span>

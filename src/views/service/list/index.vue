@@ -285,6 +285,22 @@
                     </el-col>
                 </el-row>
                     </el-tab-pane>
+
+                    <el-tab-pane label="购买送券" name="coupon">
+                        <div class="coupon-tip">购买指定服务满对应金额后发放优惠券，优惠券仅可选择「购买赠送」发放类型</div>
+                        <div class="coupon-list">
+                            <div v-for="(coupon, index) in form.giftCoupons" :key="coupon.id" class="coupon-row">
+                                <span class="coupon-label">订单满</span>
+                                <el-input-number v-model="coupon.threshold" :min="0" :precision="2" class="coupon-threshold" />
+                                <span class="coupon-label">元，发放</span>
+                                <el-select v-model="coupon.couponId" placeholder="请选择优惠券" class="coupon-select">
+                                    <el-option v-for="item in couponOptions" :key="item.id" :label="item.name" :value="item.id" />
+                                </el-select>
+                                <el-button type="danger" link @click="form.giftCoupons.splice(index, 1)">删除</el-button>
+                            </div>
+                            <el-button type="primary" plain @click="addCoupon">添加送券配置</el-button>
+                        </div>
+                    </el-tab-pane>
                 </el-tabs>
             </el-form>
             <template #footer>
@@ -338,6 +354,12 @@
                     <template #header><span class="header-title">服务须知</span></template>
                     <div class="review-content">{{ currentItem.notice }}</div>
                 </el-card>
+                <el-card v-if="currentItem.giftCoupons?.length" class="info-card mt-4" shadow="never">
+                    <template #header><span class="header-title">购买送券</span></template>
+                    <div v-for="coupon in currentItem.giftCoupons" :key="coupon.id" class="coupon-view">
+                        订单满 ¥{{ money(coupon.threshold) }} 发放「{{ couponName(coupon.couponId) }}」
+                    </div>
+                </el-card>
             </template>
         </el-drawer>
     </div>
@@ -352,6 +374,8 @@ import { exportCsv } from '@/utils/export-csv'
 import {
     category1Options,
     categoryOptions,
+    couponName,
+    couponOptions,
     services,
     serviceTypeLabels,
     storeOptions,
@@ -468,7 +492,8 @@ const emptyForm = (): ServiceItem => ({
     discountTag: '',
     intro: '',
     detail: '',
-    notice: ''
+    notice: '',
+    giftCoupons: []
 })
 const form = reactive<ServiceItem>(emptyForm())
 
@@ -523,6 +548,10 @@ const removeFormImage = (index: number) => {
     form.images.splice(index, 1)
     form.cover = form.images[0] || ''
 }
+const addCoupon = () => {
+    form.giftCoupons.push({ id: Date.now(), threshold: 0, couponId: '' })
+}
+
 const submitForm = () => {
     if (!form.name.trim()) {
         ElMessage.warning('请输入服务名称')
@@ -534,6 +563,10 @@ const submitForm = () => {
     }
     if (!form.images.length) {
         ElMessage.warning('请添加服务图片')
+        return
+    }
+    if (form.giftCoupons.some((c) => !c.couponId)) {
+        ElMessage.warning('请选择发放的优惠券')
         return
     }
     if (isEdit.value) {
@@ -822,6 +855,47 @@ const permanentDelete = (row: ServiceItem) => {
 .detail-content {
     font-size: 14px;
     line-height: 1.8;
+    color: #303133;
+}
+
+.coupon-tip {
+    margin-bottom: 14px;
+    padding: 8px 12px;
+    font-size: 12px;
+    color: #909399;
+    background: #f5f7ff;
+    border-radius: 4px;
+}
+
+.coupon-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.coupon-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.coupon-label {
+    font-size: 14px;
+    color: #606266;
+    white-space: nowrap;
+}
+
+.coupon-threshold {
+    width: 150px;
+}
+
+.coupon-select {
+    width: 260px;
+}
+
+.coupon-view {
+    padding: 6px 0;
+    font-size: 14px;
     color: #303133;
 }
 

@@ -3,6 +3,8 @@
  * 后续可由后端接口替换
  */
 
+import { giftCouponName, giftCouponOptions } from '@/views/marketing/coupon/data'
+
 export type ServiceType = 'assess' | 'recover' // 评估服务 / 康复服务
 export type OnSaleStatus = 'on' | 'off' // 上架 / 下架
 
@@ -29,8 +31,20 @@ export interface ServiceItem {
     intro: string // 服务简介
     detail: string // 服务详情（富文本）
     notice: string // 服务须知
+    giftCoupons: GiftCoupon[] // 购买送券配置
     deleted?: boolean // 是否已删除（进入回收站）
 }
+
+// 购买送券配置
+export interface GiftCoupon {
+    id: number
+    threshold: number // 订单金额门槛
+    couponId: string // 发放优惠券（仅购买赠送类型）
+}
+
+// 优惠券选项：仅「购买赠送」发放类型的优惠券
+export const couponOptions = giftCouponOptions()
+export const couponName = (id: string) => giftCouponName(id)
 
 // 一级/二级分类联动
 export const categoryOptions: Record<string, string[]> = {
@@ -74,6 +88,7 @@ export const services: ServiceItem[] = [
         intro: '通过专业手法疏通全身经络，缓解疲劳与肌肉紧张。',
         detail: '<p>全身经络理疗采用专业推拿手法，疏通经络、活血化瘀，有效缓解疲劳、改善睡眠。适合长期伏案、肩颈腰背不适人群。</p>',
         notice: '预约前请确认身体状况，急性损伤期不建议进行理疗。',
+        giftCoupons: [{ id: 1, threshold: 300, couponId: '8' }],
     },
     {
         id: 2,
@@ -98,6 +113,7 @@ export const services: ServiceItem[] = [
         intro: '由首席康复师进行肩颈功能评估，给出专业康复建议。',
         detail: '<p>通过专业评估设备与康复师经验，全面评估肩颈活动度、肌肉状态，出具个性化康复方案。</p>',
         notice: '请穿着宽松衣物以便评估。',
+        giftCoupons: [],
     },
     {
         id: 3,
@@ -122,6 +138,7 @@ export const services: ServiceItem[] = [
         intro: '针对腰部肌肉劳损的舒缓护理，放松腰背肌群。',
         detail: '<p>采用热敷与手法结合的方式，缓解腰部肌肉紧张，改善局部血液循环。</p>',
         notice: '孕妇及腰部急性损伤者不宜预约。',
+        giftCoupons: [],
     },
     {
         id: 4,
@@ -146,6 +163,7 @@ export const services: ServiceItem[] = [
         intro: '通过体态分析评估脊柱与关节状态。',
         detail: '<p>利用体态评估系统，检测脊柱侧弯、骨盆倾斜等问题，提供改善建议。</p>',
         notice: '评估需穿着贴身衣物以便准确分析。',
+        giftCoupons: [],
     },
     {
         id: 5,
@@ -170,5 +188,6 @@ export const services: ServiceItem[] = [
         intro: '多次经络护理组合套餐，性价比更高。',
         detail: '<p>包含 4 次全身经络护理，由首席康复师服务，适合长期调理人群。</p>',
         notice: '套餐有效期 365 天，过期未使用次数作废。',
+        giftCoupons: [],
     }
 ]
