@@ -73,7 +73,14 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column prop="therapistTitle" label="关联康复师职称" min-width="140" align="center" />
+                <el-table-column label="关联康复师职称" min-width="150" align="center">
+                    <template #default="{ row }">
+                        <div class="tag-list">
+                            <el-tag v-for="t in row.therapistTitle" :key="t" size="small" effect="plain">{{ t }}</el-tag>
+                            <span v-if="!row.therapistTitle.length" class="cell-sub">-</span>
+                        </div>
+                    </template>
+                </el-table-column>
                 <el-table-column label="有效服务人次系数" min-width="140" align="center">
                     <template #default="{ row }">{{ row.validCountFactor }}</template>
                 </el-table-column>
@@ -107,7 +114,6 @@
                             >
                                 {{ row.onSale === 'on' ? '下架' : '上架' }}
                             </el-button>
-                            <el-button type="primary" link size="small" @click="openTitle(row)">关联职称</el-button>
                             <el-button type="primary" link size="small" @click="openDetail(row)">查看详情</el-button>
                             <el-button type="danger" link size="small" @click="deleteService(row)">删除</el-button>
                         </template>
@@ -222,7 +228,7 @@
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="关联康复师职称">
-                            <el-select v-model="form.therapistTitle" placeholder="请选择关联职称" class="!w-full">
+                            <el-select v-model="form.therapistTitle" multiple placeholder="请选择关联职称（可多选）" class="!w-full">
                                 <el-option v-for="item in therapistTitleOptions" :key="item" :label="item" :value="item" />
                             </el-select>
                         </el-form-item>
@@ -265,18 +271,6 @@
             </template>
         </el-dialog>
 
-        <!-- 关联职称弹窗 -->
-        <el-dialog v-model="titleVisible" title="关联康复师职称" width="460px">
-            <div class="title-tip">选择可预约该服务的康复师职称范围，保存后用户端预约康复师列表将按职称过滤。</div>
-            <el-radio-group v-model="titleForm.therapistTitle" class="title-group">
-                <el-radio v-for="item in therapistTitleOptions" :key="item" :value="item">{{ item }}</el-radio>
-            </el-radio-group>
-            <template #footer>
-                <el-button @click="titleVisible = false">取消</el-button>
-                <el-button type="primary" @click="submitTitle">保存</el-button>
-            </template>
-        </el-dialog>
-
         <!-- 查看详情弹窗 -->
         <el-drawer v-model="detailVisible" size="760px">
             <template #header>
@@ -296,7 +290,13 @@
                         <div class="info-item"><span class="info-label">时长</span><span class="info-value">{{ currentItem.duration }} 分钟</span></div>
                         <div class="info-item"><span class="info-label">售价/原价</span><span class="info-value">¥{{ money(currentItem.price) }} / ¥{{ money(currentItem.originPrice) }}</span></div>
                         <div class="info-item"><span class="info-label">有效期</span><span class="info-value">{{ currentItem.validDays }} 天</span></div>
-                        <div class="info-item"><span class="info-label">关联康复师职称</span><span class="info-value">{{ currentItem.therapistTitle }}</span></div>
+                        <div class="info-item">
+                            <span class="info-label">关联康复师职称</span>
+                            <span class="info-value tag-list detail-tags">
+                                <el-tag v-for="t in currentItem.therapistTitle" :key="t" size="small" effect="plain">{{ t }}</el-tag>
+                                <span v-if="!currentItem.therapistTitle.length" class="cell-sub">-</span>
+                            </span>
+                        </div>
                         <div class="info-item"><span class="info-label">有效服务人次系数</span><span class="info-value">{{ currentItem.validCountFactor }}</span></div>
                         <div class="info-item"><span class="info-label">排序值</span><span class="info-value">{{ currentItem.sort }}</span></div>
                         <div class="info-item"><span class="info-label">热门标签</span><span class="info-value">{{ currentItem.hotTag || '-' }}</span></div>
@@ -405,7 +405,7 @@ const exportList = () => {
             `${row.duration}分钟`,
             row.price,
             row.originPrice,
-            row.therapistTitle,
+            row.therapistTitle.join('、'),
             row.validCountFactor,
             row.sort,
             row.hotTag || '-',
@@ -435,7 +435,7 @@ const emptyForm = (): ServiceItem => ({
     price: 0,
     originPrice: 0,
     tags: [],
-    therapistTitle: '所有康复师',
+    therapistTitle: ['所有康复师'],
     validCountFactor: 1,
     sort: 0,
     hotTag: '',
@@ -505,21 +505,6 @@ const toggleSale = (row: ServiceItem) => {
             ElMessage.success(isOn ? '服务已上架' : '服务已下架')
         })
         .catch(() => {})
-}
-
-// 关联职称
-const titleVisible = ref(false)
-const titleForm = reactive({ therapistTitle: '所有康复师', id: 0 })
-const openTitle = (row: ServiceItem) => {
-    titleForm.id = row.id
-    titleForm.therapistTitle = row.therapistTitle
-    titleVisible.value = true
-}
-const submitTitle = () => {
-    const target = data.find((item) => item.id === titleForm.id)
-    if (target) target.therapistTitle = titleForm.therapistTitle
-    titleVisible.value = false
-    ElMessage.success('关联职称已保存')
 }
 
 // 查看详情
@@ -650,6 +635,10 @@ const permanentDelete = (row: ServiceItem) => {
     gap: 4px;
 }
 
+.detail-tags {
+    justify-content: flex-start;
+}
+
 .price {
     font-weight: 600;
     color: #f56c6c;
@@ -681,19 +670,6 @@ const permanentDelete = (row: ServiceItem) => {
     width: 80px;
     height: 60px;
     border-radius: 4px;
-}
-
-.title-tip {
-    margin-bottom: 16px;
-    font-size: 13px;
-    line-height: 1.7;
-    color: #606266;
-}
-
-.title-group {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
 }
 
 .detail-cover {

@@ -18,7 +18,7 @@ export interface ServiceItem {
     price: number // 售价
     originPrice: number // 原价
     tags: string[]
-    therapistTitle: string // 关联康复师职称
+    therapistTitle: string[] // 关联康复师职称（多选）
     validCountFactor: number // 有效服务人次系数
     sort: number // 排序值
     hotTag: string // 热门标签
@@ -63,7 +63,7 @@ export const services: ServiceItem[] = [
         price: 298,
         originPrice: 398,
         tags: ['热销', '好评'],
-        therapistTitle: '所有康复师',
+        therapistTitle: ['所有康复师'],
         validCountFactor: 1,
         sort: 10,
         hotTag: '热门',
@@ -87,7 +87,7 @@ export const services: ServiceItem[] = [
         price: 128,
         originPrice: 168,
         tags: ['专业'],
-        therapistTitle: '首席康复师',
+        therapistTitle: ['首席康复师'],
         validCountFactor: 1,
         sort: 20,
         hotTag: '',
@@ -111,7 +111,7 @@ export const services: ServiceItem[] = [
         price: 198,
         originPrice: 258,
         tags: [],
-        therapistTitle: '康复师',
+        therapistTitle: ['康复师'],
         validCountFactor: 1,
         sort: 30,
         hotTag: '',
@@ -135,7 +135,7 @@ export const services: ServiceItem[] = [
         price: 98,
         originPrice: 138,
         tags: ['热门'],
-        therapistTitle: '所有康复师',
+        therapistTitle: ['所有康复师'],
         validCountFactor: 1,
         sort: 15,
         hotTag: '热门',
@@ -159,7 +159,7 @@ export const services: ServiceItem[] = [
         price: 399,
         originPrice: 599,
         tags: ['套餐'],
-        therapistTitle: '首席康复师',
+        therapistTitle: ['首席康复师'],
         validCountFactor: 1.5,
         sort: 5,
         hotTag: '热门',
