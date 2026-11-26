@@ -83,14 +83,16 @@
                 <el-table-column label="评价图片" min-width="130" align="center">
                     <template #default="{ row }">
                         <div class="image-list">
-                            <span
+                            <el-image
                                 v-for="(img, index) in row.images"
                                 :key="index"
+                                :src="imageUrl(img)"
+                                :preview-src-list="row.images.map(imageUrl)"
+                                :initial-index="index"
+                                fit="cover"
                                 class="proof-image"
-                                @click="openDetail(row)"
-                            >
-                                {{ img }}
-                            </span>
+                                preview-teleported
+                            />
                             <span v-if="!row.images.length" class="cell-sub">无</span>
                         </div>
                     </template>
@@ -154,38 +156,19 @@
                         <el-tag v-for="tag in currentItem.tags" :key="tag" size="small" effect="plain">{{ tag }}</el-tag>
                     </div>
                     <div v-if="currentItem.images.length" class="image-list detail-images">
-                        <span v-for="(img, index) in currentItem.images" :key="index" class="proof-image">{{ img }}</span>
+                        <el-image
+                            v-for="(img, index) in currentItem.images"
+                            :key="index"
+                            :src="imageUrl(img)"
+                            :preview-src-list="currentItem.images.map(imageUrl)"
+                            :initial-index="index"
+                            fit="cover"
+                            class="proof-image detail-proof-image"
+                            preview-teleported
+                        />
                     </div>
                     <div v-if="currentItem.reply" class="reply-box">
                         <span class="reply-label">商家回复：</span>{{ currentItem.reply }}
-                    </div>
-                </el-card>
-                <el-card class="info-card mt-4" shadow="never">
-                    <template #header><span class="header-title">用户端展示效果</span></template>
-                    <div class="preview-wrap">
-                        <div class="preview-card">
-                            <div class="preview-head">
-                                <span class="avatar" :style="{ background: currentItem.avatarColor }">
-                                    {{ currentItem.nickname.charAt(0) }}
-                                </span>
-                                <div class="preview-head-main">
-                                    <div class="preview-name">{{ currentItem.nickname }}</div>
-                                    <el-rate :model-value="currentItem.rating" disabled allow-half size="small" :colors="['#99A9BF', '#F7BA2A', '#FF9900']" />
-                                </div>
-                                <span class="preview-time">{{ currentItem.reviewTime.slice(0, 10) }}</span>
-                            </div>
-                            <div class="preview-content">{{ currentItem.content }}</div>
-                            <div class="preview-tags">
-                                <el-tag v-for="tag in currentItem.tags" :key="tag" size="small" effect="plain">{{ tag }}</el-tag>
-                            </div>
-                            <div v-if="currentItem.images.length" class="preview-images">
-                                <span v-for="(img, index) in currentItem.images" :key="index" class="preview-image">{{ img }}</span>
-                            </div>
-                            <div v-if="currentItem.reply" class="preview-reply">商家回复：{{ currentItem.reply }}</div>
-                        </div>
-                        <div v-if="currentItem.status === 'hidden'" class="preview-hidden-tip">
-                            该评价已隐藏，用户端服务详情与康复师详情不再展示
-                        </div>
                     </div>
                 </el-card>
             </template>
@@ -209,6 +192,12 @@ import {
     therapistOptions
 } from './data'
 import type { ReviewItem, ReviewStatus } from './data'
+
+// mock 图片文字生成 SVG 占位图（data URI），支持 el-image 点击放大预览
+const imageUrl = (label: string) => {
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="600" height="450"><rect width="600" height="450" fill="#eef2ff"/><rect x="20" y="20" width="560" height="410" fill="#ffffff" stroke="#d9e0ff" stroke-width="2" rx="10"/><text x="300" y="225" font-size="40" fill="#4A5DFF" text-anchor="middle" dominant-baseline="middle" font-family="sans-serif">${label}</text></svg>`
+    return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`
+}
 
 const data = reactive(cloneDeep(reviews))
 const keyword = ref('')
@@ -426,18 +415,16 @@ const hideReview = (row: ReviewItem) => {
 }
 
 .proof-image {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 44px;
-    height: 30px;
-    padding: 0 6px;
-    font-size: 11px;
-    color: #409eff;
-    background: #ecf5ff;
+    width: 44px;
+    height: 44px;
     border: 1px solid #d9ecff;
     border-radius: 4px;
     cursor: pointer;
+}
+
+.detail-proof-image {
+    width: 80px;
+    height: 80px;
 }
 
 .info-grid {
@@ -492,94 +479,6 @@ const hideReview = (row: ReviewItem) => {
 
 .reply-label {
     color: var(--el-color-primary);
-}
-
-.preview-wrap {
-    padding: 16px;
-    background: #f5f7fa;
-    border-radius: 8px;
-}
-
-.preview-card {
-    padding: 16px;
-    background: #fff;
-    border: 1px solid #ebeef5;
-    border-radius: 8px;
-}
-
-.preview-head {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.preview-head-main {
-    flex: 1;
-}
-
-.preview-name {
-    margin-bottom: 4px;
-    font-size: 14px;
-    font-weight: 600;
-    color: #303133;
-}
-
-.preview-time {
-    font-size: 12px;
-    color: #c0c4cc;
-}
-
-.preview-content {
-    margin-top: 12px;
-    font-size: 14px;
-    line-height: 1.8;
-    color: #303133;
-}
-
-.preview-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 10px;
-}
-
-.preview-images {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 10px;
-}
-
-.preview-image {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 60px;
-    height: 60px;
-    font-size: 11px;
-    color: #909399;
-    background: #f5f7fa;
-    border-radius: 4px;
-}
-
-.preview-reply {
-    margin-top: 10px;
-    padding: 8px 10px;
-    font-size: 13px;
-    color: #606266;
-    background: #f5f7fa;
-    border-radius: 4px;
-}
-
-.preview-hidden-tip {
-    margin-top: 12px;
-    padding: 10px 14px;
-    font-size: 13px;
-    color: #909399;
-    text-align: center;
-    background: #fff;
-    border: 1px dashed #dcdfe6;
-    border-radius: 6px;
 }
 
 :deep(.review-table .el-table__cell .cell) {
