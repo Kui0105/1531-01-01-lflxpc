@@ -12,29 +12,17 @@
             <div class="section-title">基础配置</div>
             <el-form :model="form" label-width="150px" class="config-form">
                 <el-form-item label="分销开关">
-                    <el-switch v-model="form.enabled" active-text="开启" inactive-text="关闭" />
-                    <div class="form-hint">关闭后全部分销推广功能停用</div>
+                    <div class="switch-with-hint">
+                        <el-switch v-model="form.enabled" />
+                        <div class="form-hint">关闭后全部分销推广功能停用</div>
+                    </div>
                 </el-form-item>
-                <el-form-item label="评估订单返利节点">
-                    <el-select v-model="form.assessNode" class="config-input">
-                        <el-option v-for="item in assessNodeOptions" :key="item" :label="item" :value="item" />
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="服务订单返利节点">
-                    <el-select v-model="form.serviceNode" class="config-input">
-                        <el-option v-for="item in serviceNodeOptions" :key="item" :label="item" :value="item" />
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="商品订单返利节点">
-                    <el-select v-model="form.goodsNode" class="config-input">
-                        <el-option v-for="item in goodsNodeOptions" :key="item" :label="item" :value="item" />
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="结算周期">
-                    <el-select v-model="form.settleCycle" class="config-input">
-                        <el-option v-for="item in settleCycleOptions" :key="item" :label="item" :value="item" />
-                    </el-select>
-                    <div class="form-hint">选择返利节点后保存，佣金明细状态将按节点自动流转</div>
+                <el-form-item label="返利规则">
+                    <div class="form-hint rule-hint">
+                        <span>评估/服务订单：到店核销后到账，核销后结算佣金</span>
+                        <span>商品订单：完成且超出售后期后返利到账，推广订单变更为已到账状态</span>
+                        <span>订单售后退款则佣金失效</span>
+                    </div>
                 </el-form-item>
             </el-form>
 
@@ -88,11 +76,6 @@
                     <span class="unit">%</span>
                     <div class="form-hint">按提现金额收取的手续费比例</div>
                 </el-form-item>
-                <el-form-item label="到账周期">
-                    <el-select v-model="form.withdrawCycle" class="config-input">
-                        <el-option v-for="item in withdrawCycleOptions" :key="item" :label="item" :value="item" />
-                    </el-select>
-                </el-form-item>
             </el-form>
 
             <div v-if="isDirty" class="dirty-tip">
@@ -109,21 +92,10 @@ import { cloneDeep } from 'lodash-es'
 
 interface ConfigForm {
     enabled: boolean // 分销开关
-    assessNode: string // 评估订单返利节点
-    serviceNode: string // 服务订单返利节点
-    goodsNode: string // 商品订单返利节点
-    settleCycle: string // 结算周期
     poster: string // 推广海报背景图（data URI）
     minWithdraw: number // 最低提现金额（元）
     withdrawFee: number // 提现手续费（%）
-    withdrawCycle: string // 到账周期
 }
-
-const assessNodeOptions = ['到店核销后到账']
-const serviceNodeOptions = ['到店核销后到账']
-const goodsNodeOptions = ['完成订单且超出售后期后到账']
-const settleCycleOptions = ['即时结算', '每日结算', '每周结算', '每月结算']
-const withdrawCycleOptions = ['实时到账', '1 个工作日', '3 个工作日', '7 个工作日']
 
 // 生成推广海报占位图
 const posterPlaceholder = () => {
@@ -134,14 +106,9 @@ const posterPlaceholder = () => {
 // 已生效配置（mock，后续可由后端接口替换）
 const savedConfig = reactive<ConfigForm>({
     enabled: true,
-    assessNode: '到店核销后到账',
-    serviceNode: '到店核销后到账',
-    goodsNode: '完成订单且超出售后期后到账',
-    settleCycle: '每周结算',
     poster: posterPlaceholder(),
     minWithdraw: 10,
-    withdrawFee: 0,
-    withdrawCycle: '1 个工作日'
+    withdrawFee: 0
 })
 
 const form = reactive<ConfigForm>(cloneDeep(savedConfig))
@@ -169,7 +136,7 @@ const handlePosterChange = (uploadFile: { raw?: File }) => {
 }
 
 const saveConfig = () => {
-    ElMessageBox.confirm('确认保存当前分销配置？保存后新配置立即生效，佣金明细状态将按返利节点自动流转。', '保存二次确认', { type: 'warning' })
+    ElMessageBox.confirm('确认保存当前分销配置？保存后新配置立即生效。', '保存二次确认', { type: 'warning' })
         .then(() => {
             Object.assign(savedConfig, cloneDeep(form))
             ElMessage.success('分销配置已保存并生效')
@@ -242,11 +209,22 @@ const saveConfig = () => {
     color: #606266;
 }
 
+.switch-with-hint {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+}
+
 .form-hint {
     margin-top: 4px;
     font-size: 12px;
     line-height: 1.5;
     color: #909399;
+}
+
+.rule-hint span {
+    display: block;
 }
 
 .poster-form {
