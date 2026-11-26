@@ -185,6 +185,7 @@
                     </el-tab-pane>
 
                     <el-tab-pane label="价格与库存" name="price">
+                        <div class="section-title">规格设置</div>
                         <el-form-item label="规格类型">
                             <el-radio-group v-model="form.specType" @change="handleSpecTypeChange">
                                 <el-radio value="single">单规格</el-radio>
@@ -192,89 +193,141 @@
                             </el-radio-group>
                         </el-form-item>
 
-                        <!-- 单规格 -->
-                        <el-row v-if="form.specType === 'single'" :gutter="16" class="spec-block">
-                            <el-col :span="8">
-                                <el-form-item label="规格名称">
+                        <!-- 单规格：简洁的一行 -->
+                        <div v-if="form.specType === 'single'" class="spec-block">
+                            <div class="spec-single-row">
+                                <div class="spec-field">
+                                    <span class="spec-field-label">规格名称</span>
                                     <el-input v-model="form.specs[0].name" placeholder="如：10包/盒" />
-                                </el-form-item>
-                            </el-col>
-                            <el-col :span="8">
+                                </div>
+                                <div class="spec-field">
+                                    <span class="spec-field-label">售价</span>
+                                    <el-input-number v-model="form.specs[0].price" :min="0" :precision="2" controls-position="right" class="!w-full" />
+                                </div>
+                                <div class="spec-field">
+                                    <span class="spec-field-label">原价</span>
+                                    <el-input-number v-model="form.specs[0].originPrice" :min="0" :precision="2" controls-position="right" class="!w-full" />
+                                </div>
+                                <div class="spec-field">
+                                    <span class="spec-field-label">会员价</span>
+                                    <el-input-number v-model="form.specs[0].memberPrice" :min="0" :precision="2" controls-position="right" class="!w-full" />
+                                </div>
+                                <div class="spec-field">
+                                    <span class="spec-field-label">库存</span>
+                                    <el-input-number v-model="form.specs[0].stock" :min="0" controls-position="right" class="!w-full" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 多规格：规格项 + 规格值，组合生成 SKU -->
+                        <div v-else class="spec-block">
+                            <div class="spec-group-list">
+                                <div v-for="(group, gIndex) in form.specGroups" :key="group.id" class="spec-group">
+                                    <div class="spec-group-head">
+                                        <span class="spec-field-label">规格项 {{ gIndex + 1 }}</span>
+                                        <el-input
+                                            v-model="group.name"
+                                            size="small"
+                                            class="spec-group-name"
+                                            placeholder="如：颜色 / 尺码"
+                                            @change="regenerateSkus"
+                                        />
+                                        <el-button type="danger" link size="small" @click="removeGroup(gIndex)">删除规格项</el-button>
+                                    </div>
+                                    <div class="spec-values">
+                                        <div class="spec-value-tags">
+                                            <el-tag
+                                                v-for="value in group.values"
+                                                :key="value"
+                                                closable
+                                                size="small"
+                                                @close="removeValue(gIndex, value)"
+                                            >
+                                                {{ value }}
+                                            </el-tag>
+                                            <span v-if="!group.values.length" class="spec-value-empty">暂无规格值，请在下方添加</span>
+                                        </div>
+                                        <div class="spec-value-add">
+                                            <el-input
+                                                v-model="newValueMap[group.id]"
+                                                size="small"
+                                                class="spec-value-input"
+                                                placeholder="输入规格值后回车"
+                                                @keyup.enter="addValue(gIndex)"
+                                            />
+                                            <el-button size="small" type="primary" plain @click="addValue(gIndex)">添加</el-button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <el-button type="primary" plain size="small" @click="addGroup">+ 添加规格项</el-button>
+                            </div>
+
+                            <!-- SKU 组合表格 -->
+                            <div v-if="form.specs.length" class="sku-section">
+                                <div class="sku-title">规格组合（{{ form.specs.length }} 个 SKU）</div>
+                                <el-table :data="form.specs" border size="small" max-height="300">
+                                    <el-table-column label="规格组合" min-width="160" align="center" fixed="left">
+                                        <template #default="{ row }">
+                                            <span>{{ row.name }}</span>
+                                        </template>
+                                    </el-table-column>
+                                    <el-table-column label="售价" min-width="130" align="center">
+                                        <template #default="{ row }">
+                                            <el-input-number v-model="row.price" :min="0" :precision="2" size="small" controls-position="right" class="!w-full" />
+                                        </template>
+                                    </el-table-column>
+                                    <el-table-column label="原价" min-width="130" align="center">
+                                        <template #default="{ row }">
+                                            <el-input-number v-model="row.originPrice" :min="0" :precision="2" size="small" controls-position="right" class="!w-full" />
+                                        </template>
+                                    </el-table-column>
+                                    <el-table-column label="会员价" min-width="130" align="center">
+                                        <template #default="{ row }">
+                                            <el-input-number v-model="row.memberPrice" :min="0" :precision="2" size="small" controls-position="right" class="!w-full" />
+                                        </template>
+                                    </el-table-column>
+                                    <el-table-column label="库存" min-width="120" align="center">
+                                        <template #default="{ row }">
+                                            <el-input-number v-model="row.stock" :min="0" size="small" controls-position="right" class="!w-full" />
+                                        </template>
+                                    </el-table-column>
+                                </el-table>
+                            </div>
+                            <div v-else class="sku-empty">请添加规格项并勾选规格值，系统将自动生成规格组合</div>
+                        </div>
+
+                        <div class="section-title mt-4">价格与库存汇总</div>
+                        <el-row :gutter="16" class="summary-row">
+                            <el-col :span="6">
                                 <el-form-item label="售价">
-                                    <el-input-number v-model="form.specs[0].price" :min="0" :precision="2" class="!w-full" />
+                                    <el-input :model-value="`¥${money(summaryPrice)}`" disabled class="!w-full" />
                                 </el-form-item>
                             </el-col>
-                            <el-col :span="8">
+                            <el-col :span="6">
                                 <el-form-item label="原价">
-                                    <el-input-number v-model="form.specs[0].originPrice" :min="0" :precision="2" class="!w-full" />
+                                    <el-input :model-value="`¥${money(summaryOrigin)}`" disabled class="!w-full" />
                                 </el-form-item>
                             </el-col>
-                            <el-col :span="8">
+                            <el-col :span="6">
                                 <el-form-item label="会员价">
-                                    <el-input-number v-model="form.specs[0].memberPrice" :min="0" :precision="2" class="!w-full" />
+                                    <el-input :model-value="`¥${money(summaryMember)}`" disabled class="!w-full" />
                                 </el-form-item>
                             </el-col>
-                            <el-col :span="8">
-                                <el-form-item label="库存">
-                                    <el-input-number v-model="form.specs[0].stock" :min="0" class="!w-full" />
+                            <el-col :span="6">
+                                <el-form-item label="总库存">
+                                    <el-input :model-value="totalStock" disabled class="!w-full" />
                                 </el-form-item>
                             </el-col>
                         </el-row>
-
-                        <!-- 多规格 -->
-                        <div v-else class="spec-block">
-                            <div class="spec-toolbar">
-                                <span class="spec-hint">可添加多个规格，每个规格独立设置价格与库存</span>
-                                <el-button type="primary" plain size="small" @click="addSpec">添加规格</el-button>
-                            </div>
-                            <el-table :data="form.specs" border size="small">
-                                <el-table-column label="规格名称" min-width="150">
-                                    <template #default="{ row }">
-                                        <el-input v-model="row.name" size="small" placeholder="规格名称" />
-                                    </template>
-                                </el-table-column>
-                                <el-table-column label="售价" min-width="140">
-                                    <template #default="{ row }">
-                                        <el-input-number v-model="row.price" :min="0" :precision="2" size="small" controls-position="right" class="!w-full" />
-                                    </template>
-                                </el-table-column>
-                                <el-table-column label="原价" min-width="140">
-                                    <template #default="{ row }">
-                                        <el-input-number v-model="row.originPrice" :min="0" :precision="2" size="small" controls-position="right" class="!w-full" />
-                                    </template>
-                                </el-table-column>
-                                <el-table-column label="会员价" min-width="140">
-                                    <template #default="{ row }">
-                                        <el-input-number v-model="row.memberPrice" :min="0" :precision="2" size="small" controls-position="right" class="!w-full" />
-                                    </template>
-                                </el-table-column>
-                                <el-table-column label="库存" min-width="130">
-                                    <template #default="{ row }">
-                                        <el-input-number v-model="row.stock" :min="0" size="small" controls-position="right" class="!w-full" />
-                                    </template>
-                                </el-table-column>
-                                <el-table-column label="操作" width="80" align="center">
-                                    <template #default="{ row, $index }">
-                                        <el-button type="danger" link size="small" @click="removeSpec($index)">删除</el-button>
-                                    </template>
-                                </el-table-column>
-                            </el-table>
-                        </div>
-
-                        <el-row :gutter="16" class="mt-4">
-                            <el-col :span="8">
+                        <el-row :gutter="16">
+                            <el-col :span="12">
                                 <el-form-item label="排序值">
                                     <el-input-number v-model="form.sort" :min="0" class="!w-full" />
                                 </el-form-item>
                             </el-col>
-                            <el-col :span="8">
+                            <el-col :span="12">
                                 <el-form-item label="售后期限（天）">
                                     <el-input-number v-model="form.afterSaleDays" :min="0" class="!w-full" />
-                                </el-form-item>
-                            </el-col>
-                            <el-col :span="8">
-                                <el-form-item label="总库存">
-                                    <el-input :model-value="totalStock" disabled class="!w-full" />
                                 </el-form-item>
                             </el-col>
                         </el-row>
@@ -532,6 +585,7 @@ const emptyForm = (): GoodsItem => ({
     category1: '',
     category2: '',
     specType: 'single',
+    specGroups: [],
     specs: [emptySpec()],
     price: 0,
     originPrice: 0,
@@ -552,23 +606,93 @@ const emptyForm = (): GoodsItem => ({
 })
 const form = reactive<GoodsItem>(emptyForm())
 
-// 规格处理
+// ===== 规格处理 =====
+// 新增规格值的输入框映射（按规格项 id）
+const newValueMap = reactive<Record<number, string>>({})
+
 const totalStock = computed(() => form.specs.reduce((sum, item) => sum + (item.stock || 0), 0))
+// 汇总价格：单规格取规格值，多规格取最低售价/会员价、最高原价
+const summaryPrice = computed(() =>
+    form.specType === 'single'
+        ? form.specs[0]?.price || 0
+        : form.specs.length ? Math.min(...form.specs.map((s) => s.price)) : 0
+)
+const summaryMember = computed(() =>
+    form.specType === 'single'
+        ? form.specs[0]?.memberPrice || 0
+        : form.specs.length ? Math.min(...form.specs.map((s) => s.memberPrice)) : 0
+)
+const summaryOrigin = computed(() =>
+    form.specType === 'single'
+        ? form.specs[0]?.originPrice || 0
+        : form.specs.length ? Math.max(...form.specs.map((s) => s.originPrice)) : 0
+)
+
 const handleSpecTypeChange = () => {
-    if (form.specType === 'single' && form.specs.length > 1) {
-        // 切回单规格保留第一条
-        form.specs = [form.specs[0]]
-    } else if (form.specType === 'multi' && form.specs.length === 0) {
-        form.specs = [emptySpec()]
+    if (form.specType === 'single') {
+        // 切回单规格：保留第一条 SKU，清空规格项
+        form.specGroups = []
+        form.specs = [form.specs[0] || emptySpec()]
+    } else {
+        // 切到多规格：初始化一个空规格项
+        form.specGroups = [{ id: Date.now(), name: '', values: [] }]
+        form.specs = []
     }
 }
-const addSpec = () => form.specs.push(emptySpec())
-const removeSpec = (index: number) => {
-    if (form.specs.length <= 1) {
-        ElMessage.warning('至少保留一个规格')
+
+// 添加规格项
+const addGroup = () => {
+    form.specGroups.push({ id: Date.now(), name: '', values: [] })
+}
+// 删除规格项
+const removeGroup = (index: number) => {
+    form.specGroups.splice(index, 1)
+    regenerateSkus()
+}
+// 添加规格值
+const addValue = (gIndex: number) => {
+    const group = form.specGroups[gIndex]
+    const val = (newValueMap[group.id] || '').trim()
+    if (!val) {
+        ElMessage.warning('请输入规格值')
         return
     }
-    form.specs.splice(index, 1)
+    if (group.values.includes(val)) {
+        ElMessage.warning('该规格值已存在')
+        return
+    }
+    group.values.push(val)
+    newValueMap[group.id] = ''
+    regenerateSkus()
+}
+// 删除规格值
+const removeValue = (gIndex: number, value: string) => {
+    const group = form.specGroups[gIndex]
+    group.values = group.values.filter((v) => v !== value)
+    regenerateSkus()
+}
+
+// 根据规格项生成 SKU 组合（笛卡尔积），保留已有 SKU 的价格库存
+const regenerateSkus = () => {
+    const validGroups = form.specGroups.filter((g) => g.name.trim() && g.values.length)
+    if (!validGroups.length) {
+        form.specs = []
+        return
+    }
+    // 笛卡尔积
+    const combos = validGroups.reduce<string[][]>(
+        (acc, group) => acc.flatMap((combo) => group.values.map((v) => [...combo, v])),
+        [[]]
+    )
+    // 按组合名称保留旧 SKU 数据
+    const oldMap = new Map(form.specs.map((s) => [s.name, s]))
+    form.specs = combos.map((combo) => {
+        const name = combo.join(' / ')
+        const old = oldMap.get(name)
+        return old
+            ? { ...old, name }
+            : { id: Date.now() + Math.random(), name, price: 0, originPrice: 0, memberPrice: 0, stock: 0 }
+    })
 }
 
 const openAdd = () => {
@@ -914,16 +1038,105 @@ const openDetail = (row: GoodsItem) => {
     border-radius: 6px;
 }
 
-.spec-toolbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 12px;
+.section-title {
+    margin: 4px 0 14px;
+    padding-left: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--el-color-primary);
+    border-left: 3px solid var(--el-color-primary);
 }
 
-.spec-hint {
+.spec-field-label {
+    display: block;
+    margin-bottom: 6px;
     font-size: 12px;
     color: #909399;
+    white-space: nowrap;
+}
+
+.spec-single-row {
+    display: grid;
+    grid-template-columns: 1.4fr repeat(4, 1fr);
+    gap: 14px;
+}
+
+.spec-group-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.spec-group {
+    padding: 12px;
+    background: #fff;
+    border: 1px solid #ebeef5;
+    border-radius: 6px;
+}
+
+.spec-group-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.spec-group-name {
+    width: 220px;
+}
+
+.spec-values {
+    padding-left: 4px;
+}
+
+.spec-value-tags {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    min-height: 24px;
+    margin-bottom: 10px;
+}
+
+.spec-value-empty {
+    font-size: 12px;
+    color: #c0c4cc;
+}
+
+.spec-value-add {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.spec-value-input {
+    width: 180px;
+}
+
+.sku-section {
+    margin-top: 16px;
+}
+
+.sku-title {
+    margin-bottom: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #606266;
+}
+
+.sku-empty {
+    margin-top: 16px;
+    padding: 20px;
+    font-size: 13px;
+    color: #c0c4cc;
+    text-align: center;
+    background: #fff;
+    border: 1px dashed #dcdfe6;
+    border-radius: 6px;
+}
+
+.summary-row {
+    margin-bottom: 4px;
 }
 
 .template-desc {

@@ -7,9 +7,17 @@ export type OnSaleStatus = 'on' | 'off'
 export type DeliveryType = 'express' | 'pickup'
 export type SpecType = 'single' | 'multi' // 单规格 / 多规格
 
+// 规格项：如「颜色」，规格值为 [红色, 蓝色]
+export interface SpecGroup {
+    id: number
+    name: string // 规格项名称，如「颜色」「尺码」
+    values: string[] // 规格值列表
+}
+
+// SKU：规格值组合后生成的每一行
 export interface SpecItem {
     id: number
-    name: string // 规格名称，如「10包/盒」
+    name: string // 规格组合名称，如「红色 / S」
     price: number // 售价
     originPrice: number // 原价
     memberPrice: number // 会员价
@@ -30,12 +38,13 @@ export interface GoodsItem {
     category1: string
     category2: string
     specType: SpecType // 规格类型
-    specs: SpecItem[] // 规格列表（单规格时仅 1 条）
+    specGroups: SpecGroup[] // 规格项（多规格时：颜色/尺码等）
+    specs: SpecItem[] // SKU 列表（单规格时 1 条，多规格时为规格值组合）
     price: number // 售价（单规格取规格值，多规格取最低价）
     originPrice: number // 原价
     memberPrice: number // 会员价
     sold: number // 已售
-    stock: number // 总库存（各规格求和）
+    stock: number // 总库存（各 SKU 求和）
     spec: string // 规格展示文字
     sort: number // 排序值
     tags: string[]
@@ -87,9 +96,12 @@ export const goodsList: GoodsItem[] = [
         category1: '养生保健',
         category2: '足浴包',
         specType: 'multi',
+        specGroups: [
+            { id: 101, name: '规格', values: ['10包/盒', '20包/盒'] }
+        ],
         specs: [
-            { id: 11, name: '10包/盒', price: 48.5, originPrice: 68, memberPrice: 43.5, stock: 98 },
-            { id: 12, name: '20包/盒', price: 88, originPrice: 128, memberPrice: 79, stock: 60 }
+            { id: 111, name: '10包/盒', price: 48.5, originPrice: 68, memberPrice: 43.5, stock: 98 },
+            { id: 112, name: '20包/盒', price: 88, originPrice: 128, memberPrice: 79, stock: 60 }
         ],
         price: 48.5,
         originPrice: 68,
@@ -116,6 +128,7 @@ export const goodsList: GoodsItem[] = [
         category1: '养生保健',
         category2: '热敷用品',
         specType: 'single',
+        specGroups: [],
         specs: [{ id: 21, name: '1个装', price: 88, originPrice: 128, memberPrice: 79, stock: 64 }],
         price: 88,
         originPrice: 128,
@@ -142,16 +155,22 @@ export const goodsList: GoodsItem[] = [
         category1: '健康礼盒',
         category2: '礼盒套装',
         specType: 'multi',
+        specGroups: [
+            { id: 301, name: '规格', values: ['6罐装', '12罐装'] },
+            { id: 302, name: '口味', values: ['清香型', '浓香型'] }
+        ],
         specs: [
-            { id: 31, name: '6罐装', price: 98, originPrice: 138, memberPrice: 88, stock: 20 },
-            { id: 32, name: '12罐装', price: 168, originPrice: 228, memberPrice: 150, stock: 15 }
+            { id: 311, name: '6罐装 / 清香型', price: 98, originPrice: 138, memberPrice: 88, stock: 10 },
+            { id: 312, name: '6罐装 / 浓香型', price: 98, originPrice: 138, memberPrice: 88, stock: 10 },
+            { id: 313, name: '12罐装 / 清香型', price: 168, originPrice: 228, memberPrice: 150, stock: 8 },
+            { id: 314, name: '12罐装 / 浓香型', price: 168, originPrice: 228, memberPrice: 150, stock: 7 }
         ],
         price: 98,
         originPrice: 228,
         memberPrice: 88,
         sold: 92,
         stock: 35,
-        spec: '6罐装、12罐装',
+        spec: '规格/口味 多规格',
         sort: 20,
         tags: ['礼盒', '送礼'],
         onSale: 'on',
@@ -174,6 +193,7 @@ export const goodsList: GoodsItem[] = [
         category1: '康复辅具',
         category2: '护具',
         specType: 'single',
+        specGroups: [],
         specs: [{ id: 41, name: '均码', price: 129, originPrice: 159, memberPrice: 116, stock: 0 }],
         price: 129,
         originPrice: 159,
@@ -200,6 +220,7 @@ export const goodsList: GoodsItem[] = [
         category1: '康复辅具',
         category2: '理疗仪器',
         specType: 'single',
+        specGroups: [],
         specs: [{ id: 51, name: '标准版', price: 398, originPrice: 498, memberPrice: 358, stock: 12 }],
         price: 398,
         originPrice: 498,
