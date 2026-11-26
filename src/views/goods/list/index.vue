@@ -51,14 +51,14 @@
                 <el-table-column label="原价" min-width="90" align="center">
                     <template #default="{ row }"><span class="origin-price">¥{{ money(row.originPrice) }}</span></template>
                 </el-table-column>
-                <el-table-column label="会员价" min-width="90" align="center">
-                    <template #default="{ row }"><span class="member-price">¥{{ money(row.memberPrice) }}</span></template>
-                </el-table-column>
                 <el-table-column prop="sold" label="已售" min-width="80" align="center" />
                 <el-table-column label="库存" min-width="90" align="center">
                     <template #default="{ row }">
                         <span :class="{ 'stock-zero': row.stock === 0 }">{{ row.stock }}</span>
                     </template>
+                </el-table-column>
+                <el-table-column label="重量(kg)" min-width="100" align="center">
+                    <template #default="{ row }">{{ row.weight }}</template>
                 </el-table-column>
                 <el-table-column label="规格" min-width="120" align="center">
                     <template #default="{ row }">
@@ -141,40 +141,40 @@
                                     <el-select v-model="form.tags" multiple allow-create filterable default-first-option placeholder="请输入标签" class="!w-full" />
                                 </el-form-item>
                             </el-col>
+                            <el-col :span="12">
+                                <el-form-item label="排序值">
+                                    <el-input-number v-model="form.sort" :min="0" class="!w-full" />
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="12">
+                                <el-form-item label="售后期限（天）">
+                                    <el-input-number v-model="form.afterSaleDays" :min="0" class="!w-full" />
+                                </el-form-item>
+                            </el-col>
                             <el-col :span="24">
-                        <el-form-item label="商品轮播图">
-                            <div class="image-upload-list">
-                                <div v-for="(img, index) in form.images" :key="index" class="image-item">
-                                    <el-image :src="coverUrl(img)" fit="cover" class="form-image" :preview-src-list="form.images.map(coverUrl)" :initial-index="index" preview-teleported />
-                                    <span v-if="index === 0" class="image-index">主图</span>
-                                    <div class="image-actions">
-                                        <el-upload
-                                            accept=".png,.jpg,.jpeg"
-                                            :auto-upload="false"
-                                            :show-file-list="false"
-                                            :on-change="(file) => replaceFormImage(file, index)"
-                                        >
-                                            <el-button type="primary" link size="small">替换</el-button>
+                                <el-form-item label="商品轮播图">
+                                    <div class="image-upload-list">
+                                        <div v-for="(img, index) in form.images" :key="index" class="image-item">
+                                            <el-image :src="coverUrl(img)" fit="cover" class="form-image" :preview-src-list="form.images.map(coverUrl)" :initial-index="index" preview-teleported />
+                                            <span v-if="index === 0" class="image-index">主图</span>
+                                            <div class="image-actions">
+                                                <el-upload accept=".png,.jpg,.jpeg" :auto-upload="false" :show-file-list="false" :on-change="(file) => replaceFormImage(file, index)">
+                                                    <el-button type="primary" link size="small">替换</el-button>
+                                                </el-upload>
+                                                <el-button type="danger" link size="small" @click="removeFormImage(index)">删除</el-button>
+                                            </div>
+                                        </div>
+                                        <el-upload accept=".png,.jpg,.jpeg" :auto-upload="false" :show-file-list="false" :on-change="addFormImage">
+                                            <div class="image-add">
+                                                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path d="M12 5v14M5 12h14" />
+                                                </svg>
+                                                <span>添加图片</span>
+                                            </div>
                                         </el-upload>
-                                        <el-button type="danger" link size="small" @click="removeFormImage(index)">删除</el-button>
                                     </div>
-                                </div>
-                                <el-upload
-                                    accept=".png,.jpg,.jpeg"
-                                    :auto-upload="false"
-                                    :show-file-list="false"
-                                    :on-change="addFormImage"
-                                >
-                                    <div class="image-add">
-                                        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M12 5v14M5 12h14" />
-                                        </svg>
-                                        <span>添加图片</span>
-                                    </div>
-                                </el-upload>
-                            </div>
-                            <div class="image-hint">支持 PNG、JPG 格式，第一张为主图，可替换或删除</div>
-                        </el-form-item>
+                                    <div class="image-hint">支持 PNG、JPG 格式，第一张为主图，可替换或删除</div>
+                                </el-form-item>
                             </el-col>
                             <el-col :span="24">
                                 <el-form-item label="商品详情">
@@ -193,9 +193,20 @@
                             </el-radio-group>
                         </el-form-item>
 
-                        <!-- 单规格：简洁的一行 -->
+                        <!-- 单规格 -->
                         <div v-if="form.specType === 'single'" class="spec-block">
                             <div class="spec-single-row">
+                                <div class="spec-field">
+                                    <span class="spec-field-label">规格图片</span>
+                                    <el-upload accept=".png,.jpg,.jpeg" :auto-upload="false" :show-file-list="false" :on-change="(file) => uploadSpecImage(file, 0)">
+                                        <img v-if="form.specs[0]?.image" :src="form.specs[0].image" class="spec-image" />
+                                        <div v-else class="spec-image-add">
+                                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M12 5v14M5 12h14" />
+                                            </svg>
+                                        </div>
+                                    </el-upload>
+                                </div>
                                 <div class="spec-field">
                                     <span class="spec-field-label">规格名称</span>
                                     <el-input v-model="form.specs[0].name" placeholder="如：10包/盒" />
@@ -209,8 +220,8 @@
                                     <el-input-number v-model="form.specs[0].originPrice" :min="0" :precision="2" controls-position="right" class="!w-full" />
                                 </div>
                                 <div class="spec-field">
-                                    <span class="spec-field-label">会员价</span>
-                                    <el-input-number v-model="form.specs[0].memberPrice" :min="0" :precision="2" controls-position="right" class="!w-full" />
+                                    <span class="spec-field-label">重量(kg)</span>
+                                    <el-input-number v-model="form.specs[0].weight" :min="0" :precision="2" controls-position="right" class="!w-full" />
                                 </div>
                                 <div class="spec-field">
                                     <span class="spec-field-label">库存</span>
@@ -219,42 +230,28 @@
                             </div>
                         </div>
 
-                        <!-- 多规格：规格项 + 规格值，组合生成 SKU -->
+                        <!-- 多规格：规格项 + 规格值，交叉生成 SKU -->
                         <div v-else class="spec-block">
                             <div class="spec-group-list">
                                 <div v-for="(group, gIndex) in form.specGroups" :key="group.id" class="spec-group">
                                     <div class="spec-group-head">
                                         <span class="spec-field-label">规格项 {{ gIndex + 1 }}</span>
-                                        <el-input
-                                            v-model="group.name"
-                                            size="small"
-                                            class="spec-group-name"
-                                            placeholder="如：颜色 / 尺码"
-                                            @change="regenerateSkus"
-                                        />
+                                        <el-input v-model="group.name" size="small" class="spec-group-name" placeholder="如：颜色 / 尺码" @change="regenerateSkus" />
                                         <el-button type="danger" link size="small" @click="removeGroup(gIndex)">删除规格项</el-button>
                                     </div>
                                     <div class="spec-values">
                                         <div class="spec-value-tags">
-                                            <el-tag
-                                                v-for="value in group.values"
-                                                :key="value"
-                                                closable
-                                                size="small"
-                                                @close="removeValue(gIndex, value)"
-                                            >
-                                                {{ value }}
-                                            </el-tag>
+                                            <div v-for="value in group.values" :key="value" class="spec-value-tag">
+                                                <el-tag closable size="small" @close="removeValue(gIndex, value)">{{ value }}</el-tag>
+                                                <el-upload accept=".png,.jpg,.jpeg" :auto-upload="false" :show-file-list="false" :on-change="(file) => uploadGroupValueImage(file, value)">
+                                                    <img v-if="groupValueImages[value]" :src="groupValueImages[value]" class="spec-value-image" />
+                                                    <span v-else class="spec-value-image-add">+</span>
+                                                </el-upload>
+                                            </div>
                                             <span v-if="!group.values.length" class="spec-value-empty">暂无规格值，请在下方添加</span>
                                         </div>
                                         <div class="spec-value-add">
-                                            <el-input
-                                                v-model="newValueMap[group.id]"
-                                                size="small"
-                                                class="spec-value-input"
-                                                placeholder="输入规格值后回车"
-                                                @keyup.enter="addValue(gIndex)"
-                                            />
+                                            <el-input v-model="newValueMap[group.id]" size="small" class="spec-value-input" placeholder="输入规格值后回车" @keyup.enter="addValue(gIndex)" />
                                             <el-button size="small" type="primary" plain @click="addValue(gIndex)">添加</el-button>
                                         </div>
                                     </div>
@@ -266,16 +263,18 @@
                             <div v-if="form.specs.length" class="sku-section">
                                 <div class="sku-title">
                                     规格组合（{{ form.specs.length }} 个 SKU）
-                                    <span class="sku-title-tip">各规格项值交叉生成，每个组合独立设置价格与库存</span>
+                                    <span class="sku-title-tip">各规格项值交叉生成，每个组合独立设置价格、图片与库存</span>
                                 </div>
                                 <el-table :data="form.specs" border size="small" max-height="320">
-                                    <el-table-column
-                                        v-for="(group, gi) in activeGroups"
-                                        :key="group.id"
-                                        :label="group.displayName"
-                                        min-width="100"
-                                        align="center"
-                                    >
+                                    <el-table-column label="规格图片" width="90" align="center">
+                                        <template #default="{ row }">
+                                            <el-upload accept=".png,.jpg,.jpeg" :auto-upload="false" :show-file-list="false" :on-change="(file) => uploadSpecImage(file, row.id)">
+                                                <img v-if="row.image" :src="row.image" class="spec-image" />
+                                                <div v-else class="spec-image-add">+</div>
+                                            </el-upload>
+                                        </template>
+                                    </el-table-column>
+                                    <el-table-column v-for="(group, gi) in activeGroups" :key="group.id" :label="group.displayName" min-width="100" align="center">
                                         <template #default="{ row }">
                                             <span>{{ row.values?.[gi] || '-' }}</span>
                                         </template>
@@ -290,9 +289,9 @@
                                             <el-input-number v-model="row.originPrice" :min="0" :precision="2" size="small" controls-position="right" class="!w-full" />
                                         </template>
                                     </el-table-column>
-                                    <el-table-column label="会员价" min-width="125" align="center">
+                                    <el-table-column label="重量(kg)" min-width="115" align="center">
                                         <template #default="{ row }">
-                                            <el-input-number v-model="row.memberPrice" :min="0" :precision="2" size="small" controls-position="right" class="!w-full" />
+                                            <el-input-number v-model="row.weight" :min="0" :precision="2" size="small" controls-position="right" class="!w-full" />
                                         </template>
                                     </el-table-column>
                                     <el-table-column label="库存" min-width="110" align="center">
@@ -304,42 +303,6 @@
                             </div>
                             <div v-else class="sku-empty">请添加规格项并填写规格值，系统会自动交叉生成规格组合</div>
                         </div>
-
-                        <div class="section-title mt-4">价格与库存汇总</div>
-                        <el-row :gutter="16" class="summary-row">
-                            <el-col :span="6">
-                                <el-form-item label="售价">
-                                    <el-input :model-value="`¥${money(summaryPrice)}`" disabled class="!w-full" />
-                                </el-form-item>
-                            </el-col>
-                            <el-col :span="6">
-                                <el-form-item label="原价">
-                                    <el-input :model-value="`¥${money(summaryOrigin)}`" disabled class="!w-full" />
-                                </el-form-item>
-                            </el-col>
-                            <el-col :span="6">
-                                <el-form-item label="会员价">
-                                    <el-input :model-value="`¥${money(summaryMember)}`" disabled class="!w-full" />
-                                </el-form-item>
-                            </el-col>
-                            <el-col :span="6">
-                                <el-form-item label="总库存">
-                                    <el-input :model-value="totalStock" disabled class="!w-full" />
-                                </el-form-item>
-                            </el-col>
-                        </el-row>
-                        <el-row :gutter="16">
-                            <el-col :span="12">
-                                <el-form-item label="排序值">
-                                    <el-input-number v-model="form.sort" :min="0" class="!w-full" />
-                                </el-form-item>
-                            </el-col>
-                            <el-col :span="12">
-                                <el-form-item label="售后期限（天）">
-                                    <el-input-number v-model="form.afterSaleDays" :min="0" class="!w-full" />
-                                </el-form-item>
-                            </el-col>
-                        </el-row>
                     </el-tab-pane>
 
                     <el-tab-pane label="配送与服务" name="delivery">
@@ -355,12 +318,7 @@
                             <el-col v-if="form.deliveryType === 'express'" :span="12">
                                 <el-form-item label="运费模板">
                                     <el-select v-model="form.freightTemplate" placeholder="请选择运费模板" class="!w-full">
-                                        <el-option
-                                            v-for="item in freightTemplates"
-                                            :key="item.name"
-                                            :label="item.name"
-                                            :value="item.name"
-                                        />
+                                        <el-option v-for="item in freightTemplates" :key="item.name" :label="item.name" :value="item.name" />
                                     </el-select>
                                 </el-form-item>
                             </el-col>
@@ -390,12 +348,7 @@
                                 <el-input-number v-model="coupon.threshold" :min="0" :precision="2" class="coupon-threshold" />
                                 <span class="coupon-label">元，发放</span>
                                 <el-select v-model="coupon.couponId" placeholder="请选择优惠券" class="coupon-select">
-                                    <el-option
-                                        v-for="item in couponOptions"
-                                        :key="item.id"
-                                        :label="item.name"
-                                        :value="item.id"
-                                    />
+                                    <el-option v-for="item in couponOptions" :key="item.id" :label="item.name" :value="item.id" />
                                 </el-select>
                                 <el-button type="danger" link @click="form.giftCoupons.splice(index, 1)">删除</el-button>
                             </div>
@@ -435,9 +388,9 @@
                         <div class="info-item"><span class="info-label">一级分类</span><span class="info-value">{{ currentItem.category1 }}</span></div>
                         <div class="info-item"><span class="info-label">二级分类</span><span class="info-value">{{ currentItem.category2 }}</span></div>
                         <div class="info-item"><span class="info-label">售价/原价</span><span class="info-value">¥{{ money(currentItem.price) }} / ¥{{ money(currentItem.originPrice) }}</span></div>
-                        <div class="info-item"><span class="info-label">会员价</span><span class="info-value">¥{{ money(currentItem.memberPrice) }}</span></div>
                         <div class="info-item"><span class="info-label">已售</span><span class="info-value">{{ currentItem.sold }}</span></div>
                         <div class="info-item"><span class="info-label">总库存</span><span class="info-value">{{ currentItem.stock }}</span></div>
+                        <div class="info-item"><span class="info-label">总重量(kg)</span><span class="info-value">{{ currentItem.weight }}</span></div>
                         <div class="info-item"><span class="info-label">排序值</span><span class="info-value">{{ currentItem.sort }}</span></div>
                         <div class="info-item"><span class="info-label">售后期限</span><span class="info-value">{{ currentItem.afterSaleDays }} 天</span></div>
                         <div class="info-item"><span class="info-label">上架状态</span><span class="info-value">{{ currentItem.onSale === 'on' ? '上架' : '下架' }}</span></div>
@@ -449,21 +402,16 @@
                 <el-card class="info-card mt-4" shadow="never">
                     <template #header><span class="header-title">规格（{{ currentItem.specType === 'multi' ? '多规格' : '单规格' }}）</span></template>
                     <el-table :data="currentItem.specs" border size="small">
-                        <el-table-column
-                            v-if="currentItem.specType === 'single'"
-                            label="规格"
-                            min-width="140"
-                            align="center"
-                        >
+                        <el-table-column label="规格图片" width="90" align="center">
+                            <template #default="{ row }">
+                                <el-image v-if="row.image" :src="row.image" fit="cover" class="spec-image" :preview-src-list="[row.image]" preview-teleported />
+                                <span v-else class="cell-sub">-</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column v-if="currentItem.specType === 'single'" label="规格" min-width="120" align="center">
                             <template #default="{ row }">{{ row.name }}</template>
                         </el-table-column>
-                        <el-table-column
-                            v-for="(group, gi) in currentItem.specGroups"
-                            :key="group.id"
-                            :label="group.name || `规格项${gi + 1}`"
-                            min-width="100"
-                            align="center"
-                        >
+                        <el-table-column v-for="(group, gi) in currentItem.specGroups" :key="group.id" :label="group.name || `规格项${gi + 1}`" min-width="100" align="center">
                             <template #default="{ row }">{{ row.values?.[gi] || '-' }}</template>
                         </el-table-column>
                         <el-table-column label="售价" min-width="100" align="center">
@@ -472,8 +420,8 @@
                         <el-table-column label="原价" min-width="100" align="center">
                             <template #default="{ row }">¥{{ money(row.originPrice) }}</template>
                         </el-table-column>
-                        <el-table-column label="会员价" min-width="100" align="center">
-                            <template #default="{ row }">¥{{ money(row.memberPrice) }}</template>
+                        <el-table-column label="重量(kg)" min-width="100" align="center">
+                            <template #default="{ row }">{{ row.weight }}</template>
                         </el-table-column>
                         <el-table-column prop="stock" label="库存" min-width="90" align="center" />
                     </el-table>
@@ -573,25 +521,26 @@ const resetSearch = () => {
 const exportList = () => {
     exportCsv(
         '商品列表',
-        ['商品名称', '一级分类', '二级分类', '售价', '原价', '会员价', '已售', '库存', '规格', '排序值', '商品标签', '上架状态'],
+        ['商品名称', '一级分类', '二级分类', '售价', '原价', '已售', '库存', '重量(kg)', '规格', '排序值', '售后期限', '商品标签', '上架状态'],
         filteredList.value.map((row) => [
             row.name,
             row.category1,
             row.category2,
             row.price,
             row.originPrice,
-            row.memberPrice,
             row.sold,
             row.stock,
+            row.weight,
             row.spec,
             row.sort,
+            `${row.afterSaleDays}天`,
             row.tags.join('、'),
             row.onSale === 'on' ? '上架' : '下架'
         ])
     )
 }
 
-// 新增/编辑表单
+// ===== 表单 =====
 const formVisible = ref(false)
 const formTab = ref('base')
 const isEdit = ref(false)
@@ -601,7 +550,7 @@ const handleFormCategory1Change = () => {
     form.category2 = ''
 }
 
-const emptySpec = (): SpecItem => ({ id: Date.now(), name: '', values: [], price: 0, originPrice: 0, memberPrice: 0, stock: 0 })
+const emptySpec = (): SpecItem => ({ id: Date.now(), name: '', values: [], image: '', price: 0, originPrice: 0, weight: 0, stock: 0 })
 const emptyForm = (): GoodsItem => ({
     id: 0,
     mainImage: '',
@@ -614,9 +563,9 @@ const emptyForm = (): GoodsItem => ({
     specs: [emptySpec()],
     price: 0,
     originPrice: 0,
-    memberPrice: 0,
     sold: 0,
     stock: 0,
+    weight: 0,
     spec: '',
     sort: 0,
     tags: [],
@@ -631,50 +580,89 @@ const emptyForm = (): GoodsItem => ({
 })
 const form = reactive<GoodsItem>(emptyForm())
 
-// ===== 规格处理 =====
-// 新增规格值的输入框映射（按规格项 id）
-const newValueMap = reactive<Record<number, string>>({})
+// 读取本地图片为 base64
+const readImage = (file: File, callback: (data: string) => void) => {
+    if (!['image/png', 'image/jpeg'].includes(file.type)) {
+        ElMessage.error('图片仅支持 PNG、JPG 格式')
+        return
+    }
+    if (file.size > 2 * 1024 * 1024) {
+        ElMessage.error('图片大小不能超过 2MB')
+        return
+    }
+    const reader = new FileReader()
+    reader.onload = (e) => callback(String(e.target?.result || ''))
+    reader.readAsDataURL(file)
+}
 
+// 轮播图
+const addFormImage = (uploadFile: { raw?: File }) => {
+    const file = uploadFile.raw
+    if (!file) return
+    readImage(file, (data) => {
+        form.images.push(data)
+        if (!form.mainImage) form.mainImage = data
+    })
+}
+const replaceFormImage = (uploadFile: { raw?: File }, index: number) => {
+    const file = uploadFile.raw
+    if (!file) return
+    readImage(file, (data) => {
+        form.images[index] = data
+        if (index === 0) form.mainImage = data
+    })
+}
+const removeFormImage = (index: number) => {
+    form.images.splice(index, 1)
+    form.mainImage = form.images[0] || ''
+}
+
+// 规格图片上传
+const uploadSpecImage = (uploadFile: { raw?: File }, specId: number) => {
+    const file = uploadFile.raw
+    if (!file) return
+    readImage(file, (data) => {
+        const spec = form.specs.find((s) => s.id === specId)
+        if (spec) spec.image = data
+    })
+}
+
+// 规格值图片映射（规格值 -> 图片）
+const groupValueImages = reactive<Record<string, string>>({})
+const uploadGroupValueImage = (uploadFile: { raw?: File }, value: string) => {
+    const file = uploadFile.raw
+    if (!file) return
+    readImage(file, (data) => {
+        groupValueImages[value] = data
+        // 同步到包含该规格值的 SKU
+        form.specs.forEach((s) => {
+            if (s.values.includes(value)) s.image = data
+        })
+    })
+}
+
+// ===== 规格处理 =====
+const newValueMap = reactive<Record<number, string>>({})
 const totalStock = computed(() => form.specs.reduce((sum, item) => sum + (item.stock || 0), 0))
-// 汇总价格：单规格取规格值，多规格取最低售价/会员价、最高原价
-const summaryPrice = computed(() =>
-    form.specType === 'single'
-        ? form.specs[0]?.price || 0
-        : form.specs.length ? Math.min(...form.specs.map((s) => s.price)) : 0
-)
-const summaryMember = computed(() =>
-    form.specType === 'single'
-        ? form.specs[0]?.memberPrice || 0
-        : form.specs.length ? Math.min(...form.specs.map((s) => s.memberPrice)) : 0
-)
-const summaryOrigin = computed(() =>
-    form.specType === 'single'
-        ? form.specs[0]?.originPrice || 0
-        : form.specs.length ? Math.max(...form.specs.map((s) => s.originPrice)) : 0
-)
+const totalWeight = computed(() => form.specs.reduce((sum, item) => sum + (item.weight || 0), 0))
 
 const handleSpecTypeChange = () => {
     if (form.specType === 'single') {
-        // 切回单规格：保留第一条 SKU，清空规格项
         form.specGroups = []
         form.specs = [form.specs[0] || emptySpec()]
     } else {
-        // 切到多规格：初始化一个空规格项
         form.specGroups = [{ id: Date.now(), name: '', values: [] }]
         form.specs = []
     }
 }
 
-// 添加规格项
 const addGroup = () => {
     form.specGroups.push({ id: Date.now(), name: '', values: [] })
 }
-// 删除规格项
 const removeGroup = (index: number) => {
     form.specGroups.splice(index, 1)
     regenerateSkus()
 }
-// 添加规格值
 const addValue = (gIndex: number) => {
     const group = form.specGroups[gIndex]
     const val = (newValueMap[group.id] || '').trim()
@@ -690,14 +678,13 @@ const addValue = (gIndex: number) => {
     newValueMap[group.id] = ''
     regenerateSkus()
 }
-// 删除规格值
 const removeValue = (gIndex: number, value: string) => {
     const group = form.specGroups[gIndex]
     group.values = group.values.filter((v) => v !== value)
     regenerateSkus()
 }
 
-// 有效规格项：只要有规格值即可参与组合（名称为空时用默认名，不影响交叉生成）
+// 有效规格项：只要有规格值即可参与组合（名称为空时用默认名）
 const activeGroups = computed(() =>
     form.specGroups.filter((g) => g.values.length).map((g, i) => ({
         ...g,
@@ -705,32 +692,33 @@ const activeGroups = computed(() =>
     }))
 )
 
-// 根据规格项生成 SKU 组合（笛卡尔积），保留已有 SKU 的价格库存
+// 笛卡尔积交叉生成 SKU，保留已有数据
 const regenerateSkus = () => {
     const groups = activeGroups.value
     if (!groups.length) {
         form.specs = []
         return
     }
-    // 笛卡尔积：如尺码[L,M,S] × 颜色[黑,白] = L/黑、L/白、M/黑、M/白、S/黑、S/白
     const combos = groups.reduce<string[][]>(
         (acc, group) => acc.flatMap((combo) => group.values.map((v) => [...combo, v])),
         [[]]
     )
-    // 按组合名称保留旧 SKU 数据
     const oldMap = new Map(form.specs.map((s) => [s.name, s]))
     form.specs = combos.map((combo) => {
         const name = combo.join(' / ')
         const old = oldMap.get(name)
+        // 取该组合中任一规格值的图片
+        const img = combo.map((v) => groupValueImages[v]).find(Boolean) || ''
         return old
-            ? { ...old, name, values: combo }
+            ? { ...old, name, values: combo, image: old.image || img }
             : {
                   id: Date.now() + Math.random(),
                   name,
                   values: combo,
+                  image: img,
                   price: 0,
                   originPrice: 0,
-                  memberPrice: 0,
+                  weight: 0,
                   stock: 0
               }
     })
@@ -741,6 +729,7 @@ const openAdd = () => {
     editingId.value = 0
     formTab.value = 'base'
     Object.assign(form, emptyForm())
+    Object.keys(groupValueImages).forEach((k) => delete groupValueImages[k])
     formVisible.value = true
 }
 const openEdit = (row: GoodsItem) => {
@@ -748,48 +737,19 @@ const openEdit = (row: GoodsItem) => {
     editingId.value = row.id
     formTab.value = 'base'
     Object.assign(form, cloneDeep(row))
+    // 恢复规格值图片映射
+    Object.keys(groupValueImages).forEach((k) => delete groupValueImages[k])
+    row.specGroups.forEach((g) => g.values.forEach((v) => {
+        const spec = row.specs.find((s) => s.values.includes(v))
+        if (spec?.image) groupValueImages[v] = spec.image
+    }))
     formVisible.value = true
 }
-// 读取本地图片为 base64
-const readImage = (file: File, callback: (data: string) => void) => {
-    if (!['image/png', 'image/jpeg'].includes(file.type)) {
-        ElMessage.error('图片仅支持 PNG、JPG 格式')
-        return
-    }
-    if (file.size > 2 * 1024 * 1024) {
-        ElMessage.error('图片大小不能超过 2MB')
-        return
-    }
-    const reader = new FileReader()
-    reader.onload = (e) => callback(String(e.target?.result || ''))
-    reader.readAsDataURL(file)
-}
-// 添加图片
-const addFormImage = (uploadFile: { raw?: File }) => {
-    const file = uploadFile.raw
-    if (!file) return
-    readImage(file, (data) => {
-        form.images.push(data)
-        if (!form.mainImage) form.mainImage = data
-    })
-}
-// 替换图片
-const replaceFormImage = (uploadFile: { raw?: File }, index: number) => {
-    const file = uploadFile.raw
-    if (!file) return
-    readImage(file, (data) => {
-        form.images[index] = data
-        if (index === 0) form.mainImage = data
-    })
-}
-// 删除图片
-const removeFormImage = (index: number) => {
-    form.images.splice(index, 1)
-    form.mainImage = form.images[0] || ''
-}
+
 const addCoupon = () => {
     form.giftCoupons.push({ id: Date.now(), threshold: 0, couponId: '' })
 }
+
 const submitForm = () => {
     if (!form.name.trim()) {
         ElMessage.warning('请输入商品名称')
@@ -812,18 +772,16 @@ const submitForm = () => {
         return
     }
 
-    // 由规格汇总价格与库存
     const first = form.specs[0]
     const minPrice = Math.min(...form.specs.map((s) => s.price))
-    const minMember = Math.min(...form.specs.map((s) => s.memberPrice))
     const maxOrigin = Math.max(...form.specs.map((s) => s.originPrice))
     const payload: GoodsItem = {
         ...cloneDeep(form),
         price: form.specType === 'single' ? first.price : minPrice,
-        memberPrice: form.specType === 'single' ? first.memberPrice : minMember,
         originPrice: form.specType === 'single' ? first.originPrice : maxOrigin,
         stock: totalStock.value,
-        spec: form.specs.map((s) => s.name).join('、'),
+        weight: totalWeight.value,
+        spec: form.specType === 'single' ? first.name : form.specs.map((s) => s.name).join('、'),
         mainImage: form.mainImage || form.images[0]
     }
     if (isEdit.value) {
@@ -837,7 +795,7 @@ const submitForm = () => {
     formVisible.value = false
 }
 
-// 上下架（二次确认）
+// 上下架
 const toggleSale = (row: GoodsItem) => {
     const target = row.onSale === 'on' ? 'off' : 'on'
     const isOn = target === 'on'
@@ -859,11 +817,7 @@ const toggleSale = (row: GoodsItem) => {
 
 // 删除 / 回收站
 const deleteGoods = (row: GoodsItem) => {
-    ElMessageBox.confirm(
-        `确认删除商品「${row.name}」？删除后可在回收站恢复或彻底删除。`,
-        '删除二次确认',
-        { type: 'warning' }
-    )
+    ElMessageBox.confirm(`确认删除商品「${row.name}」？删除后可在回收站恢复或彻底删除。`, '删除二次确认', { type: 'warning' })
         .then(() => {
             row.deleted = true
             ElMessage.success('商品已移入回收站')
@@ -987,11 +941,6 @@ const openDetail = (row: GoodsItem) => {
     text-decoration: line-through;
 }
 
-.member-price {
-    font-weight: 600;
-    color: #e6a23c;
-}
-
 .stock-zero {
     color: #f56c6c;
 }
@@ -1072,13 +1021,6 @@ const openDetail = (row: GoodsItem) => {
     color: #909399;
 }
 
-.spec-block {
-    padding: 12px;
-    background: #fafafa;
-    border: 1px solid #ebeef5;
-    border-radius: 6px;
-}
-
 .section-title {
     margin: 4px 0 14px;
     padding-left: 10px;
@@ -1096,10 +1038,42 @@ const openDetail = (row: GoodsItem) => {
     white-space: nowrap;
 }
 
+.spec-block {
+    padding: 12px;
+    background: #fafafa;
+    border: 1px solid #ebeef5;
+    border-radius: 6px;
+}
+
 .spec-single-row {
     display: grid;
-    grid-template-columns: 1.4fr repeat(4, 1fr);
-    gap: 14px;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 12px;
+}
+
+.spec-image,
+.spec-image-add {
+    width: 56px;
+    height: 56px;
+    border: 1px solid #ebeef5;
+    border-radius: 4px;
+    object-fit: cover;
+}
+
+.spec-image-add {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    color: #a8abb2;
+    background: #fafafa;
+    border-style: dashed;
+    cursor: pointer;
+
+    &:hover {
+        color: var(--el-color-primary);
+        border-color: var(--el-color-primary);
+    }
 }
 
 .spec-group-list {
@@ -1134,9 +1108,35 @@ const openDetail = (row: GoodsItem) => {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
     min-height: 24px;
     margin-bottom: 10px;
+}
+
+.spec-value-tag {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.spec-value-image,
+.spec-value-image-add {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    font-size: 14px;
+    color: #a8abb2;
+    border: 1px dashed #dcdfe6;
+    border-radius: 4px;
+    object-fit: cover;
+    cursor: pointer;
+
+    &:hover {
+        color: var(--el-color-primary);
+        border-color: var(--el-color-primary);
+    }
 }
 
 .spec-value-empty {
@@ -1165,6 +1165,13 @@ const openDetail = (row: GoodsItem) => {
     color: #606266;
 }
 
+.sku-title-tip {
+    margin-left: 10px;
+    font-size: 12px;
+    font-weight: 400;
+    color: #909399;
+}
+
 .sku-empty {
     margin-top: 16px;
     padding: 20px;
@@ -1174,10 +1181,6 @@ const openDetail = (row: GoodsItem) => {
     background: #fff;
     border: 1px dashed #dcdfe6;
     border-radius: 6px;
-}
-
-.summary-row {
-    margin-bottom: 4px;
 }
 
 .template-desc {
