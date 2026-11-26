@@ -338,8 +338,10 @@
 
                     <el-tab-pane label="购买送券" name="coupon">
                         <el-form-item label="参与分销">
-                            <el-switch v-model="form.joinDistribution" active-text="是" inactive-text="否" />
-                            <div class="form-hint">开启后该商品参与分销，推广可获得佣金</div>
+                            <div class="switch-with-hint">
+                                <el-switch v-model="form.joinDistribution" />
+                                <div class="form-hint dist-hint">开启后该商品参与分销，推广可获得佣金</div>
+                            </div>
                         </el-form-item>
                         <div class="coupon-tip">购买指定商品满对应金额后发放优惠券，优惠券仅可选择「购买赠送」发放类型（如满1000发券A、满2000发券B）</div>
                         <div class="coupon-list">
@@ -1184,6 +1186,19 @@ const openDetail = (row: GoodsItem) => {
     border-radius: 6px;
 }
 
+
+.switch-with-hint {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+}
+
+.dist-hint {
+    font-size: 11px;
+    line-height: 1.5;
+    color: #909399;
+}
 
 .coupon-tip {
     margin-bottom: 14px;

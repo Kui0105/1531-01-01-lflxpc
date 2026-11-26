@@ -31,7 +31,7 @@
                     <template #default="{ row }"><span class="rate">{{ row.commissionRate }}%</span></template>
                 </el-table-column>
                 <el-table-column label="积分返利比例" min-width="130" align="center">
-                    <template #default="{ row }">{{ row.pointRate }}%</template>
+                    <template #default="{ row }">{{ row.id === DEFAULT_LEVEL_ID ? `${row.pointRate}%` : '-' }}</template>
                 </el-table-column>
                 <el-table-column label="状态" min-width="100" align="center">
                     <template #default="{ row }">
@@ -46,6 +46,7 @@
                         <el-button type="primary" link size="small" @click="openEdit(row)">编辑</el-button>
                         <el-button v-if="row.status === 'on'" type="warning" link size="small" @click="toggleStatus(row)">停用</el-button>
                         <el-button v-else type="success" link size="small" @click="toggleStatus(row)">启用</el-button>
+                        <el-button v-if="row.id !== DEFAULT_LEVEL_ID" type="danger" link size="small" @click="deleteLevel(row)">删除</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -94,7 +95,7 @@
                     <el-input-number v-model="form.commissionRate" :min="0" :max="100" :precision="1" class="!w-full" />
                     <div class="form-hint">按订单实付金额 × 此比例计算佣金；订单售后退款则返利失效</div>
                 </el-form-item>
-                <el-form-item label="积分返利比例" required>
+                <el-form-item v-if="isEdit && form.id === DEFAULT_LEVEL_ID" label="积分返利比例" required>
                     <el-input-number v-model="form.pointRate" :min="0" :max="100" :precision="1" class="!w-full" />
                     <div class="form-hint">按订单实付金额 × 此比例计算推广积分</div>
                 </el-form-item>
@@ -120,7 +121,7 @@ import { cloneDeep } from 'lodash-es'
 
 import { distributionList } from '@/views/distribution/list/data'
 
-import { distributionLevels, type DistributionLevelItem } from './data'
+import { DEFAULT_LEVEL_ID, distributionLevels, type DistributionLevelItem } from './data'
 
 // 按排序值降序（数字越大越靠前）
 const sortedList = computed(() => [...distributionLevels].sort((a, b) => b.sort - a.sort))
@@ -195,6 +196,20 @@ const submitForm = () => {
         ElMessage.success('分销等级已新增')
     }
     formVisible.value = false
+}
+
+const deleteLevel = (row: DistributionLevelItem) => {
+    if (row.id === DEFAULT_LEVEL_ID) {
+        ElMessage.warning('默认等级不可删除')
+        return
+    }
+    ElMessageBox.confirm(`确认删除分销等级「${row.name}」？删除后不可恢复。`, '删除二次确认', { type: 'warning' })
+        .then(() => {
+            const index = distributionLevels.findIndex((item) => item.id === row.id)
+            if (index > -1) distributionLevels.splice(index, 1)
+            ElMessage.success('分销等级已删除')
+        })
+        .catch(() => {})
 }
 
 const toggleStatus = (row: DistributionLevelItem) => {

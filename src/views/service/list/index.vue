@@ -280,8 +280,10 @@
                     </el-col>
                     <el-col :span="24">
                         <el-form-item label="参与分销">
-                            <el-switch v-model="form.joinDistribution" active-text="是" inactive-text="否" />
-                            <div class="form-hint">开启后该服务参与分销，推广可获得佣金</div>
+                            <div class="switch-with-hint">
+                                <el-switch v-model="form.joinDistribution" />
+                                <div class="form-hint dist-hint">开启后该服务参与分销，推广可获得佣金</div>
+                            </div>
                         </el-form-item>
                     </el-col>
                     <el-col :span="24">
@@ -851,6 +853,19 @@ const permanentDelete = (row: ServiceItem) => {
 .info-value {
     font-size: 14px;
     color: #303133;
+}
+
+.switch-with-hint {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+}
+
+.dist-hint {
+    font-size: 11px;
+    line-height: 1.5;
+    color: #909399;
 }
 
 .review-content {

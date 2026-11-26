@@ -1,5 +1,21 @@
 # 更新日志
 
+## v0.23.1 (2026-11-26)
+
+### 本次更新
+
+- 服务列表、商品列表的「参与分销」开关去掉「是/否」文字，说明文字缩小（11px）并置于开关下方
+- 分销等级页调整：
+  - 增加删除按钮（二次确认后删除），默认等级（第一个）不可删除
+  - 积分返利比例仅默认等级显示与可编辑，其他等级列表显示「-」、弹窗不展示该字段
+  - 默认等级设为排序第一（一级分销），新增 DEFAULT_LEVEL_ID 常量
+
+### 说明
+
+- 修改文件：`src/views/service/list/index.vue`、`src/views/goods/list/index.vue`、`src/views/distribution/level/{index.vue,data.ts}`，以及版本文件
+- 验证：类型检查通过（仅保留既有历史报错，新增代码无报错），四个页面编译均返回 HTTP 200
+- 预览：http://localhost:5173/admin/distribution/level 、http://localhost:5173/admin/service/list 、http://localhost:5173/admin/goods/list
+
 ## v0.23.0 (2026-11-26)
 
 ### 本次更新
