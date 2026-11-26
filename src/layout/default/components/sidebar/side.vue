@@ -16,7 +16,7 @@
 <script setup lang="ts">
 import type { RouteRecordRaw } from 'vue-router'
 
-import { APPROISE_ROUTE, COMPLAINT_ROUTE, ORDER_ROUTE, SERVICE_ROUTE } from '@/router/routes'
+import { APPROISE_ROUTE, COMPLAINT_ROUTE, GOODS_ROUTE, ORDER_ROUTE, SERVICE_ROUTE } from '@/router/routes'
 import useAppStore from '@/stores/modules/app'
 import useSettingStore from '@/stores/modules/setting'
 import useUserStore from '@/stores/modules/user'
@@ -123,6 +123,24 @@ const routes = computed(() => {
         const orderIndex = list.findIndex((item) => item.path === ORDER_ROUTE.path)
         const insertAt = orderIndex >= 0 ? orderIndex + 1 : list.length
         list.splice(insertAt, 0, SERVICE_ROUTE)
+    }
+
+    // 静态注入「商品管理」主导航（商品列表/商品分类）到服务管理下方
+    const goodsParent = list.find((item) => item.path === GOODS_ROUTE.path)
+    if (goodsParent) {
+        const existingPaths = new Set(goodsParent.children?.map((child) => child.path) || [])
+        const missingChildren = (GOODS_ROUTE.children || []).filter(
+            (child) => !existingPaths.has(child.path)
+        )
+        if (missingChildren.length) {
+            goodsParent.children = [...(goodsParent.children || []), ...missingChildren]
+        }
+    } else if (
+        !list.some((item) => item.children?.some((child) => child.path?.includes('goods/list')))
+    ) {
+        const serviceIndex = list.findIndex((item) => item.path === SERVICE_ROUTE.path)
+        const insertAt = serviceIndex >= 0 ? serviceIndex + 1 : list.length
+        list.splice(insertAt, 0, GOODS_ROUTE)
     }
     return list
 })

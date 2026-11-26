@@ -156,11 +156,43 @@ export const SERVICE_ROUTE: RouteRecordRaw = {
     ]
 }
 
+// 商品管理导航（静态注入到服务管理下方）
+export const GOODS_ROUTE: RouteRecordRaw = {
+    path: '/goods',
+    name: Symbol('admin-goods'),
+    component: LAYOUT,
+    meta: {
+        title: '商品管理',
+        icon: 'el-icon-Goods'
+    },
+    children: [
+        {
+            path: 'list',
+            name: Symbol('admin-goods-list'),
+            component: () => import('@/views/goods/list/index.vue'),
+            meta: {
+                title: '商品列表',
+                icon: 'el-icon-List'
+            }
+        },
+        {
+            path: 'category',
+            name: Symbol('admin-goods-category'),
+            component: () => import('@/views/goods/category/index.vue'),
+            meta: {
+                title: '商品分类',
+                icon: 'el-icon-FolderOpened'
+            }
+        }
+    ]
+}
+
 export const constantRoutes: Array<RouteRecordRaw> = [
     APPROISE_ROUTE,
     COMPLAINT_ROUTE,
     ORDER_ROUTE,
     SERVICE_ROUTE,
+    GOODS_ROUTE,
     {
         path: '/consumer/lists/detail',
         name: Symbol('admin-consumer-detail'),
