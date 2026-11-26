@@ -8,6 +8,12 @@
                 </div>
             </template>
             <el-table :data="sortedList" style="width: 100%" :cell-style="{ padding: '12px 0' }">
+                <el-table-column label="分类名称" min-width="160" align="center">
+                    <template #default="{ row }">
+                        <span :class="{ 'disabled-name': !row.enabled }">{{ row.name }}</span>
+                        <el-tag v-if="row.level === 1" size="small" effect="plain" class="ml-1">一级</el-tag>
+                    </template>
+                </el-table-column>
                 <el-table-column label="分类图标" min-width="100" align="center">
                     <template #default="{ row }">
                         <el-image
@@ -19,12 +25,6 @@
                             preview-teleported
                         />
                         <span v-else class="cell-sub">-</span>
-                    </template>
-                </el-table-column>
-                <el-table-column label="分类名称" min-width="160" align="center">
-                    <template #default="{ row }">
-                        <span :class="{ 'disabled-name': !row.enabled }">{{ row.name }}</span>
-                        <el-tag v-if="row.level === 1" size="small" effect="plain" class="ml-1">一级</el-tag>
                     </template>
                 </el-table-column>
                 <el-table-column prop="sort" label="排序值" min-width="100" align="center" />
@@ -160,6 +160,10 @@ const hasOnSaleGoods = (row: CategoryItem) =>
         (g) => g.onSale === 'on' && (g.category1 === row.name || g.category2 === row.name)
     )
 
+// 已有订单关联的分类名（mock 数据）：已有订单的分类数据保留，不随分类删除
+const orderRelatedCategoryNames = ['足浴包', '护具']
+const hasOrderRecord = (row: CategoryItem) => orderRelatedCategoryNames.includes(row.name)
+
 const handleIconChange = (uploadFile: { raw?: File }) => {
     const file = uploadFile.raw
     if (!file) return
@@ -211,11 +215,13 @@ const submitForm = () => {
     const level = form.parentName ? 2 : 1
     if (isEdit.value) {
         const index = categoryList.findIndex((item) => item.id === editingId.value)
+        const oldSort = index > -1 ? categoryList[index].sort : form.sort
         if (index > -1) categoryList[index] = { ...cloneDeep(form), id: editingId.value, name: form.name.trim(), level }
-        ElMessage.success('分类已更新')
+        const sortChanged = oldSort !== form.sort
+        ElMessage.success(sortChanged ? '分类已更新，排序已同步至用户端分类TAB' : '分类已更新，用户端商城TAB已同步展示')
     } else {
         categoryList.push({ ...cloneDeep(form), id: Date.now(), name: form.name.trim(), level })
-        ElMessage.success(level === 2 ? '二级分类已新增' : '一级分类已新增')
+        ElMessage.success(`${level === 2 ? '二级分类' : '一级分类'}已新增，用户端商城TAB已同步展示`)
     }
     formVisible.value = false
 }
@@ -243,7 +249,11 @@ const deleteCategory = (row: CategoryItem) => {
         ElMessage.warning('该分类下存在二级分类，请先删除子分类')
         return
     }
-    ElMessageBox.confirm(`确认删除分类「${row.name}」？`, '删除二次确认', { type: 'warning' })
+    if (hasOrderRecord(row)) {
+        ElMessage.warning(`分类「${row.name}」已有订单记录，历史订单中的分类数据需保留，不可删除，建议改为停用`)
+        return
+    }
+    ElMessageBox.confirm(`确认删除分类「${row.name}」？删除后不可恢复，已有订单中的分类数据不受影响。`, '删除二次确认', { type: 'warning' })
         .then(() => {
             const index = categoryList.findIndex((item) => item.id === row.id)
             if (index > -1) categoryList.splice(index, 1)

@@ -1284,6 +1284,8 @@ const openDetail = (row: GoodsItem) => {
 .goods-edit-dialog {
     display: flex;
     flex-direction: column;
+    height: 82vh;
+    min-height: 560px;
     max-height: 90vh;
     margin-bottom: 2vh;
     overflow: hidden;
