@@ -128,7 +128,11 @@
                 </el-tab-pane>
                 <el-tab-pane label="推广订单" name="order">
                     <el-table :data="currentItem?.orders || []" border size="small" style="width: 100%">
-                        <el-table-column prop="orderNo" label="订单编号" min-width="150" align="center" />
+                        <el-table-column label="订单编号" min-width="150" align="center">
+                            <template #default="{ row }">
+                                <el-button type="primary" link size="small" @click="openOrderDetail(row.orderNo)">{{ row.orderNo }}</el-button>
+                            </template>
+                        </el-table-column>
                         <el-table-column prop="name" label="用户昵称" min-width="110" align="center" />
                         <el-table-column prop="phone" label="手机号码" min-width="120" align="center" />
                         <el-table-column prop="goodsName" label="服务/商品名称" min-width="140" align="center" />
@@ -143,7 +147,11 @@
                 </el-tab-pane>
                 <el-tab-pane label="佣金明细" name="commission">
                     <el-table :data="currentItem?.commissions || []" border size="small" style="width: 100%">
-                        <el-table-column prop="orderNo" label="关联订单号" min-width="160" align="center" />
+                        <el-table-column label="关联订单号" min-width="160" align="center">
+                            <template #default="{ row }">
+                                <el-button type="primary" link size="small" @click="openOrderDetail(row.orderNo)">{{ row.orderNo }}</el-button>
+                            </template>
+                        </el-table-column>
                         <el-table-column label="获得佣金" min-width="110" align="center">
                             <template #default="{ row }"><span class="money">¥{{ money(row.commission) }}</span></template>
                         </el-table-column>
@@ -168,6 +176,7 @@
 <script lang="ts" setup name="distributionList">
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { cloneDeep } from 'lodash-es'
+import { useRouter } from 'vue-router'
 
 import {
     distributionLevelOptions,
@@ -176,7 +185,20 @@ import {
     type DistributionItem
 } from './data'
 
+const router = useRouter()
 const money = (value: number) => Number(value || 0).toFixed(2)
+
+// 点击订单编号进入对应订单详情（GO 商品订单 / SO 服务订单）
+const openOrderDetail = (orderNo: string) => {
+    if (!orderNo) return
+    const path = orderNo.startsWith('GO') ? '/order/goods' : orderNo.startsWith('SO') ? '/order/service' : ''
+    if (!path) {
+        ElMessage.warning('未识别的订单编号')
+        return
+    }
+    detailVisible.value = false
+    router.push({ path, query: { orderNo } })
+}
 
 // 筛选
 const query = reactive({ name: '', phone: '', level: '', status: '' })

@@ -79,14 +79,14 @@ const teamA: TeamMember[] = [
     { id: 3, userId: 'U10048', avatar: avatar('王', '#e6a23c'), name: '王子轩', phone: '137****4826', createdAt: '2026-05-19 09:45' }
 ]
 const ordersA: PromoOrder[] = [
-    { id: 1, orderNo: 'DD20260601001', name: '张小满', phone: '138****2211', goodsName: '肩颈理疗套餐', payAmount: 298, commission: 29.8, createdAt: '2026-06-01 11:20' },
-    { id: 2, orderNo: 'DD20260603002', name: '李mei', phone: '139****3588', goodsName: '中药足浴包', payAmount: 88, commission: 8.8, createdAt: '2026-06-03 16:40' },
-    { id: 3, orderNo: 'DD20260605003', name: '王子轩', phone: '137****4826', goodsName: '体态评估', payAmount: 199, commission: 19.9, createdAt: '2026-06-05 10:15' }
+    { id: 1, orderNo: 'SO20261125001', name: '张小满', phone: '138****2211', goodsName: '肩颈理疗套餐', payAmount: 298, commission: 29.8, createdAt: '2026-06-01 11:20' },
+    { id: 2, orderNo: 'GO20261125002', name: '李mei', phone: '139****3588', goodsName: '中药足浴包', payAmount: 88, commission: 8.8, createdAt: '2026-06-03 16:40' },
+    { id: 3, orderNo: 'SO20261125002', name: '王子轩', phone: '137****4826', goodsName: '体态评估', payAmount: 199, commission: 19.9, createdAt: '2026-06-05 10:15' }
 ]
 const commissionsA: CommissionRecord[] = [
-    { id: 1, orderNo: 'DD20260601001', commission: 29.8, status: 'settled', createdAt: '2026-06-02 09:00' },
-    { id: 2, orderNo: 'DD20260603002', commission: 8.8, status: 'settled', createdAt: '2026-06-04 09:00' },
-    { id: 3, orderNo: 'DD20260605003', commission: 19.9, status: 'pending', createdAt: '2026-06-06 09:00' }
+    { id: 1, orderNo: 'SO20261125001', commission: 29.8, status: 'settled', createdAt: '2026-06-02 09:00' },
+    { id: 2, orderNo: 'GO20261125002', commission: 8.8, status: 'settled', createdAt: '2026-06-04 09:00' },
+    { id: 3, orderNo: 'SO20261125002', commission: 19.9, status: 'pending', createdAt: '2026-06-06 09:00' }
 ]
 
 const teamB: TeamMember[] = [
@@ -94,12 +94,12 @@ const teamB: TeamMember[] = [
     { id: 5, userId: 'U10119', avatar: avatar('刘', '#17a2b8'), name: '刘洋', phone: '135****1902', createdAt: '2026-03-25 11:30' }
 ]
 const ordersB: PromoOrder[] = [
-    { id: 4, orderNo: 'DD20260528004', name: '陈静', phone: '136****1023', goodsName: '养生茶礼盒', payAmount: 168, commission: 25.2, createdAt: '2026-05-28 13:50' },
-    { id: 5, orderNo: 'DD20260530005', name: '刘洋', phone: '135****1902', goodsName: '护腰带', payAmount: 129, commission: 19.35, createdAt: '2026-05-30 09:20' }
+    { id: 4, orderNo: 'GO20261123007', name: '陈静', phone: '136****1023', goodsName: '养生茶礼盒', payAmount: 168, commission: 25.2, createdAt: '2026-05-28 13:50' },
+    { id: 5, orderNo: 'GO20261124003', name: '刘洋', phone: '135****1902', goodsName: '护腰带', payAmount: 129, commission: 19.35, createdAt: '2026-05-30 09:20' }
 ]
 const commissionsB: CommissionRecord[] = [
-    { id: 4, orderNo: 'DD20260528004', commission: 25.2, status: 'settled', createdAt: '2026-05-29 09:00' },
-    { id: 5, orderNo: 'DD20260530005', commission: 19.35, status: 'pending', createdAt: '2026-05-31 09:00' }
+    { id: 4, orderNo: 'GO20261123007', commission: 25.2, status: 'settled', createdAt: '2026-05-29 09:00' },
+    { id: 5, orderNo: 'GO20261124003', commission: 19.35, status: 'pending', createdAt: '2026-05-31 09:00' }
 ]
 
 export const distributionList: DistributionItem[] = [
