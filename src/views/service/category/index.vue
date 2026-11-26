@@ -91,11 +91,30 @@
                             :auto-upload="false"
                             :show-file-list="false"
                             :on-change="handleIconChange"
+                            class="icon-uploader"
                         >
-                            <img v-if="form.icon" :src="form.icon" class="icon-preview" />
-                            <div v-else class="icon-upload-box">点击上传</div>
+                            <div v-if="form.icon" class="icon-card has-image">
+                                <img :src="form.icon" class="icon-card-img" />
+                                <div class="icon-card-mask">
+                                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                                        <circle cx="12" cy="13" r="4" />
+                                    </svg>
+                                    <span>更换图标</span>
+                                </div>
+                            </div>
+                            <div v-else class="icon-card">
+                                <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                                    <circle cx="12" cy="13" r="4" />
+                                </svg>
+                                <span class="icon-card-text">点击上传</span>
+                            </div>
                         </el-upload>
-                        <div class="icon-hint">仅支持 PNG、JPG 格式，建议 64×64 正方形</div>
+                        <div v-if="form.icon" class="icon-actions">
+                            <el-button type="danger" link size="small" @click="form.icon = ''">删除图标</el-button>
+                        </div>
+                        <div class="icon-hint">支持 PNG、JPG 格式，大小不超过 2MB，建议 64×64 正方形</div>
                     </div>
                 </el-form-item>
                 <el-form-item label="排序值">
@@ -345,39 +364,88 @@ const deleteCategory = (row: CategoryItem) => {
 
 .icon-form {
     display: flex;
-    align-items: center;
-    gap: 12px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
 }
 
-.icon-preview {
-    width: 48px;
-    height: 48px;
-    object-fit: cover;
-    border: 1px solid #ebeef5;
-    border-radius: 6px;
-    cursor: pointer;
+.icon-uploader {
+    :deep(.el-upload) {
+        display: block;
+    }
 }
 
-.icon-upload-box {
+.icon-card {
+    position: relative;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    width: 48px;
-    height: 48px;
-    font-size: 12px;
-    color: #909399;
+    gap: 6px;
+    width: 104px;
+    height: 104px;
+    color: #a8abb2;
+    background: #fafafa;
     border: 1px dashed #dcdfe6;
-    border-radius: 6px;
+    border-radius: 8px;
     cursor: pointer;
+    transition: all 0.2s;
 
     &:hover {
         color: var(--el-color-primary);
+        background: #f5f7ff;
         border-color: var(--el-color-primary);
     }
+
+    &.has-image {
+        padding: 0;
+        overflow: hidden;
+        border-style: solid;
+        border-color: #ebeef5;
+        background: #fff;
+
+        &:hover {
+            border-color: var(--el-color-primary);
+        }
+    }
+}
+
+.icon-card-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.icon-card-text {
+    font-size: 12px;
+}
+
+.icon-card-mask {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    font-size: 12px;
+    color: #fff;
+    background: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    transition: opacity 0.2s;
+
+    .icon-card:hover & {
+        opacity: 1;
+    }
+}
+
+.icon-actions {
+    line-height: 1;
 }
 
 .icon-hint {
     font-size: 12px;
+    line-height: 1.5;
     color: #909399;
 }
 
