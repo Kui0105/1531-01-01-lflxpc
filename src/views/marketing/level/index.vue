@@ -61,16 +61,48 @@
         </el-card>
 
         <!-- 新增/编辑弹窗 -->
-        <el-dialog v-model="formVisible" :title="isEdit ? '编辑会员等级' : '新增会员等级'" width="560px">
-            <el-form :model="form" label-width="110px">
-                <el-form-item label="等级名称" required>
-                    <el-input v-model="form.name" placeholder="请输入等级名称" />
-                </el-form-item>
-                <el-form-item label="等级数值" required>
-                    <el-input-number v-model="form.levelValue" :min="1" :disabled="isEdit && isDefaultLevel(form)" class="!w-full" />
-                    <div class="form-hint">数字越大等级越高{{ isEdit && isDefaultLevel(form) ? '；普通会员为系统默认等级，数值固定为 1 不可更改' : '' }}</div>
-                </el-form-item>
-                <el-form-item label="会员等级背景" required>
+        <el-dialog
+            v-model="formVisible"
+            class="level-edit-dialog"
+            :title="isEdit ? '编辑会员等级' : '新增会员等级'"
+            width="760px"
+            top="5vh"
+        >
+            <el-form :model="form" label-width="110px" class="level-form">
+                <div class="section-title">基础信息</div>
+                <el-row :gutter="16">
+                    <el-col :span="12">
+                        <el-form-item label="等级名称" required>
+                            <el-input v-model="form.name" placeholder="请输入等级名称" />
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="等级数值" required>
+                            <el-input-number v-model="form.levelValue" :min="1" :disabled="isEdit && isDefaultLevel(form)" class="!w-full" />
+                            <div class="form-hint">数字越大等级越高{{ isEdit && isDefaultLevel(form) ? '；普通会员为系统默认等级，数值固定为 1 不可更改' : '' }}</div>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="会员折扣" required>
+                            <el-input-number v-model="form.discount" :min="0.1" :max="10" :precision="1" class="!w-full" />
+                            <div class="form-hint">如 9.5 表示 9.5 折，10 表示无折扣；服务/商品可叠加优惠券折扣，折扣基准为优惠抵扣后的金额</div>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="所需成长值" required>
+                            <el-input-number v-model="form.growthValue" :min="0" class="!w-full" />
+                            <div class="form-hint">累计成长值达到该值即升级至此等级</div>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="24">
+                        <el-form-item label="状态">
+                            <el-switch v-model="form.enabled" active-text="启用" inactive-text="停用" />
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+
+                <div class="section-title">会员等级背景</div>
+                <el-form-item label="等级背景" required>
                     <div class="bg-form">
                         <el-upload
                             accept=".png,.jpg,.jpeg"
@@ -103,17 +135,8 @@
                         <div class="form-hint">支持 PNG、JPG，大小不超过 2MB，展示按 1:1 居中裁切</div>
                     </div>
                 </el-form-item>
-                <el-form-item label="会员折扣" required>
-                    <el-input-number v-model="form.discount" :min="0.1" :max="10" :precision="1" class="!w-full" />
-                    <div class="form-hint">如 9.5 表示 9.5 折，10 表示无折扣；服务/商品可叠加优惠券折扣，折扣基准为优惠抵扣后的金额</div>
-                </el-form-item>
-                <el-form-item label="所需成长值" required>
-                    <el-input-number v-model="form.growthValue" :min="0" class="!w-full" />
-                    <div class="form-hint">累计成长值达到该值即升级至此等级</div>
-                </el-form-item>
-                <el-form-item label="状态">
-                    <el-switch v-model="form.enabled" active-text="启用" inactive-text="停用" />
-                </el-form-item>
+
+                <div class="section-title">权益内容</div>
                 <el-form-item label="权益内容">
                     <editor v-model="form.benefits" :height="240" />
                     <div class="form-hint">权益内容以富文本展示在用户端会员权益页面</div>
@@ -407,11 +430,62 @@ const deleteLevel = (row: MemberLevelItem) => {
     line-height: 1;
 }
 
+.section-title {
+    position: relative;
+    margin: 4px 0 14px;
+    padding-left: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #303133;
+
+    &::before {
+        position: absolute;
+        top: 2px;
+        bottom: 2px;
+        left: 0;
+        width: 3px;
+        background: var(--el-color-primary);
+        border-radius: 2px;
+        content: '';
+    }
+}
+
 :deep(.operation-cell .cell) {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
     gap: 6px 4px;
+}
+</style>
+
+<!-- 弹窗渲染在 body 上，需用全局样式控制内部滚动（与商品/服务列表一致） -->
+<style lang="scss">
+.level-edit-dialog {
+    display: flex;
+    flex-direction: column;
+    height: 82vh;
+    min-height: 560px;
+    max-height: 90vh;
+    margin-bottom: 2vh;
+    overflow: hidden;
+
+    .el-dialog__header {
+        flex: 0 0 auto;
+        padding-bottom: 12px;
+    }
+
+    .el-dialog__body {
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow-y: auto;
+        padding-top: 8px;
+    }
+
+    .el-dialog__footer {
+        flex: 0 0 auto;
+        padding-top: 12px;
+        border-top: 1px solid #e8ebf5;
+    }
 }
 </style>

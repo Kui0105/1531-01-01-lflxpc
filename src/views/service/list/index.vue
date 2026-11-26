@@ -125,6 +125,7 @@
         <!-- 新增/编辑弹窗 -->
         <el-dialog
             v-model="formVisible"
+            class="service-edit-dialog"
             :title="isEdit ? '编辑服务' : '新增服务'"
             width="900px"
             top="5vh"
@@ -835,5 +836,36 @@ const permanentDelete = (row: ServiceItem) => {
     align-items: center;
     gap: 6px 4px;
     white-space: normal;
+}
+</style>
+
+<!-- 弹窗渲染在 body 上，需用全局样式控制内部滚动（与商品列表一致） -->
+<style lang="scss">
+.service-edit-dialog {
+    display: flex;
+    flex-direction: column;
+    height: 82vh;
+    min-height: 560px;
+    max-height: 90vh;
+    margin-bottom: 2vh;
+    overflow: hidden;
+
+    .el-dialog__header {
+        flex: 0 0 auto;
+        padding-bottom: 12px;
+    }
+
+    .el-dialog__body {
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow-y: auto;
+        padding-top: 8px;
+    }
+
+    .el-dialog__footer {
+        flex: 0 0 auto;
+        padding-top: 12px;
+        border-top: 1px solid #e8ebf5;
+    }
 }
 </style>
