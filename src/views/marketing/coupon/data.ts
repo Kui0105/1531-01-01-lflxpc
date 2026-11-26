@@ -4,7 +4,7 @@
  */
 
 export type CouponType = 'discount' | 'reduction' | 'no_threshold' // 折扣券 / 满减券 / 无门槛优惠券
-export type ApplyScope = 'service' | 'all_service' | 'goods' // 指定服务 / 全部服务 / 指定商品
+export type ApplyScope = 'all_service' | 'service' | 'all_goods' | 'goods' // 全部服务 / 指定服务 / 全部商品 / 指定商品
 export type IssueMethod = 'manual' | 'auto' | 'designated' | 'gift' | 'manager' // 手动领取 / 自动发放 / 指定发放 / 购买赠送 / 店长发放
 export type CouponStatus = 'on' | 'off' // 启用 / 停用
 
@@ -25,6 +25,7 @@ export interface CouponItem {
     serviceIds: number[] // 指定服务 ID（适用对象=指定服务时）
     goodsIds: number[] // 指定商品 ID（适用对象=指定商品时）
     birthdayBenefit: boolean // 生日福利（勾选项）
+    newUserBenefit: boolean // 新人福利（勾选项）
     autoDay: number // 自动发放：每月几日
     generateAmount: number // 生成条件：满多少金额生成（购买赠送/店长发放）
     managerConfirm: boolean // 是否需店长确认后发放（店长发放）
@@ -40,8 +41,9 @@ export const couponTypeLabels: Record<CouponType, string> = {
 }
 
 export const applyScopeLabels: Record<ApplyScope, string> = {
-    service: '指定服务',
     all_service: '全部服务',
+    service: '指定服务',
+    all_goods: '全部商品',
     goods: '指定商品'
 }
 
@@ -71,6 +73,7 @@ export const couponList: CouponItem[] = [
         serviceIds: [],
         goodsIds: [],
         birthdayBenefit: false,
+        newUserBenefit: true,
         autoDay: 1,
         generateAmount: 0,
         managerConfirm: false,
@@ -95,6 +98,7 @@ export const couponList: CouponItem[] = [
         serviceIds: [],
         goodsIds: [],
         birthdayBenefit: true,
+        newUserBenefit: false,
         autoDay: 1,
         generateAmount: 0,
         managerConfirm: false,
@@ -119,6 +123,7 @@ export const couponList: CouponItem[] = [
         serviceIds: [2],
         goodsIds: [],
         birthdayBenefit: false,
+        newUserBenefit: false,
         autoDay: 1,
         generateAmount: 0,
         managerConfirm: false,
@@ -143,6 +148,7 @@ export const couponList: CouponItem[] = [
         serviceIds: [],
         goodsIds: [],
         birthdayBenefit: false,
+        newUserBenefit: false,
         autoDay: 15,
         generateAmount: 0,
         managerConfirm: false,
@@ -167,6 +173,7 @@ export const couponList: CouponItem[] = [
         serviceIds: [],
         goodsIds: [2, 3],
         birthdayBenefit: false,
+        newUserBenefit: false,
         autoDay: 1,
         generateAmount: 100,
         managerConfirm: false,
@@ -191,6 +198,7 @@ export const couponList: CouponItem[] = [
         serviceIds: [1, 3],
         goodsIds: [],
         birthdayBenefit: false,
+        newUserBenefit: false,
         autoDay: 1,
         generateAmount: 300,
         managerConfirm: true,

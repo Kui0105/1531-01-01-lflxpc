@@ -1,29 +1,31 @@
 <template>
     <div class="marketing-coupon">
-        <el-card class="list-card" shadow="never">
+        <!-- 筛选搜索（独立模块） -->
+        <div class="filter-bar">
+            <span class="filter-title"><i class="filter-dot" />筛选搜索</span>
+            <el-input v-model="query.name" placeholder="优惠券名称" clearable class="!w-[180px]" />
+            <el-select v-model="query.type" placeholder="券类型" clearable class="!w-[140px]">
+                <el-option v-for="(label, key) in couponTypeLabels" :key="key" :label="label" :value="key" />
+            </el-select>
+            <el-select v-model="query.issueMethod" placeholder="发放方式" clearable class="!w-[140px]">
+                <el-option v-for="(label, key) in issueMethodLabels" :key="key" :label="label" :value="key" />
+            </el-select>
+            <el-select v-model="query.status" placeholder="状态" clearable class="!w-[120px]">
+                <el-option label="启用" value="on" />
+                <el-option label="停用" value="off" />
+            </el-select>
+            <el-button type="primary" @click="handleSearch">查询</el-button>
+            <el-button @click="resetQuery">重置</el-button>
+        </div>
+
+        <!-- 列表 -->
+        <el-card class="list-card mt-4" shadow="never">
             <template #header>
                 <div class="card-head">
                     <span class="header-title">优惠券列表</span>
                     <el-button type="primary" @click="openAdd">新增优惠券</el-button>
                 </div>
             </template>
-
-            <!-- 筛选搜索 -->
-            <div class="filter-bar">
-                <el-input v-model="query.name" placeholder="优惠券名称" clearable class="filter-input" />
-                <el-select v-model="query.type" placeholder="券类型" clearable class="filter-select">
-                    <el-option v-for="(label, key) in couponTypeLabels" :key="key" :label="label" :value="key" />
-                </el-select>
-                <el-select v-model="query.issueMethod" placeholder="发放方式" clearable class="filter-select">
-                    <el-option v-for="(label, key) in issueMethodLabels" :key="key" :label="label" :value="key" />
-                </el-select>
-                <el-select v-model="query.status" placeholder="状态" clearable class="filter-select">
-                    <el-option label="启用" value="on" />
-                    <el-option label="停用" value="off" />
-                </el-select>
-                <el-button type="primary" @click="handleSearch">搜索</el-button>
-                <el-button @click="resetQuery">重置</el-button>
-            </div>
 
             <el-table :data="pagedList" style="width: 100%" :cell-style="{ padding: '12px 0' }">
                 <el-table-column label="券名称" min-width="180" align="center">
@@ -129,8 +131,9 @@
                     <el-col :span="24">
                         <el-form-item label="适用范围" required>
                             <el-radio-group v-model="form.applyScope">
-                                <el-radio value="service">指定服务</el-radio>
                                 <el-radio value="all_service">全部服务</el-radio>
+                                <el-radio value="service">指定服务</el-radio>
+                                <el-radio value="all_goods">全部商品</el-radio>
                                 <el-radio value="goods">指定商品</el-radio>
                             </el-radio-group>
                         </el-form-item>
@@ -203,9 +206,16 @@
                         </el-form-item>
                     </el-col>
                     <el-col v-if="form.issueMethod === 'manual'" :span="24">
-                        <el-form-item label="生日福利">
-                            <el-switch v-model="form.birthdayBenefit" active-text="是" inactive-text="否" />
-                            <div class="form-hint">勾选后根据出生日期判断发送提醒，用户可在个人中心-生日福利页面领取优惠券</div>
+                        <el-form-item label="领取类型" required>
+                            <div class="benefit-switches">
+                                <el-switch v-model="form.birthdayBenefit" active-text="生日福利" />
+                                <el-switch v-model="form.newUserBenefit" active-text="新人福利" />
+                            </div>
+                            <div class="form-hint">
+                                生日福利与新人福利至少选择一项<br />
+                                生日福利：根据出生日期判断发送提醒，用户可在个人中心-生日福利页面领取优惠券<br />
+                                新人福利：新用户注册登录判定为新用户时弹窗领取优惠券
+                            </div>
                         </el-form-item>
                     </el-col>
                     <el-col v-if="form.issueMethod === 'designated'" :span="24">
@@ -218,7 +228,10 @@
                     <el-col :span="24">
                         <el-form-item label="提成类型">
                             <el-switch v-model="form.commissionEnabled" active-text="启用" inactive-text="不启用" />
-                            <div class="form-hint">券被使用后按券面额提成给到康复师，店长获得订单总额 2% 提成</div>
+                            <div class="form-hint">
+                                券被使用后按券面额提成给到康复师<br />
+                                店长获得订单总额 2% 提成；提成比例由管理端配置
+                            </div>
                         </el-form-item>
                     </el-col>
                     <el-col v-if="form.commissionEnabled" :span="12">
@@ -309,6 +322,7 @@ const emptyForm = (): CouponItem => ({
     serviceIds: [],
     goodsIds: [],
     birthdayBenefit: false,
+    newUserBenefit: false,
     autoDay: 1,
     generateAmount: 0,
     managerConfirm: false,
@@ -348,6 +362,10 @@ const submitForm = () => {
     }
     if (form.applyScope === 'goods' && !form.goodsIds.length) {
         ElMessage.warning('选择「指定商品」时请至少选择一个商品')
+        return
+    }
+    if (form.issueMethod === 'manual' && !form.birthdayBenefit && !form.newUserBenefit) {
+        ElMessage.warning('手动领取类型需在「生日福利」与「新人福利」中至少选择一项')
         return
     }
     if (!validRange.value?.length) {
@@ -433,19 +451,27 @@ const deleteCoupon = (row: CouponItem) => {
     flex-wrap: wrap;
     align-items: center;
     gap: 10px;
-    margin-bottom: 16px;
-    padding: 14px 16px;
-    background: #f8f9fc;
+    padding: 14px 18px;
+    background: #fff;
     border: 1px solid #e8ebf5;
     border-radius: 8px;
+    box-shadow: 0 2px 12px rgba(74, 93, 255, 0.04);
 }
 
-.filter-input {
-    width: 200px;
+.filter-title {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #303133;
 }
 
-.filter-select {
-    width: 150px;
+.filter-dot {
+    width: 4px;
+    height: 16px;
+    background: var(--el-color-primary);
+    border-radius: 2px;
 }
 
 .pagination {
@@ -462,10 +488,16 @@ const deleteCoupon = (row: CouponItem) => {
     color: #f56c6c;
 }
 
+.benefit-switches {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
 .form-hint {
     margin-top: 4px;
     font-size: 12px;
-    line-height: 1.5;
+    line-height: 1.8;
     color: #909399;
 }
 
