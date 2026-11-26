@@ -18,6 +18,7 @@ export interface SpecGroup {
 export interface SpecItem {
     id: number
     name: string // 规格组合名称，如「红色 / S」
+    values: string[] // 该 SKU 对应的各规格项值，顺序与 specGroups 一致
     price: number // 售价
     originPrice: number // 原价
     memberPrice: number // 会员价
@@ -100,8 +101,8 @@ export const goodsList: GoodsItem[] = [
             { id: 101, name: '规格', values: ['10包/盒', '20包/盒'] }
         ],
         specs: [
-            { id: 111, name: '10包/盒', price: 48.5, originPrice: 68, memberPrice: 43.5, stock: 98 },
-            { id: 112, name: '20包/盒', price: 88, originPrice: 128, memberPrice: 79, stock: 60 }
+            { id: 111, name: '10包/盒', values: ['10包/盒'], price: 48.5, originPrice: 68, memberPrice: 43.5, stock: 98 },
+            { id: 112, name: '20包/盒', values: ['20包/盒'], price: 88, originPrice: 128, memberPrice: 79, stock: 60 }
         ],
         price: 48.5,
         originPrice: 68,
@@ -129,7 +130,7 @@ export const goodsList: GoodsItem[] = [
         category2: '热敷用品',
         specType: 'single',
         specGroups: [],
-        specs: [{ id: 21, name: '1个装', price: 88, originPrice: 128, memberPrice: 79, stock: 64 }],
+        specs: [{ id: 21, name: '1个装', values: ['1个装'], price: 88, originPrice: 128, memberPrice: 79, stock: 64 }],
         price: 88,
         originPrice: 128,
         memberPrice: 79,
@@ -160,10 +161,10 @@ export const goodsList: GoodsItem[] = [
             { id: 302, name: '口味', values: ['清香型', '浓香型'] }
         ],
         specs: [
-            { id: 311, name: '6罐装 / 清香型', price: 98, originPrice: 138, memberPrice: 88, stock: 10 },
-            { id: 312, name: '6罐装 / 浓香型', price: 98, originPrice: 138, memberPrice: 88, stock: 10 },
-            { id: 313, name: '12罐装 / 清香型', price: 168, originPrice: 228, memberPrice: 150, stock: 8 },
-            { id: 314, name: '12罐装 / 浓香型', price: 168, originPrice: 228, memberPrice: 150, stock: 7 }
+            { id: 311, name: '6罐装 / 清香型', values: ['6罐装', '清香型'], price: 98, originPrice: 138, memberPrice: 88, stock: 10 },
+            { id: 312, name: '6罐装 / 浓香型', values: ['6罐装', '浓香型'], price: 98, originPrice: 138, memberPrice: 88, stock: 10 },
+            { id: 313, name: '12罐装 / 清香型', values: ['12罐装', '清香型'], price: 168, originPrice: 228, memberPrice: 150, stock: 8 },
+            { id: 314, name: '12罐装 / 浓香型', values: ['12罐装', '浓香型'], price: 168, originPrice: 228, memberPrice: 150, stock: 7 }
         ],
         price: 98,
         originPrice: 228,
@@ -194,7 +195,7 @@ export const goodsList: GoodsItem[] = [
         category2: '护具',
         specType: 'single',
         specGroups: [],
-        specs: [{ id: 41, name: '均码', price: 129, originPrice: 159, memberPrice: 116, stock: 0 }],
+        specs: [{ id: 41, name: '均码', values: ['均码'], price: 129, originPrice: 159, memberPrice: 116, stock: 0 }],
         price: 129,
         originPrice: 159,
         memberPrice: 116,
@@ -221,7 +222,7 @@ export const goodsList: GoodsItem[] = [
         category2: '理疗仪器',
         specType: 'single',
         specGroups: [],
-        specs: [{ id: 51, name: '标准版', price: 398, originPrice: 498, memberPrice: 358, stock: 12 }],
+        specs: [{ id: 51, name: '标准版', values: ['标准版'], price: 398, originPrice: 498, memberPrice: 358, stock: 12 }],
         price: 398,
         originPrice: 498,
         memberPrice: 358,

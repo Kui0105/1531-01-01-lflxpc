@@ -262,38 +262,47 @@
                                 <el-button type="primary" plain size="small" @click="addGroup">+ 添加规格项</el-button>
                             </div>
 
-                            <!-- SKU 组合表格 -->
+                            <!-- SKU 组合表格：按规格项分列，交叉展示 -->
                             <div v-if="form.specs.length" class="sku-section">
-                                <div class="sku-title">规格组合（{{ form.specs.length }} 个 SKU）</div>
-                                <el-table :data="form.specs" border size="small" max-height="300">
-                                    <el-table-column label="规格组合" min-width="160" align="center" fixed="left">
+                                <div class="sku-title">
+                                    规格组合（{{ form.specs.length }} 个 SKU）
+                                    <span class="sku-title-tip">各规格项值交叉生成，每个组合独立设置价格与库存</span>
+                                </div>
+                                <el-table :data="form.specs" border size="small" max-height="320">
+                                    <el-table-column
+                                        v-for="(group, gi) in activeGroups"
+                                        :key="group.id"
+                                        :label="group.displayName"
+                                        min-width="100"
+                                        align="center"
+                                    >
                                         <template #default="{ row }">
-                                            <span>{{ row.name }}</span>
+                                            <span>{{ row.values?.[gi] || '-' }}</span>
                                         </template>
                                     </el-table-column>
-                                    <el-table-column label="售价" min-width="130" align="center">
+                                    <el-table-column label="售价" min-width="125" align="center">
                                         <template #default="{ row }">
                                             <el-input-number v-model="row.price" :min="0" :precision="2" size="small" controls-position="right" class="!w-full" />
                                         </template>
                                     </el-table-column>
-                                    <el-table-column label="原价" min-width="130" align="center">
+                                    <el-table-column label="原价" min-width="125" align="center">
                                         <template #default="{ row }">
                                             <el-input-number v-model="row.originPrice" :min="0" :precision="2" size="small" controls-position="right" class="!w-full" />
                                         </template>
                                     </el-table-column>
-                                    <el-table-column label="会员价" min-width="130" align="center">
+                                    <el-table-column label="会员价" min-width="125" align="center">
                                         <template #default="{ row }">
                                             <el-input-number v-model="row.memberPrice" :min="0" :precision="2" size="small" controls-position="right" class="!w-full" />
                                         </template>
                                     </el-table-column>
-                                    <el-table-column label="库存" min-width="120" align="center">
+                                    <el-table-column label="库存" min-width="110" align="center">
                                         <template #default="{ row }">
                                             <el-input-number v-model="row.stock" :min="0" size="small" controls-position="right" class="!w-full" />
                                         </template>
                                     </el-table-column>
                                 </el-table>
                             </div>
-                            <div v-else class="sku-empty">请添加规格项并勾选规格值，系统将自动生成规格组合</div>
+                            <div v-else class="sku-empty">请添加规格项并填写规格值，系统会自动交叉生成规格组合</div>
                         </div>
 
                         <div class="section-title mt-4">价格与库存汇总</div>
@@ -440,7 +449,23 @@
                 <el-card class="info-card mt-4" shadow="never">
                     <template #header><span class="header-title">规格（{{ currentItem.specType === 'multi' ? '多规格' : '单规格' }}）</span></template>
                     <el-table :data="currentItem.specs" border size="small">
-                        <el-table-column prop="name" label="规格名称" min-width="140" align="center" />
+                        <el-table-column
+                            v-if="currentItem.specType === 'single'"
+                            label="规格"
+                            min-width="140"
+                            align="center"
+                        >
+                            <template #default="{ row }">{{ row.name }}</template>
+                        </el-table-column>
+                        <el-table-column
+                            v-for="(group, gi) in currentItem.specGroups"
+                            :key="group.id"
+                            :label="group.name || `规格项${gi + 1}`"
+                            min-width="100"
+                            align="center"
+                        >
+                            <template #default="{ row }">{{ row.values?.[gi] || '-' }}</template>
+                        </el-table-column>
                         <el-table-column label="售价" min-width="100" align="center">
                             <template #default="{ row }">¥{{ money(row.price) }}</template>
                         </el-table-column>
@@ -576,7 +601,7 @@ const handleFormCategory1Change = () => {
     form.category2 = ''
 }
 
-const emptySpec = (): SpecItem => ({ id: Date.now(), name: '', price: 0, originPrice: 0, memberPrice: 0, stock: 0 })
+const emptySpec = (): SpecItem => ({ id: Date.now(), name: '', values: [], price: 0, originPrice: 0, memberPrice: 0, stock: 0 })
 const emptyForm = (): GoodsItem => ({
     id: 0,
     mainImage: '',
@@ -672,15 +697,23 @@ const removeValue = (gIndex: number, value: string) => {
     regenerateSkus()
 }
 
+// 有效规格项：只要有规格值即可参与组合（名称为空时用默认名，不影响交叉生成）
+const activeGroups = computed(() =>
+    form.specGroups.filter((g) => g.values.length).map((g, i) => ({
+        ...g,
+        displayName: g.name.trim() || `规格项${i + 1}`
+    }))
+)
+
 // 根据规格项生成 SKU 组合（笛卡尔积），保留已有 SKU 的价格库存
 const regenerateSkus = () => {
-    const validGroups = form.specGroups.filter((g) => g.name.trim() && g.values.length)
-    if (!validGroups.length) {
+    const groups = activeGroups.value
+    if (!groups.length) {
         form.specs = []
         return
     }
-    // 笛卡尔积
-    const combos = validGroups.reduce<string[][]>(
+    // 笛卡尔积：如尺码[L,M,S] × 颜色[黑,白] = L/黑、L/白、M/黑、M/白、S/黑、S/白
+    const combos = groups.reduce<string[][]>(
         (acc, group) => acc.flatMap((combo) => group.values.map((v) => [...combo, v])),
         [[]]
     )
@@ -690,8 +723,16 @@ const regenerateSkus = () => {
         const name = combo.join(' / ')
         const old = oldMap.get(name)
         return old
-            ? { ...old, name }
-            : { id: Date.now() + Math.random(), name, price: 0, originPrice: 0, memberPrice: 0, stock: 0 }
+            ? { ...old, name, values: combo }
+            : {
+                  id: Date.now() + Math.random(),
+                  name,
+                  values: combo,
+                  price: 0,
+                  originPrice: 0,
+                  memberPrice: 0,
+                  stock: 0
+              }
     })
 }
 
