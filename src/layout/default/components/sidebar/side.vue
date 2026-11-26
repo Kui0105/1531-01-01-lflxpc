@@ -16,7 +16,7 @@
 <script setup lang="ts">
 import type { RouteRecordRaw } from 'vue-router'
 
-import { APPROISE_ROUTE, COMPLAINT_ROUTE, GOODS_ROUTE, ORDER_ROUTE, SERVICE_ROUTE } from '@/router/routes'
+import { APPROISE_ROUTE, COMPLAINT_ROUTE, GOODS_ROUTE, MARKET_ROUTE, ORDER_ROUTE, SERVICE_ROUTE } from '@/router/routes'
 import useAppStore from '@/stores/modules/app'
 import useSettingStore from '@/stores/modules/setting'
 import useUserStore from '@/stores/modules/user'
@@ -141,6 +141,24 @@ const routes = computed(() => {
         const serviceIndex = list.findIndex((item) => item.path === SERVICE_ROUTE.path)
         const insertAt = serviceIndex >= 0 ? serviceIndex + 1 : list.length
         list.splice(insertAt, 0, GOODS_ROUTE)
+    }
+
+    // 静态注入「营销管理」主导航（会员等级/营销配置/优惠券列表）到商品管理下方
+    const marketParent = list.find((item) => item.path === MARKET_ROUTE.path)
+    if (marketParent) {
+        const existingPaths = new Set(marketParent.children?.map((child) => child.path) || [])
+        const missingChildren = (MARKET_ROUTE.children || []).filter(
+            (child) => !existingPaths.has(child.path)
+        )
+        if (missingChildren.length) {
+            marketParent.children = [...(marketParent.children || []), ...missingChildren]
+        }
+    } else if (
+        !list.some((item) => item.children?.some((child) => child.path?.includes('marketing/level')))
+    ) {
+        const goodsIndex = list.findIndex((item) => item.path === GOODS_ROUTE.path)
+        const insertAt = goodsIndex >= 0 ? goodsIndex + 1 : list.length
+        list.splice(insertAt, 0, MARKET_ROUTE)
     }
     return list
 })

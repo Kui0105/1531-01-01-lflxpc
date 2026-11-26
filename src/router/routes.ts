@@ -187,12 +187,53 @@ export const GOODS_ROUTE: RouteRecordRaw = {
     ]
 }
 
+// 营销管理导航（静态注入到商品管理下方）
+export const MARKET_ROUTE: RouteRecordRaw = {
+    path: '/marketing',
+    name: Symbol('admin-marketing'),
+    component: LAYOUT,
+    meta: {
+        title: '营销管理',
+        icon: 'el-icon-Promotion'
+    },
+    children: [
+        {
+            path: 'level',
+            name: Symbol('admin-marketing-level'),
+            component: () => import('@/views/marketing/level/index.vue'),
+            meta: {
+                title: '会员等级',
+                icon: 'el-icon-Medal'
+            }
+        },
+        {
+            path: 'config',
+            name: Symbol('admin-marketing-config'),
+            component: () => import('@/views/marketing/config/index.vue'),
+            meta: {
+                title: '营销配置',
+                icon: 'el-icon-Setting'
+            }
+        },
+        {
+            path: 'coupon',
+            name: Symbol('admin-marketing-coupon'),
+            component: () => import('@/views/marketing/coupon/index.vue'),
+            meta: {
+                title: '优惠券列表',
+                icon: 'el-icon-Tickets'
+            }
+        }
+    ]
+}
+
 export const constantRoutes: Array<RouteRecordRaw> = [
     APPROISE_ROUTE,
     COMPLAINT_ROUTE,
     ORDER_ROUTE,
     SERVICE_ROUTE,
     GOODS_ROUTE,
+    MARKET_ROUTE,
     {
         path: '/consumer/lists/detail',
         name: Symbol('admin-consumer-detail'),
