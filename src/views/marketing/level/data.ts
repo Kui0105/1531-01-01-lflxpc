@@ -11,7 +11,7 @@ export interface MemberLevelItem {
     discount: number // 会员折扣（如 9.5 表示 9.5 折）
     growthValue: number // 所需成长值
     enabled: boolean // 状态
-    benefits: string[] // 权益内容
+    benefits: string // 权益内容（富文本 HTML，用于用户端展示）
     createdAt: string // 创建时间
 }
 
@@ -30,7 +30,7 @@ export const memberLevelList: MemberLevelItem[] = [
         discount: 10,
         growthValue: 0,
         enabled: true,
-        benefits: ['基础咨询服务', '积分累计'],
+        benefits: '<ul><li>基础咨询服务</li><li>积分累计</li></ul>',
         createdAt: '2026-01-05 10:30'
     },
     {
@@ -41,7 +41,7 @@ export const memberLevelList: MemberLevelItem[] = [
         discount: 9.5,
         growthValue: 500,
         enabled: true,
-        benefits: ['95 折专属折扣', '积分 1.2 倍', '生日礼券'],
+        benefits: '<ul><li>95 折专属折扣</li><li>积分 1.2 倍</li><li>生日礼券</li></ul>',
         createdAt: '2026-01-18 14:20'
     },
     {
@@ -52,7 +52,7 @@ export const memberLevelList: MemberLevelItem[] = [
         discount: 9,
         growthValue: 2000,
         enabled: true,
-        benefits: ['9 折专属折扣', '积分 1.5 倍', '优先预约', '专属客服'],
+        benefits: '<ul><li>9 折专属折扣</li><li>积分 1.5 倍</li><li>优先预约</li><li>专属客服</li></ul>',
         createdAt: '2026-02-02 09:15'
     },
     {
@@ -63,7 +63,7 @@ export const memberLevelList: MemberLevelItem[] = [
         discount: 8.5,
         growthValue: 5000,
         enabled: true,
-        benefits: ['85 折专属折扣', '积分 2 倍', '免费配送', '专属活动'],
+        benefits: '<ul><li>85 折专属折扣</li><li>积分 2 倍</li><li>免费配送</li><li>专属活动</li></ul>',
         createdAt: '2026-03-11 16:45'
     },
     {
@@ -74,7 +74,7 @@ export const memberLevelList: MemberLevelItem[] = [
         discount: 8,
         growthValue: 10000,
         enabled: false,
-        benefits: ['8 折专属折扣', '积分 3 倍', '一对一顾问', 'VIP 专属权益'],
+        benefits: '<ul><li>8 折专属折扣</li><li>积分 3 倍</li><li>一对一顾问</li><li>VIP 专属权益</li></ul>',
         createdAt: '2026-04-20 11:00'
     }
 ]
