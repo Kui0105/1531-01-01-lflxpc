@@ -138,7 +138,7 @@
 
                 <div class="section-title">权益内容</div>
                 <el-form-item label="权益内容">
-                    <editor v-model="form.benefits" :height="240" />
+                    <editor v-model="form.benefits" :height="420" />
                     <div class="form-hint">权益内容以富文本展示在用户端会员权益页面</div>
                 </el-form-item>
             </el-form>
