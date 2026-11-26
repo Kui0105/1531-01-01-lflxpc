@@ -26,14 +26,6 @@
                 </el-form-item>
             </el-form>
 
-            <div class="rule-box">
-                <div class="rule-title">功能规则</div>
-                <ul class="rule-list">
-                    <li><span class="rule-label">积分来源：</span>推广用户下级用户消费后获得积分，管理端可对用户积分进行充值/扣减</li>
-                    <li><span class="rule-label">叠加规则：</span>商品购物积分抵扣可与优惠券叠加使用，服务订单积分抵扣与优惠券不可叠加使用</li>
-                </ul>
-            </div>
-
             <div v-if="isDirty" class="dirty-tip">
                 <el-icon><InfoFilled /></el-icon>
                 配置已修改，请点击右上角「保存配置」使其生效
@@ -127,52 +119,6 @@ const saveConfig = () => {
     font-size: 12px;
     line-height: 1.5;
     color: #909399;
-}
-
-.rule-box {
-    max-width: 620px;
-    margin-top: 12px;
-    padding: 16px 18px;
-    background: #f8f9fc;
-    border: 1px solid #e8ebf5;
-    border-radius: 8px;
-}
-
-.rule-title {
-    position: relative;
-    margin-bottom: 10px;
-    padding-left: 10px;
-    font-size: 14px;
-    font-weight: 600;
-    color: #303133;
-
-    &::before {
-        position: absolute;
-        top: 2px;
-        bottom: 2px;
-        left: 0;
-        width: 3px;
-        background: var(--el-color-primary);
-        border-radius: 2px;
-        content: '';
-    }
-}
-
-.rule-list {
-    margin: 0;
-    padding-left: 20px;
-    font-size: 13px;
-    line-height: 2;
-    color: #606266;
-
-    li::marker {
-        color: var(--el-color-primary);
-    }
-}
-
-.rule-label {
-    font-weight: 600;
-    color: #303133;
 }
 
 .dirty-tip {
