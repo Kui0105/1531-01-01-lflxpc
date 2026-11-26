@@ -75,6 +75,7 @@
                         </div>
                     </template>
                 </el-table-column>
+                <el-table-column prop="createdAt" label="创建时间" min-width="150" align="center" />
                 <el-table-column label="上架状态" min-width="100" align="center">
                     <template #default="{ row }">
                         <el-tag :type="row.onSale === 'on' ? 'success' : 'info'" size="small" effect="light">
@@ -579,7 +580,8 @@ const emptyForm = (): GoodsItem => ({
     giftCoupons: [],
     joinDistribution: true,
     afterSaleDays: 7,
-    detail: ''
+    detail: '',
+    createdAt: ''
 })
 const form = reactive<GoodsItem>(emptyForm())
 
@@ -792,7 +794,10 @@ const submitForm = () => {
         if (index > -1) data[index] = { ...payload, id: editingId.value }
         ElMessage.success('商品已更新')
     } else {
-        data.unshift({ ...payload, id: Date.now() })
+        const now = new Date()
+        const pad = (n: number) => String(n).padStart(2, '0')
+        const createdAt = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}`
+        data.unshift({ ...payload, id: Date.now(), createdAt })
         ElMessage.success('商品已新增')
     }
     formVisible.value = false

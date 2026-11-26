@@ -1,5 +1,18 @@
 # 更新日志
 
+## v0.25.1 (2026-11-26)
+
+### 本次更新
+
+- 服务列表、商品列表增加「创建时间」列（置于上架状态前）
+- 两个数据模型新增 createdAt 字段并补齐 5 条 mock 数据；新增服务/商品时自动记录当前创建时间
+
+### 说明
+
+- 修改文件：`src/views/service/list/{index.vue,data.ts}`、`src/views/goods/list/{index.vue,data.ts}`，以及版本文件
+- 验证：类型检查通过（仅保留既有历史报错，新增代码无报错），两个页面编译均返回 HTTP 200
+- 预览：http://localhost:5173/admin/service/list 、http://localhost:5173/admin/goods/list
+
 ## v0.25.0 (2026-11-26)
 
 ### 本次更新

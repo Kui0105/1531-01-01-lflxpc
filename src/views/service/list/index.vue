@@ -91,6 +91,7 @@
                         <span v-else class="cell-sub">-</span>
                     </template>
                 </el-table-column>
+                <el-table-column prop="createdAt" label="创建时间" min-width="150" align="center" />
                 <el-table-column label="上架状态" min-width="100" align="center">
                     <template #default="{ row }">
                         <el-tag :type="row.onSale === 'on' ? 'success' : 'info'" size="small" effect="light">
@@ -502,7 +503,8 @@ const emptyForm = (): ServiceItem => ({
     detail: '',
     notice: '',
     joinDistribution: true,
-    giftCoupons: []
+    giftCoupons: [],
+    createdAt: ''
 })
 const form = reactive<ServiceItem>(emptyForm())
 
@@ -583,7 +585,10 @@ const submitForm = () => {
         if (index > -1) data[index] = { ...cloneDeep(form), id: editingId.value }
         ElMessage.success('服务已更新')
     } else {
-        data.unshift({ ...cloneDeep(form), id: Date.now() })
+        const now = new Date()
+        const pad = (n: number) => String(n).padStart(2, '0')
+        const createdAt = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}`
+        data.unshift({ ...cloneDeep(form), id: Date.now(), createdAt })
         ElMessage.success('服务已新增')
     }
     formVisible.value = false

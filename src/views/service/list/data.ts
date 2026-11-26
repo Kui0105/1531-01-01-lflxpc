@@ -33,6 +33,7 @@ export interface ServiceItem {
     notice: string // 服务须知
     joinDistribution: boolean // 参与分销
     giftCoupons: GiftCoupon[] // 购买送券配置
+    createdAt: string // 创建时间
     deleted?: boolean // 是否已删除（进入回收站）
 }
 
@@ -91,6 +92,7 @@ export const services: ServiceItem[] = [
         notice: '预约前请确认身体状况，急性损伤期不建议进行理疗。',
         joinDistribution: true,
         giftCoupons: [{ id: 1, threshold: 300, couponId: '8' }],
+        createdAt: '2026-01-10 09:30',
     },
     {
         id: 2,
@@ -117,6 +119,7 @@ export const services: ServiceItem[] = [
         notice: '请穿着宽松衣物以便评估。',
         joinDistribution: true,
         giftCoupons: [],
+        createdAt: '2026-02-15 14:20',
     },
     {
         id: 3,
@@ -143,6 +146,7 @@ export const services: ServiceItem[] = [
         notice: '孕妇及腰部急性损伤者不宜预约。',
         joinDistribution: true,
         giftCoupons: [],
+        createdAt: '2026-03-08 10:45',
     },
     {
         id: 4,
@@ -169,6 +173,7 @@ export const services: ServiceItem[] = [
         notice: '评估需穿着贴身衣物以便准确分析。',
         joinDistribution: true,
         giftCoupons: [],
+        createdAt: '2026-04-12 16:00',
     },
     {
         id: 5,
@@ -195,5 +200,6 @@ export const services: ServiceItem[] = [
         notice: '套餐有效期 365 天，过期未使用次数作废。',
         joinDistribution: true,
         giftCoupons: [],
+        createdAt: '2026-05-20 11:15',
     }
 ]

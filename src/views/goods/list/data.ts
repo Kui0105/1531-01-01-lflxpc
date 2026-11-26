@@ -61,6 +61,7 @@ export interface GoodsItem {
     joinDistribution: boolean // 参与分销
     afterSaleDays: number // 售后期限（天）
     detail: string // 商品详情（富文本）
+    createdAt: string // 创建时间
     deleted?: boolean // 是否进入回收站
 }
 
@@ -119,7 +120,8 @@ export const goodsList: GoodsItem[] = [
         giftCoupons: [{ id: 1, threshold: 100, couponId: '5' }],
         joinDistribution: true,
         afterSaleDays: 7,
-        detail: '<p>精选多种中药材搭配而成，温水冲泡即可使用，缓解疲劳、改善睡眠。</p>'
+        detail: '<p>精选多种中药材搭配而成，温水冲泡即可使用，缓解疲劳、改善睡眠。</p>',
+        createdAt: '2026-01-05 10:00',
     },
     {
         id: 2,
@@ -147,7 +149,8 @@ export const goodsList: GoodsItem[] = [
         giftCoupons: [],
         joinDistribution: true,
         afterSaleDays: 7,
-        detail: '<p>可循环使用的肩颈热敷包，热敷放松肩颈肌肉，缓解酸痛。</p>'
+        detail: '<p>可循环使用的肩颈热敷包，热敷放松肩颈肌肉，缓解酸痛。</p>',
+        createdAt: '2026-02-18 09:20',
     },
     {
         id: 3,
@@ -186,7 +189,8 @@ export const goodsList: GoodsItem[] = [
         ],
         joinDistribution: true,
         afterSaleDays: 15,
-        detail: '<p>多款养生茶组合礼盒，适合送礼与自用，品质保证。</p>'
+        detail: '<p>多款养生茶组合礼盒，适合送礼与自用，品质保证。</p>',
+        createdAt: '2026-03-22 15:40',
     },
     {
         id: 4,
@@ -214,7 +218,8 @@ export const goodsList: GoodsItem[] = [
         giftCoupons: [],
         joinDistribution: true,
         afterSaleDays: 7,
-        detail: '<p>弹力护腰带，支撑腰部、缓解劳损，适合久坐人群。</p>'
+        detail: '<p>弹力护腰带，支撑腰部、缓解劳损，适合久坐人群。</p>',
+        createdAt: '2026-04-10 11:30',
     },
     {
         id: 5,
@@ -242,6 +247,7 @@ export const goodsList: GoodsItem[] = [
         giftCoupons: [],
         joinDistribution: false,
         afterSaleDays: 30,
-        detail: '<p>家用艾灸理疗仪，温经通络、驱寒除湿，操作简单。</p>'
+        detail: '<p>家用艾灸理疗仪，温经通络、驱寒除湿，操作简单。</p>',
+        createdAt: '2026-05-15 14:50',
     }
 ]
