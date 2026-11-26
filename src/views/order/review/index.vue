@@ -112,7 +112,7 @@
                         </el-tag>
                     </template>
                 </el-table-column>
-                <el-table-column label="操作" min-width="160" align="center" fixed="right">
+                <el-table-column label="操作" min-width="230" align="center" fixed="right">
                     <template #default="{ row }">
                         <el-button type="primary" link size="small" @click="openDetail(row)">查看评价</el-button>
                         <el-button
@@ -120,10 +120,20 @@
                             type="warning"
                             link
                             size="small"
-                            @click="hideReview(row)"
+                            @click="toggleReview(row, 'hidden')"
                         >
                             隐藏评价
                         </el-button>
+                        <el-button
+                            v-else
+                            type="success"
+                            link
+                            size="small"
+                            @click="toggleReview(row, 'shown')"
+                        >
+                            展示评价
+                        </el-button>
+                        <el-button type="danger" link size="small" @click="deleteReview(row)">删除</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -279,16 +289,35 @@ const openDetail = (row: ReviewItem) => {
     detailVisible.value = true
 }
 
-// 隐藏评价（二次确认）
-const hideReview = (row: ReviewItem) => {
+// 隐藏 / 展示评价（二次确认）
+const toggleReview = (row: ReviewItem, target: ReviewStatus) => {
+    const isHide = target === 'hidden'
     ElMessageBox.confirm(
-        `确认隐藏该评价？隐藏后用户端服务详情与康复师详情将不再展示该评价。`,
-        '隐藏评价二次确认',
+        isHide
+            ? '确认隐藏该评价？隐藏后用户端服务详情与康复师详情将不再展示该评价。'
+            : '确认展示该评价？展示后用户端服务详情与康复师详情将重新展示该评价。',
+        isHide ? '隐藏评价二次确认' : '展示评价二次确认',
+        { type: isHide ? 'warning' : 'info' }
+    )
+        .then(() => {
+            row.status = target
+            ElMessage.success(isHide ? '评价已隐藏' : '评价已展示')
+        })
+        .catch(() => {})
+}
+
+// 删除评价（二次确认）
+const deleteReview = (row: ReviewItem) => {
+    ElMessageBox.confirm(
+        `确认删除评价「${row.reviewNo}」？删除后不可恢复。`,
+        '删除评价二次确认',
         { type: 'warning' }
     )
         .then(() => {
-            row.status = 'hidden'
-            ElMessage.success('评价已隐藏')
+            const index = data.findIndex((item) => item.id === row.id)
+            if (index > -1) data.splice(index, 1)
+            if (currentItem.value?.id === row.id) detailVisible.value = false
+            ElMessage.success('评价已删除')
         })
         .catch(() => {})
 }
