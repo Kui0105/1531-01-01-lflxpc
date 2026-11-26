@@ -10,10 +10,6 @@
             <el-select v-model="category2" placeholder="二级分类" clearable class="!w-[130px]" :disabled="!category2Options.length">
                 <el-option v-for="item in category2Options" :key="item" :label="item" :value="item" />
             </el-select>
-            <el-select v-model="onSale" placeholder="上架状态" clearable class="!w-[120px]">
-                <el-option label="上架" value="on" />
-                <el-option label="下架" value="off" />
-            </el-select>
             <el-button type="primary" @click="handleSearch">查询</el-button>
             <el-button @click="resetSearch">重置</el-button>
             <el-button class="ml-auto" @click="exportList">导出</el-button>
@@ -22,6 +18,12 @@
 
         <!-- 列表 -->
         <el-card class="list-card mt-4" shadow="never">
+            <el-tabs v-model="activeTab">
+                <el-tab-pane label="全部" name="all" />
+                <el-tab-pane label="上架" name="on" />
+                <el-tab-pane label="下架" name="off" />
+                <el-tab-pane label="回收站" name="recycle" />
+            </el-tabs>
             <el-table class="goods-table" :data="filteredList" style="width: 100%" :cell-style="{ padding: '12px 0' }">
                 <el-table-column label="商品主图" min-width="110" align="center">
                     <template #default="{ row }">
@@ -58,7 +60,12 @@
                         <span :class="{ 'stock-zero': row.stock === 0 }">{{ row.stock }}</span>
                     </template>
                 </el-table-column>
-                <el-table-column prop="spec" label="规格" min-width="100" align="center" />
+                <el-table-column label="规格" min-width="120" align="center">
+                    <template #default="{ row }">
+                        <span>{{ row.spec }}</span>
+                        <el-tag size="small" effect="plain" class="ml-1">{{ row.specType === 'multi' ? '多' : '单' }}</el-tag>
+                    </template>
+                </el-table-column>
                 <el-table-column prop="sort" label="排序值" min-width="90" align="center" />
                 <el-table-column label="商品标签" min-width="120" align="center">
                     <template #default="{ row }">
@@ -75,18 +82,25 @@
                         </el-tag>
                     </template>
                 </el-table-column>
-                <el-table-column label="操作" min-width="200" align="center" fixed="right" class-name="operation-cell">
+                <el-table-column label="操作" min-width="230" align="center" fixed="right" class-name="operation-cell">
                     <template #default="{ row }">
-                        <el-button type="primary" link size="small" @click="openEdit(row)">编辑</el-button>
-                        <el-button
-                            :type="row.onSale === 'on' ? 'warning' : 'success'"
-                            link
-                            size="small"
-                            @click="toggleSale(row)"
-                        >
-                            {{ row.onSale === 'on' ? '下架' : '上架' }}
-                        </el-button>
-                        <el-button type="primary" link size="small" @click="openDetail(row)">查看详情</el-button>
+                        <template v-if="activeTab === 'recycle'">
+                            <el-button type="primary" link size="small" @click="restoreGoods(row)">恢复</el-button>
+                            <el-button type="danger" link size="small" @click="permanentDelete(row)">彻底删除</el-button>
+                        </template>
+                        <template v-else>
+                            <el-button type="primary" link size="small" @click="openEdit(row)">编辑</el-button>
+                            <el-button
+                                :type="row.onSale === 'on' ? 'warning' : 'success'"
+                                link
+                                size="small"
+                                @click="toggleSale(row)"
+                            >
+                                {{ row.onSale === 'on' ? '下架' : '上架' }}
+                            </el-button>
+                            <el-button type="primary" link size="small" @click="openDetail(row)">查看详情</el-button>
+                            <el-button type="danger" link size="small" @click="deleteGoods(row)">删除</el-button>
+                        </template>
                     </template>
                 </el-table-column>
             </el-table>
@@ -96,7 +110,7 @@
         <el-dialog
             v-model="formVisible"
             :title="isEdit ? '编辑商品' : '新增商品'"
-            width="900px"
+            width="940px"
             top="5vh"
         >
             <el-form :model="form" label-width="120px" class="goods-form">
@@ -150,32 +164,83 @@
                     </el-tab-pane>
 
                     <el-tab-pane label="价格与库存" name="price">
-                        <el-row :gutter="16">
+                        <el-form-item label="规格类型">
+                            <el-radio-group v-model="form.specType" @change="handleSpecTypeChange">
+                                <el-radio value="single">单规格</el-radio>
+                                <el-radio value="multi">多规格</el-radio>
+                            </el-radio-group>
+                        </el-form-item>
+
+                        <!-- 单规格 -->
+                        <el-row v-if="form.specType === 'single'" :gutter="16" class="spec-block">
+                            <el-col :span="8">
+                                <el-form-item label="规格名称">
+                                    <el-input v-model="form.specs[0].name" placeholder="如：10包/盒" />
+                                </el-form-item>
+                            </el-col>
                             <el-col :span="8">
                                 <el-form-item label="售价">
-                                    <el-input-number v-model="form.price" :min="0" :precision="2" class="!w-full" />
+                                    <el-input-number v-model="form.specs[0].price" :min="0" :precision="2" class="!w-full" />
                                 </el-form-item>
                             </el-col>
                             <el-col :span="8">
                                 <el-form-item label="原价">
-                                    <el-input-number v-model="form.originPrice" :min="0" :precision="2" class="!w-full" />
+                                    <el-input-number v-model="form.specs[0].originPrice" :min="0" :precision="2" class="!w-full" />
                                 </el-form-item>
                             </el-col>
                             <el-col :span="8">
                                 <el-form-item label="会员价">
-                                    <el-input-number v-model="form.memberPrice" :min="0" :precision="2" class="!w-full" />
+                                    <el-input-number v-model="form.specs[0].memberPrice" :min="0" :precision="2" class="!w-full" />
                                 </el-form-item>
                             </el-col>
                             <el-col :span="8">
                                 <el-form-item label="库存">
-                                    <el-input-number v-model="form.stock" :min="0" class="!w-full" />
+                                    <el-input-number v-model="form.specs[0].stock" :min="0" class="!w-full" />
                                 </el-form-item>
                             </el-col>
-                            <el-col :span="8">
-                                <el-form-item label="规格">
-                                    <el-input v-model="form.spec" placeholder="请输入规格" />
-                                </el-form-item>
-                            </el-col>
+                        </el-row>
+
+                        <!-- 多规格 -->
+                        <div v-else class="spec-block">
+                            <div class="spec-toolbar">
+                                <span class="spec-hint">可添加多个规格，每个规格独立设置价格与库存</span>
+                                <el-button type="primary" plain size="small" @click="addSpec">添加规格</el-button>
+                            </div>
+                            <el-table :data="form.specs" border size="small">
+                                <el-table-column label="规格名称" min-width="150">
+                                    <template #default="{ row }">
+                                        <el-input v-model="row.name" size="small" placeholder="规格名称" />
+                                    </template>
+                                </el-table-column>
+                                <el-table-column label="售价" min-width="140">
+                                    <template #default="{ row }">
+                                        <el-input-number v-model="row.price" :min="0" :precision="2" size="small" controls-position="right" class="!w-full" />
+                                    </template>
+                                </el-table-column>
+                                <el-table-column label="原价" min-width="140">
+                                    <template #default="{ row }">
+                                        <el-input-number v-model="row.originPrice" :min="0" :precision="2" size="small" controls-position="right" class="!w-full" />
+                                    </template>
+                                </el-table-column>
+                                <el-table-column label="会员价" min-width="140">
+                                    <template #default="{ row }">
+                                        <el-input-number v-model="row.memberPrice" :min="0" :precision="2" size="small" controls-position="right" class="!w-full" />
+                                    </template>
+                                </el-table-column>
+                                <el-table-column label="库存" min-width="130">
+                                    <template #default="{ row }">
+                                        <el-input-number v-model="row.stock" :min="0" size="small" controls-position="right" class="!w-full" />
+                                    </template>
+                                </el-table-column>
+                                <el-table-column label="操作" width="80" align="center">
+                                    <template #default="{ row, $index }">
+                                        <el-button type="danger" link size="small" @click="removeSpec($index)">删除</el-button>
+                                    </template>
+                                </el-table-column>
+                            </el-table>
+                        </div>
+
+                        <el-row :gutter="16" class="mt-4">
                             <el-col :span="8">
                                 <el-form-item label="排序值">
                                     <el-input-number v-model="form.sort" :min="0" class="!w-full" />
@@ -186,6 +251,11 @@
                                     <el-input-number v-model="form.afterSaleDays" :min="0" class="!w-full" />
                                 </el-form-item>
                             </el-col>
+                            <el-col :span="8">
+                                <el-form-item label="总库存">
+                                    <el-input :model-value="totalStock" disabled class="!w-full" />
+                                </el-form-item>
+                            </el-col>
                         </el-row>
                     </el-tab-pane>
 
@@ -194,15 +264,27 @@
                             <el-col :span="12">
                                 <el-form-item label="配送方式">
                                     <el-select v-model="form.deliveryType" class="!w-full">
-                                        <el-option label="快递（含运费）" value="express" />
+                                        <el-option label="快递" value="express" />
                                         <el-option label="门店自提" value="pickup" />
                                     </el-select>
                                 </el-form-item>
                             </el-col>
-                            <el-col :span="12">
-                                <el-form-item v-if="form.deliveryType === 'express'" label="运费">
-                                    <el-input-number v-model="form.freight" :min="0" :precision="2" class="!w-full" />
+                            <el-col v-if="form.deliveryType === 'express'" :span="12">
+                                <el-form-item label="运费模板">
+                                    <el-select v-model="form.freightTemplate" placeholder="请选择运费模板" class="!w-full">
+                                        <el-option
+                                            v-for="item in freightTemplates"
+                                            :key="item.name"
+                                            :label="item.name"
+                                            :value="item.name"
+                                        />
+                                    </el-select>
                                 </el-form-item>
+                            </el-col>
+                            <el-col v-if="form.deliveryType === 'express' && form.freightTemplate" :span="24">
+                                <div class="template-desc">
+                                    模板说明：{{ freightTemplates.find((t) => t.name === form.freightTemplate)?.desc }}
+                                </div>
                             </el-col>
                             <el-col :span="24">
                                 <el-form-item label="分装服务">
@@ -224,7 +306,14 @@
                                 <span class="coupon-label">订单满</span>
                                 <el-input-number v-model="coupon.threshold" :min="0" :precision="2" class="coupon-threshold" />
                                 <span class="coupon-label">元，发放</span>
-                                <el-input v-model="coupon.couponName" class="coupon-name" placeholder="优惠券名称" />
+                                <el-select v-model="coupon.couponId" placeholder="请选择优惠券" class="coupon-select">
+                                    <el-option
+                                        v-for="item in couponOptions"
+                                        :key="item.id"
+                                        :label="item.name"
+                                        :value="item.id"
+                                    />
+                                </el-select>
                                 <el-button type="danger" link @click="form.giftCoupons.splice(index, 1)">删除</el-button>
                             </div>
                             <el-button type="primary" plain @click="addCoupon">添加送券配置</el-button>
@@ -265,8 +354,7 @@
                         <div class="info-item"><span class="info-label">售价/原价</span><span class="info-value">¥{{ money(currentItem.price) }} / ¥{{ money(currentItem.originPrice) }}</span></div>
                         <div class="info-item"><span class="info-label">会员价</span><span class="info-value">¥{{ money(currentItem.memberPrice) }}</span></div>
                         <div class="info-item"><span class="info-label">已售</span><span class="info-value">{{ currentItem.sold }}</span></div>
-                        <div class="info-item"><span class="info-label">库存</span><span class="info-value">{{ currentItem.stock }}</span></div>
-                        <div class="info-item"><span class="info-label">规格</span><span class="info-value">{{ currentItem.spec }}</span></div>
+                        <div class="info-item"><span class="info-label">总库存</span><span class="info-value">{{ currentItem.stock }}</span></div>
                         <div class="info-item"><span class="info-label">排序值</span><span class="info-value">{{ currentItem.sort }}</span></div>
                         <div class="info-item"><span class="info-label">售后期限</span><span class="info-value">{{ currentItem.afterSaleDays }} 天</span></div>
                         <div class="info-item"><span class="info-label">上架状态</span><span class="info-value">{{ currentItem.onSale === 'on' ? '上架' : '下架' }}</span></div>
@@ -276,10 +364,26 @@
                     </div>
                 </el-card>
                 <el-card class="info-card mt-4" shadow="never">
+                    <template #header><span class="header-title">规格（{{ currentItem.specType === 'multi' ? '多规格' : '单规格' }}）</span></template>
+                    <el-table :data="currentItem.specs" border size="small">
+                        <el-table-column prop="name" label="规格名称" min-width="140" align="center" />
+                        <el-table-column label="售价" min-width="100" align="center">
+                            <template #default="{ row }">¥{{ money(row.price) }}</template>
+                        </el-table-column>
+                        <el-table-column label="原价" min-width="100" align="center">
+                            <template #default="{ row }">¥{{ money(row.originPrice) }}</template>
+                        </el-table-column>
+                        <el-table-column label="会员价" min-width="100" align="center">
+                            <template #default="{ row }">¥{{ money(row.memberPrice) }}</template>
+                        </el-table-column>
+                        <el-table-column prop="stock" label="库存" min-width="90" align="center" />
+                    </el-table>
+                </el-card>
+                <el-card class="info-card mt-4" shadow="never">
                     <template #header><span class="header-title">配送与服务</span></template>
                     <div class="info-grid">
                         <div class="info-item"><span class="info-label">配送方式</span><span class="info-value">{{ currentItem.deliveryType === 'express' ? '快递' : '门店自提' }}</span></div>
-                        <div v-if="currentItem.deliveryType === 'express'" class="info-item"><span class="info-label">运费</span><span class="info-value">¥{{ money(currentItem.freight) }}</span></div>
+                        <div v-if="currentItem.deliveryType === 'express'" class="info-item"><span class="info-label">运费模板</span><span class="info-value">{{ currentItem.freightTemplate }}</span></div>
                         <div class="info-item"><span class="info-label">分装服务</span><span class="info-value">{{ currentItem.packingService ? '支持' : '不支持' }}</span></div>
                         <div v-if="currentItem.packingService" class="info-item full-width"><span class="info-label">分装说明</span><span class="info-value">{{ currentItem.packingDesc }}</span></div>
                     </div>
@@ -287,7 +391,7 @@
                 <el-card v-if="currentItem.giftCoupons.length" class="info-card mt-4" shadow="never">
                     <template #header><span class="header-title">购买送券</span></template>
                     <div v-for="coupon in currentItem.giftCoupons" :key="coupon.id" class="coupon-view">
-                        订单满 ¥{{ money(coupon.threshold) }} 发放「{{ coupon.couponName }}」
+                        订单满 ¥{{ money(coupon.threshold) }} 发放「{{ couponName(coupon.couponId) }}」
                     </div>
                 </el-card>
                 <el-card class="info-card mt-4" shadow="never">
@@ -308,9 +412,12 @@ import { exportCsv } from '@/utils/export-csv'
 import {
     category1Options,
     categoryOptions,
+    couponName,
+    couponOptions,
+    freightTemplates,
     goodsList
 } from './data'
-import type { GoodsItem, GiftCoupon } from './data'
+import type { GoodsItem, SpecItem } from './data'
 
 const money = (value: number) => value.toFixed(2)
 
@@ -325,23 +432,27 @@ const data = reactive(cloneDeep(goodsList))
 const keyword = ref('')
 const category1 = ref('')
 const category2 = ref('')
-const onSale = ref('')
-const query = reactive({ keyword: '', category1: '', category2: '', onSale: '' })
+const activeTab = ref('all')
+const query = reactive({ keyword: '', category1: '', category2: '' })
 
 const category2Options = computed(() => (category1.value ? categoryOptions[category1.value] || [] : []))
 const handleCategory1Change = () => {
     category2.value = ''
 }
 
-// 排序值降序
+// 状态 TAB + 排序值降序
 const filteredList = computed(() =>
     data
         .filter((item) => {
             const matchKeyword = !query.keyword || item.name.includes(query.keyword)
             const matchC1 = !query.category1 || item.category1 === query.category1
             const matchC2 = !query.category2 || item.category2 === query.category2
-            const matchSale = !query.onSale || item.onSale === query.onSale
-            return matchKeyword && matchC1 && matchC2 && matchSale
+            let matchTab = true
+            if (activeTab.value === 'recycle') matchTab = !!item.deleted
+            else if (activeTab.value === 'on') matchTab = !item.deleted && item.onSale === 'on'
+            else if (activeTab.value === 'off') matchTab = !item.deleted && item.onSale === 'off'
+            else matchTab = !item.deleted
+            return matchKeyword && matchC1 && matchC2 && matchTab
         })
         .sort((a, b) => b.sort - a.sort)
 )
@@ -350,13 +461,12 @@ const handleSearch = () => {
     query.keyword = keyword.value.trim()
     query.category1 = category1.value
     query.category2 = category2.value
-    query.onSale = onSale.value
 }
 const resetSearch = () => {
     keyword.value = ''
     category1.value = ''
     category2.value = ''
-    onSale.value = ''
+    activeTab.value = 'all'
     handleSearch()
 }
 
@@ -390,6 +500,8 @@ const formCategory2Options = computed(() => (form.category1 ? categoryOptions[fo
 const handleFormCategory1Change = () => {
     form.category2 = ''
 }
+
+const emptySpec = (): SpecItem => ({ id: Date.now(), name: '', price: 0, originPrice: 0, memberPrice: 0, stock: 0 })
 const emptyForm = (): GoodsItem => ({
     id: 0,
     mainImage: '',
@@ -397,6 +509,8 @@ const emptyForm = (): GoodsItem => ({
     name: '',
     category1: '',
     category2: '',
+    specType: 'single',
+    specs: [emptySpec()],
     price: 0,
     originPrice: 0,
     memberPrice: 0,
@@ -407,7 +521,7 @@ const emptyForm = (): GoodsItem => ({
     tags: [],
     onSale: 'on',
     deliveryType: 'express',
-    freight: 0,
+    freightTemplate: freightTemplates[0].name,
     packingService: false,
     packingDesc: '',
     giftCoupons: [],
@@ -415,6 +529,25 @@ const emptyForm = (): GoodsItem => ({
     detail: ''
 })
 const form = reactive<GoodsItem>(emptyForm())
+
+// 规格处理
+const totalStock = computed(() => form.specs.reduce((sum, item) => sum + (item.stock || 0), 0))
+const handleSpecTypeChange = () => {
+    if (form.specType === 'single' && form.specs.length > 1) {
+        // 切回单规格保留第一条
+        form.specs = [form.specs[0]]
+    } else if (form.specType === 'multi' && form.specs.length === 0) {
+        form.specs = [emptySpec()]
+    }
+}
+const addSpec = () => form.specs.push(emptySpec())
+const removeSpec = (index: number) => {
+    if (form.specs.length <= 1) {
+        ElMessage.warning('至少保留一个规格')
+        return
+    }
+    form.specs.splice(index, 1)
+}
 
 const openAdd = () => {
     isEdit.value = false
@@ -435,7 +568,7 @@ const addFormImage = () => {
     if (!form.mainImage) form.mainImage = form.images[0]
 }
 const addCoupon = () => {
-    form.giftCoupons.push({ id: Date.now(), threshold: 0, couponName: '' })
+    form.giftCoupons.push({ id: Date.now(), threshold: 0, couponId: '' })
 }
 const submitForm = () => {
     if (!form.name.trim()) {
@@ -450,11 +583,29 @@ const submitForm = () => {
         ElMessage.warning('请添加商品轮播图')
         return
     }
-    if (form.giftCoupons.some((c) => !c.couponName.trim())) {
-        ElMessage.warning('请填写优惠券名称或删除空配置')
+    if (!form.specs.length || form.specs.some((s) => !s.name.trim())) {
+        ElMessage.warning('请填写规格名称')
         return
     }
-    const payload = { ...cloneDeep(form), mainImage: form.mainImage || form.images[0] }
+    if (form.giftCoupons.some((c) => !c.couponId)) {
+        ElMessage.warning('请选择发放的优惠券')
+        return
+    }
+
+    // 由规格汇总价格与库存
+    const first = form.specs[0]
+    const minPrice = Math.min(...form.specs.map((s) => s.price))
+    const minMember = Math.min(...form.specs.map((s) => s.memberPrice))
+    const maxOrigin = Math.max(...form.specs.map((s) => s.originPrice))
+    const payload: GoodsItem = {
+        ...cloneDeep(form),
+        price: form.specType === 'single' ? first.price : minPrice,
+        memberPrice: form.specType === 'single' ? first.memberPrice : minMember,
+        originPrice: form.specType === 'single' ? first.originPrice : maxOrigin,
+        stock: totalStock.value,
+        spec: form.specs.map((s) => s.name).join('、'),
+        mainImage: form.mainImage || form.images[0]
+    }
     if (isEdit.value) {
         const index = data.findIndex((item) => item.id === editingId.value)
         if (index > -1) data[index] = { ...payload, id: editingId.value }
@@ -471,7 +622,7 @@ const toggleSale = (row: GoodsItem) => {
     const target = row.onSale === 'on' ? 'off' : 'on'
     const isOn = target === 'on'
     if (isOn && row.stock === 0) {
-        ElMessage.warning('库存为 0 的商品无法上架，请先补充库存')
+        ElMessage.warning('总库存为 0 的商品无法上架，请先补充库存')
         return
     }
     ElMessageBox.confirm(
@@ -482,6 +633,37 @@ const toggleSale = (row: GoodsItem) => {
         .then(() => {
             row.onSale = target
             ElMessage.success(isOn ? '商品已上架' : '商品已下架')
+        })
+        .catch(() => {})
+}
+
+// 删除 / 回收站
+const deleteGoods = (row: GoodsItem) => {
+    ElMessageBox.confirm(
+        `确认删除商品「${row.name}」？删除后可在回收站恢复或彻底删除。`,
+        '删除二次确认',
+        { type: 'warning' }
+    )
+        .then(() => {
+            row.deleted = true
+            ElMessage.success('商品已移入回收站')
+        })
+        .catch(() => {})
+}
+const restoreGoods = (row: GoodsItem) => {
+    ElMessageBox.confirm(`确认恢复商品「${row.name}」？`, '恢复二次确认', { type: 'info' })
+        .then(() => {
+            row.deleted = false
+            ElMessage.success('商品已恢复')
+        })
+        .catch(() => {})
+}
+const permanentDelete = (row: GoodsItem) => {
+    ElMessageBox.confirm(`确认彻底删除商品「${row.name}」？删除后不可恢复。`, '彻底删除二次确认', { type: 'warning' })
+        .then(() => {
+            const index = data.findIndex((item) => item.id === row.id)
+            if (index > -1) data.splice(index, 1)
+            ElMessage.success('商品已彻底删除')
         })
         .catch(() => {})
 }
@@ -617,6 +799,34 @@ const openDetail = (row: GoodsItem) => {
     border-radius: 4px;
 }
 
+.spec-block {
+    padding: 12px;
+    background: #fafafa;
+    border: 1px solid #ebeef5;
+    border-radius: 6px;
+}
+
+.spec-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.spec-hint {
+    font-size: 12px;
+    color: #909399;
+}
+
+.template-desc {
+    margin: -6px 0 12px;
+    padding: 8px 12px;
+    font-size: 12px;
+    color: #606266;
+    background: #f5f7ff;
+    border-radius: 4px;
+}
+
 .coupon-tip {
     margin-bottom: 14px;
     padding: 8px 12px;
@@ -648,7 +858,7 @@ const openDetail = (row: GoodsItem) => {
     width: 150px;
 }
 
-.coupon-name {
+.coupon-select {
     width: 240px;
 }
 
