@@ -189,11 +189,16 @@
                     </el-col>
                     <el-col v-if="form.issueMethod === 'auto'" :span="24">
                         <el-form-item label="每月发放日">
-                            <el-input-number v-model="form.autoDay" :min="1" :max="31" class="!w-full" />
-                            <div class="form-hint">每月此日固定发放给所有用户</div>
+                            <el-select v-model="form.autoDay" placeholder="请选择发放日" class="!w-full">
+                                <el-option v-for="day in 31" :key="day" :label="`${day} 日`" :value="day" />
+                            </el-select>
+                            <div class="form-hint">每月此日固定发放给所有用户（按自然月天数选择）</div>
                         </el-form-item>
                     </el-col>
-                    <el-col v-if="form.issueMethod === 'gift' || form.issueMethod === 'manager'" :span="24">
+                    <el-col v-if="form.issueMethod === 'gift'" :span="24">
+                        <div class="method-tip">购买赠送：关联条件在服务/商品的新增编辑表单中配置</div>
+                    </el-col>
+                    <el-col v-if="form.issueMethod === 'manager'" :span="24">
                         <el-form-item label="生成条件">
                             <el-input-number v-model="form.generateAmount" :min="0" class="!w-full" />
                             <div class="form-hint">购买指定服务/商品满该金额后可生成赠送优惠券</div>
@@ -201,18 +206,21 @@
                     </el-col>
                     <el-col v-if="form.issueMethod === 'manager'" :span="24">
                         <el-form-item label="店长确认发放">
-                            <el-switch v-model="form.managerConfirm" active-text="需店长确认" inactive-text="自动发放" />
-                            <div class="form-hint">勾选后需店长在员工端选择店内消费过的用户并确认发放；不勾选则自动发放至用户优惠券账户</div>
+                            <el-radio-group v-model="form.managerConfirm">
+                                <el-radio :value="true">需店长确认</el-radio>
+                                <el-radio :value="false">自动发放</el-radio>
+                            </el-radio-group>
+                            <div class="form-hint">需店长确认时，店长在员工端选择店内消费过的用户并确认发放；自动发放则直接发放至用户优惠券账户</div>
                         </el-form-item>
                     </el-col>
                     <el-col v-if="form.issueMethod === 'manual'" :span="24">
                         <el-form-item label="领取类型" required>
-                            <div class="benefit-switches">
-                                <el-switch v-model="form.birthdayBenefit" active-text="生日福利" />
-                                <el-switch v-model="form.newUserBenefit" active-text="新人福利" />
-                            </div>
+                            <el-radio-group v-model="benefitChoice">
+                                <el-radio value="birthday">生日福利</el-radio>
+                                <el-radio value="newUser">新人福利</el-radio>
+                            </el-radio-group>
                             <div class="form-hint">
-                                生日福利与新人福利至少选择一项<br />
+                                生日福利与新人福利二选一，不可同时选择<br />
                                 生日福利：根据出生日期判断发送提醒，用户可在个人中心-生日福利页面领取优惠券<br />
                                 新人福利：新用户注册登录判定为新用户时弹窗领取优惠券
                             </div>
@@ -228,9 +236,9 @@
                     <el-col :span="24">
                         <el-form-item label="提成类型">
                             <el-switch v-model="form.commissionEnabled" active-text="启用" inactive-text="不启用" />
-                            <div class="form-hint">
-                                券被使用后按券面额提成给到康复师<br />
-                                店长获得订单总额 2% 提成；提成比例由管理端配置
+                            <div class="form-hint commission-hint">
+                                <span>券被使用后按券面额提成给到康复师</span>
+                                <span>店长获得订单总额 2% 提成；提成比例由管理端配置</span>
                             </div>
                         </el-form-item>
                     </el-col>
@@ -331,6 +339,15 @@ const emptyForm = (): CouponItem => ({
     createdAt: ''
 })
 const form = reactive<CouponItem>(emptyForm())
+
+// 领取类型：生日福利 / 新人福利 单选，与两个布尔字段同步
+const benefitChoice = computed({
+    get: () => (form.birthdayBenefit ? 'birthday' : form.newUserBenefit ? 'newUser' : ''),
+    set: (val: string) => {
+        form.birthdayBenefit = val === 'birthday'
+        form.newUserBenefit = val === 'newUser'
+    }
+})
 
 const openAdd = () => {
     isEdit.value = false
@@ -488,17 +505,15 @@ const deleteCoupon = (row: CouponItem) => {
     color: #f56c6c;
 }
 
-.benefit-switches {
-    display: flex;
-    align-items: center;
-    gap: 24px;
-}
-
 .form-hint {
     margin-top: 4px;
     font-size: 12px;
     line-height: 1.8;
     color: #909399;
+}
+
+.commission-hint span {
+    display: block;
 }
 
 .method-tip {
