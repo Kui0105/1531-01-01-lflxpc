@@ -91,7 +91,7 @@
                         </el-tag>
                     </template>
                 </el-table-column>
-                <el-table-column label="操作" min-width="230" align="center" fixed="right">
+                <el-table-column label="操作" min-width="300" align="center" fixed="right" class-name="operation-cell">
                     <template #default="{ row }">
                         <template v-if="activeTab === 'recycle'">
                             <el-button type="primary" link size="small" @click="restoreService(row)">恢复</el-button>
@@ -742,5 +742,14 @@ const permanentDelete = (row: ServiceItem) => {
 
 :deep(.service-table .el-table__cell .cell) {
     white-space: nowrap;
+}
+
+:deep(.operation-cell .cell) {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 6px 4px;
+    white-space: normal;
 }
 </style>
