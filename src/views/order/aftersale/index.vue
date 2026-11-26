@@ -84,9 +84,14 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="申请退款金额" min-width="130" align="center">
+                <el-table-column label="退款金额" min-width="150" align="center">
                     <template #default="{ row }">
-                        <span class="refund-amount">¥{{ money(row.refundAmount) }}</span>
+                        <div class="cell-lines">
+                            <span>申请 ¥{{ money(row.refundAmount) }}</span>
+                            <span v-if="row.actualRefundAmount" class="cell-sub refund-amount">
+                                实退 ¥{{ money(row.actualRefundAmount) }}
+                            </span>
+                        </div>
                     </template>
                 </el-table-column>
                 <el-table-column label="状态" min-width="110" align="center">
@@ -104,7 +109,7 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="操作" min-width="120" align="center" fixed="right">
+                <el-table-column label="操作" min-width="150" align="center" fixed="right">
                     <template #default="{ row }">
                         <el-button
                             v-if="row.status === 'pending'"
@@ -114,6 +119,24 @@
                             @click="openAudit(row)"
                         >
                             审核处理
+                        </el-button>
+                        <el-button
+                            v-else-if="row.status === 'waiting_receive'"
+                            type="primary"
+                            link
+                            size="small"
+                            @click="openReceive(row)"
+                        >
+                            确认收货
+                        </el-button>
+                        <el-button
+                            v-else-if="row.status === 'waiting_refund'"
+                            type="primary"
+                            link
+                            size="small"
+                            @click="openRefund(row)"
+                        >
+                            确认退款
                         </el-button>
                         <span v-else class="text-muted">-</span>
                     </template>
@@ -137,6 +160,10 @@
                 </el-card>
                 <div class="refund-info">
                     <div class="refund-row">
+                        <span class="refund-label">售后类型</span>
+                        <span class="refund-value type-value">{{ afterSaleTypeLabels[currentItem.afterSaleType] }}</span>
+                    </div>
+                    <div class="refund-row">
                         <span class="refund-label">可退款金额</span>
                         <span class="refund-value">¥{{ money(currentItem.refundableAmount) }}</span>
                     </div>
@@ -145,11 +172,19 @@
                         <span class="refund-rule">{{ currentItem.refundRule }}</span>
                     </div>
                 </div>
+                <div v-if="auditResult === 'agree'" class="process-tip">
+                    <template v-if="currentItem.afterSaleType === 'refund'">
+                        仅退款：审核通过后原路退回可退款金额，售后单转为已同意。
+                    </template>
+                    <template v-else>
+                        退货退款：审核通过后由用户端寄回商品并填写物流信息（快递公司、物流单号），管理端确认收货后方可确认退款。
+                    </template>
+                </div>
                 <div class="audit-form">
                     <div class="audit-row">
                         <span class="audit-label">处理结果</span>
                         <el-radio-group v-model="auditResult">
-                            <el-radio value="agree">同意退款</el-radio>
+                            <el-radio value="agree">同意{{ currentItem.afterSaleType === 'refund' ? '退款' : '退货退款' }}</el-radio>
                             <el-radio value="reject">拒绝退款</el-radio>
                         </el-radio-group>
                     </div>
@@ -168,6 +203,71 @@
             <template #footer>
                 <el-button @click="auditVisible = false">取消</el-button>
                 <el-button type="primary" @click="submitAudit">确认提交</el-button>
+            </template>
+        </el-dialog>
+
+        <!-- 确认收货弹窗（退货退款） -->
+        <el-dialog v-model="receiveVisible" title="确认收货" width="520px">
+            <template v-if="currentItem">
+                <div class="process-tip">
+                    用户已寄回商品并填写物流信息，请核对后确认收货。确认收货后才可操作确认退款。
+                </div>
+                <el-card class="info-card" shadow="never">
+                    <template #header><span class="header-title">退货物流信息</span></template>
+                    <div class="info-grid">
+                        <div class="info-item"><span class="info-label">售后单号</span><span class="info-value">{{ currentItem.afterSaleNo }}</span></div>
+                        <div class="info-item"><span class="info-label">用户昵称</span><span class="info-value">{{ currentItem.nickname }}</span></div>
+                        <div class="info-item"><span class="info-label">快递公司</span><span class="info-value">{{ currentItem.returnExpressCompany }}</span></div>
+                        <div class="info-item"><span class="info-label">物流单号</span><span class="info-value">{{ currentItem.returnTrackingNo }}</span></div>
+                    </div>
+                </el-card>
+            </template>
+            <template #footer>
+                <el-button @click="receiveVisible = false">取消</el-button>
+                <el-button type="primary" @click="submitReceive">确认收货</el-button>
+            </template>
+        </el-dialog>
+
+        <!-- 确认退款弹窗（退货退款） -->
+        <el-dialog v-model="refundVisible" title="确认退款" width="520px">
+            <template v-if="currentItem">
+                <div class="process-tip">
+                    已确认收货，可原路返还全额付款金额，或填写退回部分金额。
+                </div>
+                <el-card class="info-card" shadow="never">
+                    <template #header><span class="header-title">退款信息</span></template>
+                    <div class="info-grid">
+                        <div class="info-item"><span class="info-label">售后单号</span><span class="info-value">{{ currentItem.afterSaleNo }}</span></div>
+                        <div class="info-item"><span class="info-label">可退金额</span><span class="info-value">¥{{ money(currentItem.refundableAmount) }}</span></div>
+                    </div>
+                </el-card>
+                <div class="refund-form">
+                    <div class="audit-row">
+                        <span class="audit-label">退款方式</span>
+                        <el-radio-group v-model="refundMode">
+                            <el-radio value="full">全额退款</el-radio>
+                            <el-radio value="partial">部分退款</el-radio>
+                        </el-radio-group>
+                    </div>
+                    <div v-if="refundMode === 'partial'" class="audit-row">
+                        <span class="audit-label">退回金额</span>
+                        <el-input-number
+                            v-model="partialAmount"
+                            :min="0.01"
+                            :max="currentItem.refundableAmount"
+                            :precision="2"
+                            :step="1"
+                            class="!w-[220px]"
+                        />
+                    </div>
+                    <div class="refund-preview">
+                        实际退款金额：<span class="refund-amount">¥{{ money(actualRefundValue) }}</span>
+                    </div>
+                </div>
+            </template>
+            <template #footer>
+                <el-button @click="refundVisible = false">取消</el-button>
+                <el-button type="primary" @click="submitRefund">确认退款</el-button>
             </template>
         </el-dialog>
 
@@ -254,7 +354,7 @@ const resetSearch = () => {
 const exportList = () => {
     exportCsv(
         '售后订单',
-        ['售后单号', '原订单编号', '订单类型', '售后类型', '用户昵称', '手机号', '售后原因', '备注说明', '申请退款金额', '状态', '申请时间'],
+        ['售后单号', '原订单编号', '订单类型', '售后类型', '用户昵称', '手机号', '售后原因', '备注说明', '申请退款金额', '实际退款金额', '状态', '申请时间'],
         filteredList.value.map((row) => [
             row.afterSaleNo,
             row.originOrderNo,
@@ -265,6 +365,7 @@ const exportList = () => {
             row.reason,
             row.remark,
             row.refundAmount,
+            row.actualRefundAmount,
             statusLabels[row.status],
             row.applyTime
         ])
@@ -306,25 +407,95 @@ const submitAudit = () => {
         ElMessage.warning('请填写拒绝原因')
         return
     }
-    if (auditResult.value === 'agree') {
-        ElMessageBox.confirm(
-            `确认同意退款 ¥${money(currentItem.value.refundableAmount)}？确认后将原路退还退款金额。`,
-            '退款二次确认',
-            { type: 'warning' }
-        )
-            .then(() => {
-                if (!currentItem.value) return
-                currentItem.value.status = 'agreed'
-                auditVisible.value = false
-                ElMessage.success('已同意退款，金额将原路退还')
-            })
-            .catch(() => {})
-    } else {
+    if (auditResult.value === 'reject') {
         currentItem.value.status = 'rejected'
         currentItem.value.rejectReason = rejectReason.value.trim()
         auditVisible.value = false
         ElMessage.success('已拒绝退款，拒绝原因将展示给用户')
+        return
     }
+    // 同意处理：仅退款直接原路退回；退货退款进入待用户寄回阶段
+    const isRefund = currentItem.value.afterSaleType === 'refund'
+    const tip = isRefund
+        ? `确认同意仅退款 ¥${money(currentItem.value.refundableAmount)}？确认后将原路退回退款金额。`
+        : '确认同意退货退款？同意后用户端需寄回商品并填写物流信息（快递公司、物流单号）。'
+    ElMessageBox.confirm(tip, '审核二次确认', { type: 'warning' })
+        .then(() => {
+            if (!currentItem.value) return
+            if (isRefund) {
+                // 仅退款：审核通过即原路退回
+                currentItem.value.status = 'agreed'
+                currentItem.value.actualRefundAmount = currentItem.value.refundableAmount
+                ElMessage.success('已同意退款，金额已原路退回')
+            } else {
+                // 退货退款：进入待收货，等待用户寄回并填写物流
+                currentItem.value.status = 'waiting_receive'
+                ElMessage.success('已同意退货退款，等待用户寄回商品并填写物流信息')
+            }
+            auditVisible.value = false
+        })
+        .catch(() => {})
+}
+
+// 确认收货（退货退款）
+const receiveVisible = ref(false)
+const openReceive = (row: AfterSaleItem) => {
+    currentItem.value = row
+    receiveVisible.value = true
+}
+const submitReceive = () => {
+    if (!currentItem.value) return
+    ElMessageBox.confirm(
+        `确认已收到用户寄回的商品（${currentItem.value.returnExpressCompany} ${currentItem.value.returnTrackingNo}）？确认后方可操作退款。`,
+        '确认收货二次确认',
+        { type: 'warning' }
+    )
+        .then(() => {
+            if (!currentItem.value) return
+            currentItem.value.status = 'waiting_refund'
+            receiveVisible.value = false
+            ElMessage.success('已确认收货，可操作确认退款')
+        })
+        .catch(() => {})
+}
+
+// 确认退款（退货退款）
+const refundVisible = ref(false)
+const refundMode = ref<'full' | 'partial'>('full')
+const partialAmount = ref(0)
+const actualRefundValue = computed(() =>
+    refundMode.value === 'full' ? currentItem.value?.refundableAmount || 0 : partialAmount.value
+)
+const openRefund = (row: AfterSaleItem) => {
+    currentItem.value = row
+    refundMode.value = 'full'
+    partialAmount.value = row.refundableAmount
+    refundVisible.value = true
+}
+const submitRefund = () => {
+    if (!currentItem.value) return
+    const amount = actualRefundValue.value
+    if (amount <= 0) {
+        ElMessage.warning('退款金额需大于 0')
+        return
+    }
+    if (amount > currentItem.value.refundableAmount) {
+        ElMessage.warning('退款金额不能超过可退金额')
+        return
+    }
+    ElMessageBox.confirm(
+        `确认退款 ¥${money(amount)}？确认后将原路返还给用户。`,
+        '退款二次确认',
+        { type: 'warning' }
+    )
+        .then(() => {
+            if (!currentItem.value) return
+            currentItem.value.status = 'agreed'
+            currentItem.value.actualRefundAmount = amount
+            refundVisible.value = false
+            ElMessage.success(`退款成功，已原路返还 ¥${money(amount)}`)
+        })
+        .catch(() => {})
 }
 </script>
 
@@ -509,6 +680,11 @@ const submitAudit = () => {
     color: #f56c6c;
 }
 
+.type-value {
+    font-size: 15px;
+    color: var(--el-color-primary);
+}
+
 .refund-rule {
     flex: 1;
     font-size: 13px;
@@ -516,8 +692,32 @@ const submitAudit = () => {
     color: #606266;
 }
 
+.process-tip {
+    margin-top: 14px;
+    padding: 10px 14px;
+    font-size: 13px;
+    line-height: 1.7;
+    color: #606266;
+    background: #f5f7ff;
+    border: 1px solid #e8ebf5;
+    border-radius: 6px;
+}
+
 .audit-form {
     margin-top: 16px;
+}
+
+.refund-form {
+    margin-top: 16px;
+}
+
+.refund-preview {
+    margin-top: 10px;
+    padding: 10px 14px;
+    font-size: 14px;
+    color: #606266;
+    background: #f5f7fa;
+    border-radius: 6px;
 }
 
 .audit-row {
