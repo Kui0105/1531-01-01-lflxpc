@@ -1,5 +1,18 @@
 # 更新日志
 
+## v0.23.2 (2026-11-26)
+
+### 本次更新
+
+- 分销等级名称调整为：黄铜分销、白银分销、黄金分销、钻石分销（图标文字同步为 铜/银/金/钻）
+- 分销列表 mock 用户的所属等级同步更新为新名称（黄铜/白银/黄金）
+
+### 说明
+
+- 修改文件：`src/views/distribution/level/data.ts`、`src/views/distribution/list/data.ts`，以及版本文件
+- 验证：页面编译均返回 HTTP 200
+- 预览：http://localhost:5173/admin/distribution/level
+
 ## v0.23.1 (2026-11-26)
 
 ### 本次更新

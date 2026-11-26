@@ -23,8 +23,8 @@ const levelIcon = (label: string, color: string) => {
 export const DEFAULT_LEVEL_ID = 1
 
 export const distributionLevels: DistributionLevelItem[] = [
-    { id: 1, name: '一级分销', icon: levelIcon('一', '#4A5DFF'), commissionRate: 10, pointRate: 5, status: 'on', sort: 40 },
-    { id: 2, name: '二级分销', icon: levelIcon('二', '#67c23a'), commissionRate: 8, pointRate: 4, status: 'on', sort: 30 },
-    { id: 3, name: '三级分销', icon: levelIcon('三', '#e6a23c'), commissionRate: 5, pointRate: 2, status: 'on', sort: 20 },
+    { id: 1, name: '黄铜分销', icon: levelIcon('铜', '#b87333'), commissionRate: 10, pointRate: 5, status: 'on', sort: 40 },
+    { id: 2, name: '白银分销', icon: levelIcon('银', '#9aa5b1'), commissionRate: 8, pointRate: 4, status: 'on', sort: 30 },
+    { id: 3, name: '黄金分销', icon: levelIcon('金', '#d4a017'), commissionRate: 5, pointRate: 2, status: 'on', sort: 20 },
     { id: 4, name: '钻石分销', icon: levelIcon('钻', '#8e44ad'), commissionRate: 15, pointRate: 8, status: 'off', sort: 10 }
 ]
