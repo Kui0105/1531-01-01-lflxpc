@@ -227,6 +227,46 @@ export const MARKET_ROUTE: RouteRecordRaw = {
     ]
 }
 
+// 分销推广导航（静态注入到营销管理下方）
+export const DISTRIBUTION_ROUTE: RouteRecordRaw = {
+    path: '/distribution',
+    name: Symbol('admin-distribution'),
+    component: LAYOUT,
+    meta: {
+        title: '分销推广',
+        icon: 'el-icon-Connection'
+    },
+    children: [
+        {
+            path: 'list',
+            name: Symbol('admin-distribution-list'),
+            component: () => import('@/views/distribution/list/index.vue'),
+            meta: {
+                title: '分销列表',
+                icon: 'el-icon-List'
+            }
+        },
+        {
+            path: 'level',
+            name: Symbol('admin-distribution-level'),
+            component: () => import('@/views/distribution/level/index.vue'),
+            meta: {
+                title: '分销等级',
+                icon: 'el-icon-Medal'
+            }
+        },
+        {
+            path: 'config',
+            name: Symbol('admin-distribution-config'),
+            component: () => import('@/views/distribution/config/index.vue'),
+            meta: {
+                title: '分销配置',
+                icon: 'el-icon-Setting'
+            }
+        }
+    ]
+}
+
 export const constantRoutes: Array<RouteRecordRaw> = [
     APPROISE_ROUTE,
     COMPLAINT_ROUTE,
@@ -234,6 +274,7 @@ export const constantRoutes: Array<RouteRecordRaw> = [
     SERVICE_ROUTE,
     GOODS_ROUTE,
     MARKET_ROUTE,
+    DISTRIBUTION_ROUTE,
     {
         path: '/consumer/lists/detail',
         name: Symbol('admin-consumer-detail'),
