@@ -428,9 +428,11 @@ const submitAudit = () => {
                 currentItem.value.actualRefundAmount = currentItem.value.refundableAmount
                 ElMessage.success('已同意退款，金额已原路退回')
             } else {
-                // 退货退款：进入待收货，等待用户寄回并填写物流
+                // 退货退款：模拟用户端寄回并填写物流信息，进入待收货
                 currentItem.value.status = 'waiting_receive'
-                ElMessage.success('已同意退货退款，等待用户寄回商品并填写物流信息')
+                currentItem.value.returnExpressCompany = currentItem.value.returnExpressCompany || '顺丰速运'
+                currentItem.value.returnTrackingNo = currentItem.value.returnTrackingNo || `SF${Date.now().toString().slice(-10)}`
+                ElMessage.success('已同意退货退款，用户已寄回商品并填写物流信息')
             }
             auditVisible.value = false
         })
@@ -446,7 +448,7 @@ const openReceive = (row: AfterSaleItem) => {
 const submitReceive = () => {
     if (!currentItem.value) return
     ElMessageBox.confirm(
-        `确认已收到用户寄回的商品（${currentItem.value.returnExpressCompany} ${currentItem.value.returnTrackingNo}）？确认后方可操作退款。`,
+        `确认已收到用户寄回的商品「${currentItem.value.originOrder.serviceName}」（${currentItem.value.returnExpressCompany} ${currentItem.value.returnTrackingNo}）？确认后方可操作退款。`,
         '确认收货二次确认',
         { type: 'warning' }
     )
