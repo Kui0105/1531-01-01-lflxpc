@@ -163,15 +163,36 @@
                     <el-col :span="24">
                         <el-form-item label="封面图/轮播图">
                             <div class="image-upload-list">
-                                <el-image
-                                    v-for="(img, index) in form.images"
-                                    :key="index"
-                                    :src="coverUrl(img)"
-                                    fit="cover"
-                                    class="form-image"
-                                />
-                                <el-button type="primary" plain @click="addFormImage">添加图片</el-button>
+                                <div v-for="(img, index) in form.images" :key="index" class="image-item">
+                                    <el-image :src="coverUrl(img)" fit="cover" class="form-image" :preview-src-list="form.images.map(coverUrl)" :initial-index="index" preview-teleported />
+                                    <span v-if="index === 0" class="image-index">主图</span>
+                                    <div class="image-actions">
+                                        <el-upload
+                                            accept=".png,.jpg,.jpeg"
+                                            :auto-upload="false"
+                                            :show-file-list="false"
+                                            :on-change="(file) => replaceFormImage(file, index)"
+                                        >
+                                            <el-button type="primary" link size="small">替换</el-button>
+                                        </el-upload>
+                                        <el-button type="danger" link size="small" @click="removeFormImage(index)">删除</el-button>
+                                    </div>
+                                </div>
+                                <el-upload
+                                    accept=".png,.jpg,.jpeg"
+                                    :auto-upload="false"
+                                    :show-file-list="false"
+                                    :on-change="addFormImage"
+                                >
+                                    <div class="image-add">
+                                        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M12 5v14M5 12h14" />
+                                        </svg>
+                                        <span>添加图片</span>
+                                    </div>
+                                </el-upload>
                             </div>
+                            <div class="image-hint">支持 PNG、JPG 格式，第一张为主图，可替换或删除</div>
                         </el-form-item>
                     </el-col>
                     <el-col :span="24">
@@ -339,8 +360,9 @@ import type { OnSaleStatus, ServiceItem, ServiceType } from './data'
 
 const money = (value: number) => value.toFixed(2)
 
-// mock 文字生成 SVG 占位图
+// mock 文字生成 SVG 占位图；已是图片地址（base64/http）直接返回
 const coverUrl = (label: string) => {
+    if (label.startsWith('data:image') || label.startsWith('http')) return label
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300"><rect width="400" height="300" fill="#eef2ff"/><text x="200" y="150" font-size="26" fill="#4A5DFF" text-anchor="middle" dominant-baseline="middle" font-family="sans-serif">${label}</text></svg>`
     return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`
 }
@@ -463,9 +485,42 @@ const openEdit = (row: ServiceItem) => {
     Object.assign(form, cloneDeep(row))
     formVisible.value = true
 }
-const addFormImage = () => {
-    form.images.push(`服务图片${form.images.length + 1}`)
-    if (!form.cover) form.cover = form.images[0]
+// 读取本地图片为 base64
+const readImage = (file: File, callback: (data: string) => void) => {
+    if (!['image/png', 'image/jpeg'].includes(file.type)) {
+        ElMessage.error('图片仅支持 PNG、JPG 格式')
+        return
+    }
+    if (file.size > 2 * 1024 * 1024) {
+        ElMessage.error('图片大小不能超过 2MB')
+        return
+    }
+    const reader = new FileReader()
+    reader.onload = (e) => callback(String(e.target?.result || ''))
+    reader.readAsDataURL(file)
+}
+// 添加图片
+const addFormImage = (uploadFile: { raw?: File }) => {
+    const file = uploadFile.raw
+    if (!file) return
+    readImage(file, (data) => {
+        form.images.push(data)
+        if (!form.cover) form.cover = data
+    })
+}
+// 替换图片
+const replaceFormImage = (uploadFile: { raw?: File }, index: number) => {
+    const file = uploadFile.raw
+    if (!file) return
+    readImage(file, (data) => {
+        form.images[index] = data
+        if (index === 0) form.cover = data
+    })
+}
+// 删除图片
+const removeFormImage = (index: number) => {
+    form.images.splice(index, 1)
+    form.cover = form.images[0] || ''
 }
 const submitForm = () => {
     if (!form.name.trim()) {
@@ -661,15 +716,68 @@ const permanentDelete = (row: ServiceItem) => {
 
 .image-upload-list {
     display: flex;
-    align-items: center;
-    gap: 10px;
+    align-items: flex-start;
+    gap: 12px;
     flex-wrap: wrap;
 }
 
+.image-item {
+    position: relative;
+    width: 100px;
+}
+
 .form-image {
-    width: 80px;
-    height: 60px;
-    border-radius: 4px;
+    width: 100px;
+    height: 80px;
+    border: 1px solid #ebeef5;
+    border-radius: 6px;
+}
+
+.image-index {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    padding: 1px 6px;
+    font-size: 11px;
+    color: #fff;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 3px;
+}
+
+.image-actions {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 4px;
+}
+
+.image-add {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    width: 100px;
+    height: 80px;
+    font-size: 12px;
+    color: #a8abb2;
+    background: #fafafa;
+    border: 1px dashed #dcdfe6;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &:hover {
+        color: var(--el-color-primary);
+        background: #f5f7ff;
+        border-color: var(--el-color-primary);
+    }
+}
+
+.image-hint {
+    margin-top: 8px;
+    font-size: 12px;
+    color: #909399;
 }
 
 .detail-cover {

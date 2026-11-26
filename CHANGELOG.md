@@ -1,5 +1,20 @@
 # 更新日志
 
+## v0.14.1 (2026-11-26)
+
+### 本次更新
+
+- 服务列表与商品列表的新增/编辑弹窗封面图/轮播图改为**本地上传**（PNG/JPG，≤2MB，读取为 base64）
+- 每张图片支持「替换」（点击重新选择本地图片）与「删除」操作，第一张标记为主图，删除后自动顺延主图
+- 添加图片改为虚线卡片式上传入口，上传后可预览放大
+- coverUrl 兼容已上传图片（base64/http 直接返回）与 mock 文字占位图
+
+### 说明
+
+- 修改文件：`src/views/service/list/index.vue`、`src/views/goods/list/index.vue`，以及版本文件
+- 验证：类型检查通过（仅保留既有历史报错，新增代码无报错）
+- 预览：http://localhost:5173/admin/service/list 、http://localhost:5173/admin/goods/list
+
 ## v0.14.0 (2026-11-26)
 
 ### 本次更新
