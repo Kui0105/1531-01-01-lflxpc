@@ -17,10 +17,11 @@ export interface UserState {
 }
 
 // 需在「系统设置 → 网站设置」下追加的子菜单（后端原始数据格式）
+// 三级导航入口不显示图标，icon 置空
 const extraWebsiteMenus = [
-    { paths: 'complaint-type', name: '投诉类型', component: 'setting/website/complaint-type', icon: 'el-icon-ChatLineSquare' },
-    { paths: 'order-setting', name: '订单设置', component: 'setting/website/order-setting', icon: 'el-icon-Setting' },
-    { paths: 'freight-template', name: '运费模板', component: 'setting/website/freight-template', icon: 'el-icon-Tickets' }
+    { paths: 'complaint-type', name: '投诉类型', component: 'setting/website/complaint-type' },
+    { paths: 'order-setting', name: '订单设置', component: 'setting/website/order-setting' },
+    { paths: 'freight-template', name: '运费模板', component: 'setting/website/freight-template' }
 ]
 
 // 递归查找「网站设置」节点并注入子菜单，返回是否命中
@@ -49,7 +50,7 @@ function injectWebsiteMenus(menus: any[]): boolean {
                         is_show: 1,
                         is_cache: 0,
                         perms: '',
-                        icon: item.icon,
+                        icon: '',
                         params: '',
                         selected: ''
                     })
@@ -101,7 +102,7 @@ function injectWebsiteMenusFallback(menus: any[]): boolean {
                         is_show: 1,
                         is_cache: 0,
                         perms: '',
-                        icon: item.icon,
+                        icon: '',
                         params: '',
                         selected: ''
                     })
