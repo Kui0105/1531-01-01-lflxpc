@@ -29,13 +29,6 @@
                     <el-table-column label="本月净收入" min-width="130" align="center">
                         <template #default="{ row }"><span class="value-net">¥{{ money(row.monthNet) }}</span></template>
                     </el-table-column>
-                    <el-table-column label="状态" min-width="100" align="center">
-                        <template #default="{ row }">
-                            <el-tag :type="row.status === 'active' ? 'success' : 'info'" size="small" effect="light">
-                                {{ row.status === 'active' ? '正常' : '停用' }}
-                            </el-tag>
-                        </template>
-                    </el-table-column>
                     <el-table-column label="操作" min-width="120" align="center">
                         <template #default="{ row }">
                             <el-button type="primary" link size="small" @click="openDetail(row.store)">查看明细</el-button>
