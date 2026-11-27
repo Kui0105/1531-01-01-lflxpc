@@ -35,10 +35,6 @@
                 <div class="stat-value income">¥{{ money(summary.income) }}</div>
             </div>
             <div class="stat-card">
-                <div class="stat-label">总支出</div>
-                <div class="stat-value expense">¥{{ money(summary.expense) }}</div>
-            </div>
-            <div class="stat-card">
                 <div class="stat-label">退款金额</div>
                 <div class="stat-value refund">¥{{ money(summary.refund) }}</div>
             </div>
@@ -159,8 +155,7 @@ const summary = computed(() => {
     const rows = filteredList.value
     const income = rows.filter((r) => r.flowType === 'pay' && r.status === 'success').reduce((s, r) => s + r.amount, 0)
     const refund = rows.filter((r) => r.flowType === 'refund' && r.status === 'success').reduce((s, r) => s + r.amount, 0)
-    const expense = refund
-    return { income, expense, refund, net: income - refund }
+    return { income, refund, net: income - refund }
 })
 
 const money = (n: number) => n.toFixed(2)
@@ -234,7 +229,7 @@ const openOrderDetail = (orderNo: string) => {
 
 .stat-row {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 14px;
     margin-top: 14px;
 }
@@ -257,7 +252,6 @@ const openOrderDetail = (orderNo: string) => {
     font-weight: 600;
 
     &.income { color: #67c23a; }
-    &.expense { color: #e6a23c; }
     &.refund { color: #f56c6c; }
     &.net { color: var(--el-color-primary); }
 }
