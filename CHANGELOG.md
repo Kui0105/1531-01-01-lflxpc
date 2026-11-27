@@ -1,5 +1,18 @@
 # 更新日志
 
+## v0.35.1 (2026-11-27)
+
+### 本次更新
+
+- 网站协议配置页增加「康复须知」「成长值规则」两个富文本配置卡片（名称 + 富文本内容，沿用全局 `<editor>` 组件）
+- formData 扩展 rehab_title/rehab_content/growth_title/growth_content 字段，并在获取协议时对后端未返回的新字段做空值兜底，保存时一并提交
+
+### 说明
+
+- 修改文件：`src/views/setting/website/protocol.vue`，以及版本文件
+- 验证：类型检查通过（仅保留既有历史报错），页面编译返回 HTTP 200
+- 预览：http://localhost:5173/admin/setting/website/protocol
+
 ## v0.35.0 (2026-11-27)
 
 ### 本次更新
