@@ -27,6 +27,7 @@ export interface WithdrawRecord {
     applyTime: string // 申请时间
     status: WithdrawStatus // 状态
     rejectReason: string // 拒绝原因
+    voucher?: string // 打款凭证（data URI）
 }
 
 export const withdrawList: WithdrawRecord[] = [
@@ -73,7 +74,8 @@ export const withdrawList: WithdrawRecord[] = [
         bankAccount: '6228480018012345680',
         applyTime: '2026-11-26 14:20',
         status: 'paid',
-        rejectReason: ''
+        rejectReason: '',
+        voucher: 'data:image/svg+xml;charset=utf-8,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27600%27 height=%27360%27%3E%3Crect width=%27600%27 height=%27360%27 fill=%27%23f5f7fa%27/%3E%3Crect x=%2720%27 y=%2720%27 width=%27560%27 height=%27320%27 fill=%27white%27 stroke=%27%23dcdfe6%27/%3E%3Ctext x=%27300%27 y=%27150%27 font-size=%2728%27 text-anchor=%27middle%27 fill=%27%23303333%27%3E%E6%89%93%E6%AC%BE%E5%87%AD%E8%AF%81%3C/text%3E%3Ctext x=%27300%27 y=%27200%27 font-size=%2716%27 text-anchor=%27middle%27 fill=%27%23606266%27%3E%E7%A4%BA%E4%BE%8B%E5%87%AD%E8%AF%81%E5%9B%BE%3C/text%3E%3C/svg%3E'
     },
     {
         id: 4,
@@ -88,7 +90,8 @@ export const withdrawList: WithdrawRecord[] = [
         bankAccount: '6216600100012345681',
         applyTime: '2026-11-25 11:05',
         status: 'paid',
-        rejectReason: ''
+        rejectReason: '',
+        voucher: 'data:image/svg+xml;charset=utf-8,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27600%27 height=%27360%27%3E%3Crect width=%27600%27 height=%27360%27 fill=%27%23f5f7fa%27/%3E%3Crect x=%2720%27 y=%2720%27 width=%27560%27 height=%27320%27 fill=%27white%27 stroke=%27%23dcdfe6%27/%3E%3Ctext x=%27300%27 y=%27150%27 font-size=%2728%27 text-anchor=%27middle%27 fill=%27%23303333%27%3E%E6%89%93%E6%AC%BE%E5%87%AD%E8%AF%81%3C/text%3E%3Ctext x=%27300%27 y=%27200%27 font-size=%2716%27 text-anchor=%27middle%27 fill=%27%23606266%27%3E%E7%A4%BA%E4%BE%8B%E5%87%AD%E8%AF%81%E5%9B%BE%3C/text%3E%3C/svg%3E'
     },
     {
         id: 5,
@@ -133,7 +136,8 @@ export const withdrawList: WithdrawRecord[] = [
         bankAccount: '6227003325012345684',
         applyTime: '2026-11-22 09:40',
         status: 'paid',
-        rejectReason: ''
+        rejectReason: '',
+        voucher: 'data:image/svg+xml;charset=utf-8,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27600%27 height=%27360%27%3E%3Crect width=%27600%27 height=%27360%27 fill=%27%23f5f7fa%27/%3E%3Crect x=%2720%27 y=%2720%27 width=%27560%27 height=%27320%27 fill=%27white%27 stroke=%27%23dcdfe6%27/%3E%3Ctext x=%27300%27 y=%27150%27 font-size=%2728%27 text-anchor=%27middle%27 fill=%27%23303333%27%3E%E6%89%93%E6%AC%BE%E5%87%AD%E8%AF%81%3C/text%3E%3Ctext x=%27300%27 y=%27200%27 font-size=%2716%27 text-anchor=%27middle%27 fill=%27%23606266%27%3E%E7%A4%BA%E4%BE%8B%E5%87%AD%E8%AF%81%E5%9B%BE%3C/text%3E%3C/svg%3E'
     },
     {
         id: 8,

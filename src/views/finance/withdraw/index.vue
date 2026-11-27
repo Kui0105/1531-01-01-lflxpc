@@ -57,8 +57,9 @@
                 <el-table-column label="操作" min-width="160" align="center" fixed="right">
                     <template #default="{ row }">
                         <el-button v-if="row.status === 'pending'" type="primary" link size="small" @click="openAudit(row)">审核</el-button>
-                        <el-button v-if="row.status === 'approved'" type="success" link size="small" @click="payOut(row)">打款</el-button>
-                        <span v-if="row.status === 'paid' || row.status === 'rejected'" class="cell-sub">-</span>
+                        <el-button v-if="row.status === 'approved'" type="success" link size="small" @click="openPay(row)">打款</el-button>
+                        <el-button v-if="row.status === 'paid' && row.voucher" type="primary" link size="small" @click="openVoucher(row)">查看凭证</el-button>
+                        <span v-if="row.status === 'rejected' || (row.status === 'paid' && !row.voucher)" class="cell-sub">-</span>
                     </template>
                 </el-table-column>
             </el-table>
@@ -104,11 +105,56 @@
                 <el-button type="primary" @click="submitAudit">确认提交</el-button>
             </template>
         </el-dialog>
+
+        <!-- 打款弹窗（需上传打款凭证） -->
+        <el-dialog v-model="payVisible" title="确认打款" width="520px" :close-on-click-modal="false">
+            <div v-if="current" class="audit-info">
+                <div class="audit-row"><span class="audit-label">提现单号</span><span>{{ current.serialNo }}</span></div>
+                <div class="audit-row"><span class="audit-label">用户信息</span><span>{{ current.nickname }}（{{ current.phone }}）</span></div>
+                <div class="audit-row"><span class="audit-label">到账金额</span><span class="actual-amount">¥{{ money(current.actualAmount) }}</span></div>
+                <div class="audit-row"><span class="audit-label">开户银行</span><span>{{ current.bank }}</span></div>
+                <div class="audit-row"><span class="audit-label">银行账号</span><span>{{ current.bankAccount }}</span></div>
+            </div>
+            <el-divider />
+            <el-form label-width="90px">
+                <el-form-item label="打款凭证">
+                    <el-upload
+                        accept=".png,.jpg,.jpeg"
+                        :auto-upload="false"
+                        :show-file-list="false"
+                        :on-change="handleVoucherChange"
+                        class="voucher-uploader"
+                    >
+                        <div v-if="payVoucher" class="voucher-preview">
+                            <img :src="payVoucher" class="voucher-img" />
+                            <div class="voucher-mask">点击更换凭证</div>
+                        </div>
+                        <div v-else class="voucher-placeholder">
+                            <el-icon :size="28"><Plus /></el-icon>
+                            <div>点击上传打款凭证</div>
+                            <div class="voucher-tip">支持 PNG/JPG，不超过 2MB</div>
+                        </div>
+                    </el-upload>
+                </el-form-item>
+            </el-form>
+            <template #footer>
+                <el-button @click="payVisible = false">取消</el-button>
+                <el-button type="primary" @click="submitPay">确认打款</el-button>
+            </template>
+        </el-dialog>
+
+        <!-- 查看打款凭证 -->
+        <el-dialog v-model="voucherVisible" title="打款凭证" width="700px">
+            <div v-if="current?.voucher" class="voucher-view">
+                <img :src="current.voucher" class="voucher-view-img" />
+            </div>
+        </el-dialog>
     </div>
 </template>
 
 <script lang="ts" setup name="financeWithdraw">
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { ElMessage } from 'element-plus'
+import { Plus } from '@element-plus/icons-vue'
 
 import {
     withdrawList,
@@ -186,18 +232,49 @@ const submitAudit = () => {
     ElMessage.success(auditResult.value === 'approved' ? '审核通过，待打款' : '已拒绝该提现申请')
 }
 
-// 打款（二次确认）
-const payOut = (row: WithdrawRecord) => {
-    ElMessageBox.confirm(
-        `确认对 ${row.nickname} 的提现单 ${row.serialNo} 打款 ¥${money(row.actualAmount)}？打款后状态变更为已打款。`,
-        '打款二次确认',
-        { type: 'warning' }
-    )
-        .then(() => {
-            row.status = 'paid'
-            ElMessage.success('打款成功，状态已变更为已打款')
-        })
-        .catch(() => {})
+// 打款弹窗（需上传打款凭证，二次确认）
+const payVisible = ref(false)
+const payVoucher = ref('')
+const voucherVisible = ref(false)
+
+const openPay = (row: WithdrawRecord) => {
+    current.value = row
+    payVoucher.value = ''
+    payVisible.value = true
+}
+const handleVoucherChange = (uploadFile: { raw?: File }) => {
+    const file = uploadFile.raw
+    if (!file) return
+    if (!['image/png', 'image/jpeg'].includes(file.type)) {
+        ElMessage.error('打款凭证仅支持 PNG、JPG 格式')
+        return
+    }
+    if (file.size > 2 * 1024 * 1024) {
+        ElMessage.error('打款凭证图片大小不能超过 2MB')
+        return
+    }
+    const reader = new FileReader()
+    reader.onload = (e) => {
+        payVoucher.value = String(e.target?.result || '')
+    }
+    reader.readAsDataURL(file)
+}
+const submitPay = () => {
+    if (!current.value) return
+    if (!payVoucher.value) {
+        ElMessage.warning('请先上传打款凭证')
+        return
+    }
+    current.value.status = 'paid'
+    current.value.voucher = payVoucher.value
+    payVisible.value = false
+    ElMessage.success('打款成功，状态已变更为已打款')
+}
+
+// 查看打款凭证
+const openVoucher = (row: WithdrawRecord) => {
+    current.value = row
+    voucherVisible.value = true
 }
 </script>
 
@@ -265,6 +342,79 @@ const payOut = (row: WithdrawRecord) => {
 .audit-label {
     flex: 0 0 80px;
     color: #909399;
+}
+
+.voucher-uploader {
+    :deep(.el-upload) {
+        display: block;
+    }
+}
+
+.voucher-preview {
+    position: relative;
+    width: 180px;
+    height: 120px;
+    overflow: hidden;
+    border: 1px solid #e8ebf5;
+    border-radius: 6px;
+    cursor: pointer;
+
+    .voucher-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .voucher-mask {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        color: #fff;
+        background: rgba(0, 0, 0, 0.45);
+        opacity: 0;
+        transition: opacity 0.2s;
+    }
+
+    &:hover .voucher-mask {
+        opacity: 1;
+    }
+}
+
+.voucher-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 180px;
+    height: 120px;
+    color: #909399;
+    border: 1px dashed #dcdfe6;
+    border-radius: 6px;
+    cursor: pointer;
+
+    &:hover {
+        border-color: var(--el-color-primary);
+        color: var(--el-color-primary);
+    }
+
+    .voucher-tip {
+        margin-top: 4px;
+        font-size: 11px;
+    }
+}
+
+.voucher-view {
+    display: flex;
+    justify-content: center;
+
+    .voucher-view-img {
+        max-width: 100%;
+        max-height: 60vh;
+        object-fit: contain;
+    }
 }
 </style>
 
