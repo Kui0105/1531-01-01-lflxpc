@@ -13,9 +13,9 @@
                 <el-table-column label="职级数量" min-width="110" align="center">
                     <template #default="{ row }">{{ getLevelCount(row.id) }}</template>
                 </el-table-column>
-                <el-table-column label="人员类型" min-width="140" align="center">
+                <el-table-column prop="staffType" label="人员类型" min-width="140" align="center">
                     <template #default="{ row }">
-                        <el-tag v-for="t in row.staffTypes" :key="t" size="small" effect="plain" class="mr-1">{{ t }}</el-tag>
+                        <el-tag size="small" effect="plain">{{ row.staffType }}</el-tag>
                     </template>
                 </el-table-column>
                 <el-table-column prop="sort" label="排序" min-width="90" align="center" />
@@ -45,10 +45,11 @@
                     <el-input v-model="titleForm.name" placeholder="请输入职称名称" />
                 </el-form-item>
                 <el-form-item label="人员类型">
-                    <el-checkbox-group v-model="titleForm.staffTypes">
-                        <el-checkbox value="店员">店员</el-checkbox>
-                        <el-checkbox value="店长">店长</el-checkbox>
-                    </el-checkbox-group>
+                    <el-radio-group v-model="titleForm.staffType">
+                        <el-radio value="店员">店员</el-radio>
+                        <el-radio value="店长">店长</el-radio>
+                        <el-radio value="技术店长">技术店长</el-radio>
+                    </el-radio-group>
                 </el-form-item>
                 <el-form-item label="排序">
                     <el-input-number v-model="titleForm.sort" :min="0" :max="999" />
@@ -88,20 +89,20 @@
         </el-dialog>
 
         <!-- 新增/编辑绩效评分弹窗 -->
-        <el-dialog v-model="scoreDialogVisible" :title="scoreEditId ? '编辑绩效评分' : '新增绩效评分'" width="440px" append-to-body :close-on-click-modal="false">
-            <el-form :model="scoreForm" label-width="90px">
+        <el-dialog v-model="scoreDialogVisible" :title="scoreEditId ? '编辑绩效评分' : '新增绩效评分'" width="520px" append-to-body :close-on-click-modal="false">
+            <el-form :model="scoreForm" label-width="100px" class="score-form">
                 <el-form-item label="绩效等级">
-                    <el-input v-model="scoreForm.level" placeholder="如 A" />
+                    <el-input v-model="scoreForm.level" placeholder="如 A" class="score-input" />
                 </el-form-item>
                 <el-form-item label="得分区间">
                     <div class="score-range">
-                        <el-input-number v-model="scoreForm.minScore" :min="0" :max="100" controls-position="right" />
-                        <span>~</span>
-                        <el-input-number v-model="scoreForm.maxScore" :min="0" :max="100" controls-position="right" />
+                        <el-input-number v-model="scoreForm.minScore" :min="0" :max="100" controls-position="right" class="score-number" />
+                        <span class="score-separator">~</span>
+                        <el-input-number v-model="scoreForm.maxScore" :min="0" :max="100" controls-position="right" class="score-number" />
                     </div>
                 </el-form-item>
                 <el-form-item label="绩效系数">
-                    <el-input-number v-model="scoreForm.factor" :min="0" :max="10" :precision="2" :step="0.1" />
+                    <el-input-number v-model="scoreForm.factor" :min="0" :max="10" :precision="2" :step="0.1" class="score-number" />
                 </el-form-item>
             </el-form>
             <template #footer>
@@ -179,7 +180,7 @@ import {
 } from './data'
 
 // 职称数据（响应式）
-const titleData = ref<TitleItem[]>(titleList.map((item) => ({ ...item, staffTypes: [...item.staffTypes] })))
+const titleData = ref<TitleItem[]>(titleList.map((item) => ({ ...item })))
 const scoreData = ref<PerformanceScore[]>(performanceScores.map((item) => ({ ...item })))
 const levelData = ref<TitleLevel[]>([])
 const currentTitle = ref<TitleItem | null>(null)
@@ -190,9 +191,9 @@ const levelDataAll = ref<TitleLevel[]>(titleLevels.map((item) => ({ ...item })))
 // ===== 职称新增/编辑 =====
 const titleDialogVisible = ref(false)
 const titleEditId = ref<number | null>(null)
-const emptyTitleForm = (): { name: string; staffTypes: StaffType[]; sort: number; status: TitleStatus } => ({
+const emptyTitleForm = (): { name: string; staffType: StaffType; sort: number; status: TitleStatus } => ({
     name: '',
-    staffTypes: [],
+    staffType: '店员',
     sort: 10,
     status: 'on'
 })
@@ -200,7 +201,7 @@ const titleForm = reactive(emptyTitleForm())
 
 const openTitleEdit = (row?: TitleItem) => {
     titleEditId.value = row?.id ?? null
-    Object.assign(titleForm, row ? { ...row, staffTypes: [...row.staffTypes] } : emptyTitleForm())
+    Object.assign(titleForm, row ? { ...row } : emptyTitleForm())
     titleDialogVisible.value = true
 }
 const submitTitle = () => {
@@ -208,13 +209,13 @@ const submitTitle = () => {
         ElMessage.warning('请输入职称名称')
         return
     }
-    if (!titleForm.staffTypes.length) {
+    if (!titleForm.staffType) {
         ElMessage.warning('请选择人员类型')
         return
     }
     if (titleEditId.value) {
         const idx = titleData.value.findIndex((t) => t.id === titleEditId.value)
-        if (idx > -1) titleData.value[idx] = { ...titleData.value[idx], ...titleForm, staffTypes: [...titleForm.staffTypes] }
+        if (idx > -1) titleData.value[idx] = { ...titleData.value[idx], ...titleForm }
         ElMessage.success('编辑成功')
     } else {
         const now = new Date()
@@ -222,7 +223,6 @@ const submitTitle = () => {
         titleData.value.push({
             id: Date.now(),
             ...titleForm,
-            staffTypes: [...titleForm.staffTypes],
             createdAt: `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}`
         })
         ElMessage.success('新增成功')
@@ -382,10 +382,26 @@ const deleteLevel = (row: TitleLevel) => {
     color: #303133;
 }
 
+.score-form {
+    .score-input {
+        width: 100%;
+    }
+
+    .score-number {
+        width: 140px;
+    }
+}
+
 .score-range {
     display: flex;
     align-items: center;
     gap: 8px;
+    width: 100%;
+
+    .score-separator {
+        flex: 0 0 auto;
+        color: #909399;
+    }
 }
 
 .level-form {

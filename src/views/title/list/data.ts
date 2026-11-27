@@ -3,7 +3,7 @@
  * 后续可由后端接口替换
  */
 
-export type StaffType = '店员' | '店长' // 人员类型（可多选）
+export type StaffType = '店员' | '店长' | '技术店长' // 人员类型（单选）
 export type TitleStatus = 'on' | 'off' // 启用 / 停用
 
 // 绩效评分项
@@ -37,18 +37,18 @@ export interface TitleLevel {
 export interface TitleItem {
     id: number
     name: string // 职称名称
-    staffTypes: StaffType[] // 人员类型
+    staffType: StaffType // 人员类型（单选）
     sort: number // 排序
     status: TitleStatus // 状态
     createdAt: string // 创建时间
 }
 
 export const titleList: TitleItem[] = [
-    { id: 1, name: '初级康复师', staffTypes: ['店员'], sort: 10, status: 'on', createdAt: '2026-01-10 09:30' },
-    { id: 2, name: '中级康复师', staffTypes: ['店员'], sort: 20, status: 'on', createdAt: '2026-02-15 14:20' },
-    { id: 3, name: '高级康复师', staffTypes: ['店员'], sort: 30, status: 'on', createdAt: '2026-03-08 10:45' },
-    { id: 4, name: '技术店长', staffTypes: ['店长', '店员'], sort: 40, status: 'on', createdAt: '2026-04-12 16:00' },
-    { id: 5, name: '店长', staffTypes: ['店长'], sort: 50, status: 'off', createdAt: '2026-05-20 11:15' }
+    { id: 1, name: '初级康复师', staffType: '店员', sort: 10, status: 'on', createdAt: '2026-01-10 09:30' },
+    { id: 2, name: '中级康复师', staffType: '店员', sort: 20, status: 'on', createdAt: '2026-02-15 14:20' },
+    { id: 3, name: '高级康复师', staffType: '店员', sort: 30, status: 'on', createdAt: '2026-03-08 10:45' },
+    { id: 4, name: '技术店长', staffType: '技术店长', sort: 40, status: 'on', createdAt: '2026-04-12 16:00' },
+    { id: 5, name: '店长', staffType: '店长', sort: 50, status: 'off', createdAt: '2026-05-20 11:15' }
 ]
 
 export const performanceScores: PerformanceScore[] = [
