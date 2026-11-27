@@ -1,5 +1,19 @@
 # 更新日志
 
+## v0.34.1 (2026-11-27)
+
+### 本次更新
+
+- 广告列表页调整：
+  - 列表按排序数字从大到小排列（数字越大排名越靠前），改用 adDataRaw + computed 排序，增删改操作同步作用到原始数据
+  - 优化新增/编辑弹窗的广告图上传组件样式：加 ad-uploader class 强制 el-upload 为 block、line-height: 0；预览/占位区加 box-sizing 并调整尺寸为 240×90，解决样式错乱
+
+### 说明
+
+- 修改文件：`src/views/content/ad/index.vue`，以及版本文件
+- 验证：类型检查通过（仅保留既有历史报错），页面编译返回 HTTP 200
+- 预览：http://localhost:5173/admin/content/ad
+
 ## v0.34.0 (2026-11-27)
 
 ### 本次更新

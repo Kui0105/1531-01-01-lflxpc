@@ -38,7 +38,7 @@
         <el-dialog v-model="editVisible" :title="editId ? '编辑广告' : '新增广告'" width="560px" :close-on-click-modal="false">
             <el-form :model="form" label-width="100px" class="ad-form">
                 <el-form-item label="广告图片">
-                    <el-upload accept=".png,.jpg,.jpeg" :auto-upload="false" :show-file-list="false" :on-change="handleImageChange" action="#">
+                    <el-upload class="ad-uploader" accept=".png,.jpg,.jpeg" :auto-upload="false" :show-file-list="false" :on-change="handleImageChange" action="#">
                         <div v-if="form.image" class="image-preview">
                             <img :src="form.image" class="image-img" />
                             <div class="image-mask">点击更换</div>
@@ -79,7 +79,9 @@ import { Plus } from '@element-plus/icons-vue'
 
 import { adList, adPositionOptions, type AdItem } from './data'
 
-const adData = ref<AdItem[]>(adList.map((item) => ({ ...item })))
+const adDataRaw = ref<AdItem[]>(adList.map((item) => ({ ...item })))
+// 排序数字越大排名越靠前
+const adData = computed(() => [...adDataRaw.value].sort((a, b) => b.sort - a.sort))
 
 // 新增/编辑
 const editVisible = ref(false)
@@ -113,15 +115,15 @@ const submitEdit = () => {
     if (!form.image) { ElMessage.warning('请上传广告图片'); return }
     if (!form.position) { ElMessage.warning('请选择广告位置'); return }
     if (editId.value) {
-        const idx = adData.value.findIndex((a) => a.id === editId.value)
-        if (idx > -1) adData.value[idx] = { ...adData.value[idx], ...form }
+        const idx = adDataRaw.value.findIndex((a) => a.id === editId.value)
+        if (idx > -1) adDataRaw.value[idx] = { ...adDataRaw.value[idx], ...form }
         ElMessage.success('编辑成功')
     } else {
         const now = new Date()
         const pad = (n: number) => String(n).padStart(2, '0')
-        adData.value.push({
+        adDataRaw.value.push({
             id: Date.now(),
-            adId: `AD${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}${String(adData.value.length + 1).padStart(3, '0')}`,
+            adId: `AD${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}${String(adDataRaw.value.length + 1).padStart(3, '0')}`,
             ...form,
             createdAt: `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}`
         })
@@ -134,7 +136,7 @@ const submitEdit = () => {
 const deleteAd = (row: AdItem) => {
     ElMessageBox.confirm(`确认删除广告「${row.adId}」？`, '提示', { type: 'warning' })
         .then(() => {
-            adData.value = adData.value.filter((a) => a.id !== row.id)
+            adDataRaw.value = adDataRaw.value.filter((a) => a.id !== row.id)
             ElMessage.success('删除成功')
         })
         .catch(() => {})
@@ -191,15 +193,34 @@ const deleteAd = (row: AdItem) => {
     }
 }
 
+.ad-uploader {
+    display: inline-block;
+    line-height: 0;
+
+    :deep(.el-upload) {
+        display: block;
+        line-height: 0;
+    }
+}
+
 .image-preview {
     position: relative;
-    width: 200px;
-    height: 70px;
+    box-sizing: border-box;
+    width: 240px;
+    height: 90px;
     overflow: hidden;
     border: 1px solid #e8ebf5;
     border-radius: 6px;
     cursor: pointer;
-    .image-img { width: 100%; height: 100%; object-fit: cover; }
+    line-height: normal;
+
+    .image-img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
     .image-mask {
         position: absolute;
         inset: 0;
@@ -212,7 +233,10 @@ const deleteAd = (row: AdItem) => {
         opacity: 0;
         transition: opacity 0.2s;
     }
-    &:hover .image-mask { opacity: 1; }
+
+    &:hover .image-mask {
+        opacity: 1;
+    }
 }
 
 .image-placeholder {
@@ -220,13 +244,23 @@ const deleteAd = (row: AdItem) => {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    width: 200px;
-    height: 70px;
+    box-sizing: border-box;
+    width: 240px;
+    height: 90px;
+    line-height: normal;
     color: #909399;
     border: 1px dashed #dcdfe6;
     border-radius: 6px;
     cursor: pointer;
-    &:hover { border-color: var(--el-color-primary); color: var(--el-color-primary); }
-    .image-tip { margin-top: 2px; font-size: 11px; }
+
+    &:hover {
+        border-color: var(--el-color-primary);
+        color: var(--el-color-primary);
+    }
+
+    .image-tip {
+        margin-top: 4px;
+        font-size: 11px;
+    }
 }
 </style>
