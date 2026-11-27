@@ -1,5 +1,17 @@
 # 更新日志
 
+## v0.26.6 (2026-11-27)
+
+### 本次更新
+
+- 修复积分明细页时间段选择框宽度不生效：Element Plus 日期组件默认宽度由内部 CSS 变量控制（daterange 默认 350px），改用专属 class `.date-range-picker` + `width: 400px !important` 在 scoped 样式中强制覆盖
+
+### 说明
+
+- 修改文件：`src/views/finance/points/index.vue`，以及版本文件
+- 验证：类型检查通过（仅保留既有历史报错），编译产物确认生成 400px 样式
+- 预览：http://localhost:5173/admin/finance/points
+
 ## v0.26.5 (2026-11-27)
 
 ### 本次更新

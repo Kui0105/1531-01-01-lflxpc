@@ -15,8 +15,7 @@
                 start-placeholder="开始日期"
                 end-placeholder="结束日期"
                 unlink-panels
-                class="!w-[400px]"
-                style="width: 400px"
+                class="date-range-picker"
             />
             <el-button type="primary" @click="handleSearch">查询</el-button>
             <el-button @click="resetSearch">重置</el-button>
@@ -189,6 +188,11 @@ const openOrderDetail = (orderNo: string) => {
 
 .list-card {
     border-radius: 8px;
+}
+
+// 日期范围选择框宽度（强制覆盖 Element Plus 默认 350px）
+.date-range-picker {
+    width: 400px !important;
 }
 
 .pagination-wrap {
