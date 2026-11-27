@@ -1,5 +1,21 @@
 # 更新日志
 
+## v0.38.0 (2026-11-27)
+
+### 本次更新
+
+- 三个订单详情页补充用户信息字段：
+  - 预约详情（/order/appointment）：新增「用户信息」卡片（用户昵称、真实姓名、联系电话）
+  - 服务订单详情（/order/service）：补充真实姓名、联系电话字段
+  - 商品订单详情（/order/goods）：新增「下单人信息」卡片（用户昵称、真实姓名、联系电话）
+- 三个数据模型 `AppointmentItem`/`ServiceOrderItem`/`GoodsOrderItem` 增加 realName 字段并填充演示数据
+
+### 说明
+
+- 修改文件：`src/views/order/{appointment,service,goods}/{index.vue,data.ts}`，以及版本文件
+- 验证：类型检查通过（仅保留既有历史报错），三个页面编译均返回 HTTP 200
+- 预览：http://localhost:5173/order/appointment
+
 ## v0.37.2 (2026-11-27)
 
 ### 本次更新

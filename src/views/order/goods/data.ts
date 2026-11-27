@@ -25,6 +25,7 @@ export interface GoodsOrderItem {
     orderNo: string
     avatarColor: string
     nickname: string
+    realName: string
     mobile: string
     goodsName: string
     goodsSpec: string
@@ -107,6 +108,7 @@ export const goodsOrders: GoodsOrderItem[] = [
         orderNo: 'GO20261125001',
         avatarColor: '#4A5DFF',
         nickname: '健康同行者',
+        realName: '陈健康',
         mobile: '13800138001',
         goodsName: '艾草舒缓贴',
         goodsSpec: '10贴/盒',
@@ -143,6 +145,7 @@ export const goodsOrders: GoodsOrderItem[] = [
         orderNo: 'GO20261125002',
         avatarColor: '#e6a23c',
         nickname: '春风化雨',
+        realName: '李春雨',
         mobile: '13800138002',
         goodsName: '肩颈热敷包',
         goodsSpec: '标准款/咖色',
@@ -179,6 +182,7 @@ export const goodsOrders: GoodsOrderItem[] = [
         orderNo: 'GO20261124003',
         avatarColor: '#67c23a',
         nickname: '康养达人',
+        realName: '王康',
         mobile: '13800138003',
         goodsName: '中药足浴包',
         goodsSpec: '30包/袋',
@@ -216,6 +220,7 @@ export const goodsOrders: GoodsOrderItem[] = [
         orderNo: 'GO20261126004',
         avatarColor: '#9b59b6',
         nickname: '阳光正好',
+        realName: '刘养正',
         mobile: '13800138005',
         goodsName: '精油按摩套装',
         goodsSpec: '三瓶装/礼盒',
@@ -249,6 +254,7 @@ export const goodsOrders: GoodsOrderItem[] = [
         orderNo: 'GO20261122005',
         avatarColor: '#f56c6c',
         nickname: '安然自得',
+        realName: '赵安泰',
         mobile: '13800138006',
         goodsName: '热敷眼罩',
         goodsSpec: '5片/盒',
@@ -287,6 +293,7 @@ export const goodsOrders: GoodsOrderItem[] = [
         orderNo: 'GO20261125006',
         avatarColor: '#409eff',
         nickname: '静待花开',
+        realName: '孙调理',
         mobile: '13800138004',
         goodsName: '养生茶礼盒',
         goodsSpec: '10袋/盒',
@@ -324,6 +331,7 @@ export const goodsOrders: GoodsOrderItem[] = [
         orderNo: 'GO20261123007',
         avatarColor: '#17a2b8',
         nickname: '岁月静好',
+        realName: '周复健',
         mobile: '13800138007',
         goodsName: '艾草舒缓贴',
         goodsSpec: '10贴/盒',
@@ -362,6 +370,7 @@ export const goodsOrders: GoodsOrderItem[] = [
         orderNo: 'GO20261121008',
         avatarColor: '#607d8b',
         nickname: '前程似锦',
+        realName: '吴养身',
         mobile: '13800138008',
         goodsName: '肩颈热敷包',
         goodsSpec: '标准款/灰色',

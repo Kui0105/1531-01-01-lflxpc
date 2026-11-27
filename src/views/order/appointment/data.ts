@@ -16,6 +16,7 @@ export interface AppointmentItem {
     no: string
     avatarColor: string
     nickname: string
+    realName: string
     mobile: string
     store: string
     therapist: string
@@ -74,6 +75,7 @@ export const appointments: AppointmentItem[] = [
         no: 'YY202611250001',
         avatarColor: '#4A5DFF',
         nickname: '健康同行者',
+        realName: '陈健康',
         mobile: '13800138001',
         store: '天河店',
         therapist: '张敏',
@@ -96,6 +98,7 @@ export const appointments: AppointmentItem[] = [
         no: 'YY202611250002',
         avatarColor: '#e6a23c',
         nickname: '春风化雨',
+        realName: '李春雨',
         mobile: '13800138002',
         store: '越秀店',
         therapist: '王芳',
@@ -118,6 +121,7 @@ export const appointments: AppointmentItem[] = [
         no: 'YY202611230003',
         avatarColor: '#67c23a',
         nickname: '康养达人',
+        realName: '王康',
         mobile: '13800138003',
         store: '海珠店',
         therapist: '李强',
@@ -140,6 +144,7 @@ export const appointments: AppointmentItem[] = [
         no: 'YY202611220004',
         avatarColor: '#9b59b6',
         nickname: '阳光正好',
+        realName: '刘养正',
         mobile: '13800138005',
         store: '天河店',
         therapist: '陈杰',
@@ -162,6 +167,7 @@ export const appointments: AppointmentItem[] = [
         no: 'YY202611260005',
         avatarColor: '#f56c6c',
         nickname: '安然自得',
+        realName: '赵安泰',
         mobile: '13800138006',
         store: '越秀店',
         therapist: '赵慧',
@@ -184,6 +190,7 @@ export const appointments: AppointmentItem[] = [
         no: 'YY202611250006',
         avatarColor: '#409eff',
         nickname: '静待花开',
+        realName: '孙调理',
         mobile: '13800138004',
         store: '海珠店',
         therapist: '王芳',

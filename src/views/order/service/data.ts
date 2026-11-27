@@ -25,6 +25,7 @@ export interface ServiceOrderItem {
     orderType: OrderType
     avatarColor: string
     nickname: string
+    realName: string
     mobile: string
     store: string
     serviceName: string
@@ -100,6 +101,7 @@ export const serviceOrders: ServiceOrderItem[] = [
         orderType: 'service',
         avatarColor: '#4A5DFF',
         nickname: '健康同行者',
+        realName: '陈健康',
         mobile: '13800138001',
         store: '天河店',
         serviceName: '全身经络理疗',
@@ -131,6 +133,7 @@ export const serviceOrders: ServiceOrderItem[] = [
         orderType: 'assess',
         avatarColor: '#e6a23c',
         nickname: '春风化雨',
+        realName: '李春雨',
         mobile: '13800138002',
         store: '越秀店',
         serviceName: '肩颈康复评估',
@@ -161,6 +164,7 @@ export const serviceOrders: ServiceOrderItem[] = [
         orderType: 'service',
         avatarColor: '#67c23a',
         nickname: '康养达人',
+        realName: '王康',
         mobile: '13800138003',
         store: '海珠店',
         serviceName: '腰部舒缓护理',
@@ -194,6 +198,7 @@ export const serviceOrders: ServiceOrderItem[] = [
         orderType: 'service',
         avatarColor: '#9b59b6',
         nickname: '阳光正好',
+        realName: '刘养正',
         mobile: '13800138005',
         store: '天河店',
         serviceName: '体态评估与护理套餐',
@@ -219,6 +224,7 @@ export const serviceOrders: ServiceOrderItem[] = [
         orderType: 'service',
         avatarColor: '#f56c6c',
         nickname: '安然自得',
+        realName: '赵安泰',
         mobile: '13800138006',
         store: '越秀店',
         serviceName: '全身经络理疗',
@@ -248,6 +254,7 @@ export const serviceOrders: ServiceOrderItem[] = [
         orderType: 'assess',
         avatarColor: '#409eff',
         nickname: '静待花开',
+        realName: '孙调理',
         mobile: '13800138004',
         store: '海珠店',
         serviceName: '康复评估报告',
@@ -282,6 +289,7 @@ export const serviceOrders: ServiceOrderItem[] = [
         orderType: 'service',
         avatarColor: '#17a2b8',
         nickname: '岁月静好',
+        realName: '周复健',
         mobile: '13800138007',
         store: '天河店',
         serviceName: '肩颈康复评估',

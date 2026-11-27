@@ -139,6 +139,8 @@
                         <div class="info-item"><span class="info-label">支付状态</span><span class="info-value">{{ payStatusLabels[currentItem.payStatus] }}</span></div>
                         <div class="info-item"><span class="info-label">服务名称</span><span class="info-value">{{ currentItem.serviceName }}</span></div>
                         <div class="info-item"><span class="info-label">用户昵称</span><span class="info-value">{{ currentItem.nickname }}</span></div>
+                        <div class="info-item"><span class="info-label">真实姓名</span><span class="info-value">{{ currentItem.realName || '-' }}</span></div>
+                        <div class="info-item"><span class="info-label">联系电话</span><span class="info-value">{{ currentItem.mobile }}</span></div>
                         <div class="info-item"><span class="info-label">下单时间</span><span class="info-value">{{ currentItem.orderTime }}</span></div>
                         <div class="info-item"><span class="info-label">支付时间</span><span class="info-value">{{ currentItem.payTime || '-' }}</span></div>
                         <template v-if="currentItem.orderType === 'assess'">

@@ -151,6 +151,14 @@
             </template>
             <template v-if="currentItem">
                 <el-card class="info-card" shadow="never">
+                    <template #header><span class="header-title">下单人信息</span></template>
+                    <div class="info-grid">
+                        <div class="info-item"><span class="info-label">用户昵称</span><span class="info-value">{{ currentItem.nickname }}</span></div>
+                        <div class="info-item"><span class="info-label">真实姓名</span><span class="info-value">{{ currentItem.realName || '-' }}</span></div>
+                        <div class="info-item"><span class="info-label">联系电话</span><span class="info-value">{{ currentItem.mobile }}</span></div>
+                    </div>
+                </el-card>
+                <el-card class="info-card mt-4" shadow="never">
                     <template #header>
                         <span class="header-title">
                             {{ currentItem.deliveryType === 'express' ? '收货信息' : '自提信息' }}
