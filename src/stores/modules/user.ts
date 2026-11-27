@@ -22,7 +22,7 @@ const extraWebsiteMenus = [
     { paths: 'complaint-type', name: '投诉类型', component: 'setting/website/complaint-type' },
     { paths: 'order-setting', name: '订单设置', component: 'setting/website/order-setting' },
     { paths: 'freight-template', name: '运费模板', component: 'setting/website/freight-template' },
-    { paths: 'nutrition-assessment', name: '营养评估', component: 'setting/website/nutrition-assessment' }
+    { paths: 'nutrition-assessment', name: '营养评估', component: 'setting/website/nutrition-assessment/index' }
 ]
 
 // 递归查找「网站设置」节点并注入子菜单，返回是否命中

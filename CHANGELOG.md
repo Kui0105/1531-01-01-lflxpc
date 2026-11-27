@@ -1,5 +1,17 @@
 # 更新日志
 
+## v0.40.1 (2026-11-27)
+
+### 本次更新
+
+- 修复营养评估页面空白问题：菜单注入的 component 路径写成了 `setting/website/nutrition-assessment`，但页面文件是 `nutrition-assessment/index.vue`（目录下），导致 `loadRouteView` 匹配不到组件（浏览器报"找不到组件"）→ 改为 `setting/website/nutrition-assessment/index`
+
+### 说明
+
+- 修改文件：`src/stores/modules/user.ts`，以及版本文件
+- 验证：浏览器实测组件可正常渲染完整题目列表，路由匹配错误消失
+- 预览：http://localhost:5173/setting/website/nutrition-assessment
+
 ## v0.40.0 (2026-11-27)
 
 ### 本次更新
