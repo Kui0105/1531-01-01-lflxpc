@@ -8,16 +8,17 @@
                 <el-option label="收入" value="income" />
                 <el-option label="支出" value="expense" />
             </el-select>
-            <el-date-picker
-                v-model="dateRange"
-                type="daterange"
-                value-format="YYYY-MM-DD"
-                start-placeholder="开始日期"
-                end-placeholder="结束日期"
-                unlink-panels
-                class="date-range-picker"
-                style="--el-date-editor-daterange-width: 400px; --el-date-editor-width: 400px"
-            />
+            <div class="date-range-wrap">
+                <el-date-picker
+                    v-model="dateRange"
+                    type="daterange"
+                    value-format="YYYY-MM-DD"
+                    start-placeholder="开始日期"
+                    end-placeholder="结束日期"
+                    unlink-panels
+                    class="date-range-picker"
+                />
+            </div>
             <el-button type="primary" @click="handleSearch">查询</el-button>
             <el-button @click="resetSearch">重置</el-button>
             <el-button class="ml-auto" @click="exportData">导出</el-button>
@@ -217,10 +218,16 @@ const openOrderDetail = (orderNo: string) => {
 <!-- 全局样式：Element Plus 日期组件宽度由内部 CSS 变量控制，需非 scoped 命中真实 DOM -->
 <style lang="scss">
 .point-record-list {
-    .el-date-editor--daterange {
-        width: 400px !important;
-        --el-date-editor-width: 400px;
-        --el-date-editor-daterange-width: 400px;
+    .date-range-wrap {
+        width: 400px;
+        flex: 0 0 400px;
+
+        .el-date-editor--daterange,
+        .el-date-editor.el-input__wrapper {
+            width: 400px !important;
+            --el-date-editor-width: 400px;
+            --el-date-editor-daterange-width: 400px;
+        }
     }
 }
 </style>

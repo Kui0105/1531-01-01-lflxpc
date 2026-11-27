@@ -1,5 +1,17 @@
 # 更新日志
 
+## v0.26.8 (2026-11-27)
+
+### 本次更新
+
+- 时间段选择框宽度 400px 最终方案：外层包一个固定 400px 的普通 div 容器（`.date-range-wrap`，width/flex 均 400px），内部日期框用全局样式 `width: 400px !important` + CSS 变量填满；不依赖 scoped 属性透传，确保视觉生效
+
+### 说明
+
+- 修改文件：`src/views/finance/points/index.vue`，以及版本文件
+- 验证：类型检查通过（仅保留既有历史报错），编译产物确认生成容器与日期框 400px 规则
+- 预览：http://localhost:5173/admin/finance/points
+
 ## v0.26.7 (2026-11-27)
 
 ### 本次更新
