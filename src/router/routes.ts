@@ -267,6 +267,64 @@ export const DISTRIBUTION_ROUTE: RouteRecordRaw = {
     ]
 }
 
+// 财务管理导航（静态注入到分销推广下方）
+export const FINANCE_ROUTE: RouteRecordRaw = {
+    path: '/finance',
+    name: Symbol('admin-finance'),
+    component: LAYOUT,
+    meta: {
+        title: '财务管理',
+        icon: 'el-icon-Wallet'
+    },
+    children: [
+        {
+            path: 'points',
+            name: Symbol('admin-finance-points'),
+            component: () => import('@/views/finance/points/index.vue'),
+            meta: {
+                title: '积分明细',
+                icon: 'el-icon-Coin'
+            }
+        },
+        {
+            path: 'bill',
+            name: Symbol('admin-finance-bill'),
+            component: () => import('@/views/finance/bill/index.vue'),
+            meta: {
+                title: '流水账单',
+                icon: 'el-icon-Tickets'
+            }
+        },
+        {
+            path: 'commission',
+            name: Symbol('admin-finance-commission'),
+            component: () => import('@/views/finance/commission/index.vue'),
+            meta: {
+                title: '佣金明细',
+                icon: 'el-icon-Money'
+            }
+        },
+        {
+            path: 'withdraw',
+            name: Symbol('admin-finance-withdraw'),
+            component: () => import('@/views/finance/withdraw/index.vue'),
+            meta: {
+                title: '提现记录',
+                icon: 'el-icon-WalletFilled'
+            }
+        },
+        {
+            path: 'store',
+            name: Symbol('admin-finance-store'),
+            component: () => import('@/views/finance/store/index.vue'),
+            meta: {
+                title: '门店明细',
+                icon: 'el-icon-TrendCharts'
+            }
+        }
+    ]
+}
+
 export const constantRoutes: Array<RouteRecordRaw> = [
     APPROISE_ROUTE,
     COMPLAINT_ROUTE,
@@ -275,6 +333,7 @@ export const constantRoutes: Array<RouteRecordRaw> = [
     GOODS_ROUTE,
     MARKET_ROUTE,
     DISTRIBUTION_ROUTE,
+    FINANCE_ROUTE,
     {
         path: '/consumer/lists/detail',
         name: Symbol('admin-consumer-detail'),
