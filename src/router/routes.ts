@@ -327,7 +327,7 @@ export const FINANCE_ROUTE: RouteRecordRaw = {
             name: Symbol('admin-finance-performance'),
             component: () => import('@/views/finance/performance/index.vue'),
             meta: {
-                title: '绩效账单',
+                title: '绩效薪资',
                 icon: 'el-icon-DataAnalysis'
             }
         }

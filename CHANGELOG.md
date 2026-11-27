@@ -1,5 +1,17 @@
 # 更新日志
 
+## v0.39.1 (2026-11-27)
+
+### 本次更新
+
+- 「绩效账单」更名为「绩效薪资」：导航标题、详情标题、导出文件名及代码注释统一更新；「账单时间」等字段名按需求保持不变
+
+### 说明
+
+- 修改文件：`src/router/routes.ts`、`src/views/finance/performance/{index.vue,data.ts}`，以及版本文件
+- 验证：页面与路由编译返回 HTTP 200
+- 预览：http://localhost:5173/finance/performance
+
 ## v0.39.0 (2026-11-27)
 
 ### 本次更新

@@ -43,7 +43,7 @@
         <template v-else>
             <div class="detail-head">
                 <el-button link @click="backToList"><el-icon><ArrowLeft /></el-icon>返回账单列表</el-button>
-                <span class="detail-title">{{ currentBill.billMonth }} {{ currentBill.store }} - 绩效账单明细</span>
+                <span class="detail-title">{{ currentBill.billMonth }} {{ currentBill.store }} - 绩效薪资明细</span>
                 <el-button class="ml-auto" @click="exportDetails">导出</el-button>
             </div>
 
@@ -118,7 +118,7 @@ const resetSearch = () => {
 // 导出账单列表
 const billHeaders = ['账单时间', '门店', '工资合计', '门店人数']
 const exportBills = () =>
-    exportCsv('绩效账单', billHeaders, filteredBills.value.map((item: PerformanceBill) => [
+    exportCsv('绩效薪资', billHeaders, filteredBills.value.map((item: PerformanceBill) => [
         item.billMonth, item.store, item.totalSalary, item.staffCount
     ]))
 
@@ -133,7 +133,7 @@ const detailList = computed(() =>
 // 导出明细（所有明细）
 const detailHeaders = ['姓名', '职称', '职级', '绩效等级', '基本薪资', '岗位津贴', '绩效奖金', '超额工时费', '提成', '合计工资']
 const exportDetails = () =>
-    exportCsv(`绩效账单明细_${currentBill.value?.billMonth}_${currentBill.value?.store}`,
+    exportCsv(`绩效薪资明细_${currentBill.value?.billMonth}_${currentBill.value?.store}`,
         detailHeaders,
         detailList.value.map((item: SalaryDetail) => [
             item.name, item.title, item.level, item.performanceLevel, item.baseSalary,

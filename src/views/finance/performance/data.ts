@@ -1,5 +1,5 @@
 /**
- * 绩效账单演示数据
+ * 绩效薪资演示数据
  * 后续可由后端接口替换
  */
 
@@ -19,7 +19,7 @@ export interface SalaryDetail {
     totalSalary: number // 合计工资
 }
 
-// 绩效账单
+// 绩效薪资
 export interface PerformanceBill {
     id: number
     billMonth: string // 账单时间（年月）
