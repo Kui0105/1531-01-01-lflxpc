@@ -116,7 +116,7 @@
                 <el-row :gutter="12">
                     <el-col :span="8"><el-form-item label="产值目标"><el-input-number v-model="form.outputTarget" :min="0" class="!w-full" /></el-form-item></el-col>
                     <el-col :span="8"><el-form-item label="营收目标"><el-input-number v-model="form.revenueTarget" :min="0" class="!w-full" /></el-form-item></el-col>
-                    <el-col :span="8"><el-form-item label="每月净利润目标"><el-input-number v-model="form.profitTarget" :min="0" class="!w-full" /></el-form-item></el-col>
+                    <el-col :span="8"><el-form-item label="月净利润目标"><el-input-number v-model="form.profitTarget" :min="0" class="!w-full" /></el-form-item></el-col>
                 </el-row>
             </el-form>
             <template #footer>
