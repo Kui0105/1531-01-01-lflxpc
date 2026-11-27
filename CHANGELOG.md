@@ -1,5 +1,17 @@
 # 更新日志
 
+## v0.37.1 (2026-11-27)
+
+### 本次更新
+
+- 将 `.env.production` 纳入版本控制：从推送脚本的排除列表移除，强制推送本地生产环境配置（仅含 NODE_ENV 与 VITE_APP_BASE_URL，无凭证信息）
+
+### 说明
+
+- 修改文件：`scripts/push-github.mjs`、`.env.production`，以及版本文件
+- 验证：脚本正常推送
+- 预览：http://localhost:5173/
+
 ## v0.37.0 (2026-11-27)
 
 ### 本次更新

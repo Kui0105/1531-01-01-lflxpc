@@ -24,8 +24,8 @@ const EXCLUDE_FILES = new Set([
     'auto-imports.d.ts',
     'components.d.ts',
     '.eslintrc-auto-import.json',
-    '.env.development',
-    '.env.production'
+    '.env.development'
+    // .env.production 已按需纳入版本控制（v0.37.1 起强制推送）
 ])
 const EXCLUDE_RE = /\.(log|local)$/
 
