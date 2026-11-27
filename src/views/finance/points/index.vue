@@ -15,12 +15,11 @@
                 start-placeholder="开始日期"
                 end-placeholder="结束日期"
                 unlink-panels
-                class="!w-[260px]"
+                class="!w-[400px]"
             />
             <el-button type="primary" @click="handleSearch">查询</el-button>
             <el-button @click="resetSearch">重置</el-button>
-            <el-button class="ml-auto" @click="exportList">按筛选导出</el-button>
-            <el-button @click="exportAll">导出全部</el-button>
+            <el-button class="ml-auto" @click="exportData">导出</el-button>
         </div>
 
         <!-- 列表 -->
@@ -141,8 +140,14 @@ const toRow = (item: PointRecord) => [
     item.remark,
     item.createdAt
 ]
-const exportList = () => exportCsv('积分明细', headers, filteredList.value.map(toRow))
-const exportAll = () => exportCsv('积分明细全部', headers, pointList.map(toRow))
+// 有筛选条件时导出筛选结果，无筛选时导出全部数据
+const hasFilter = computed(
+    () => !!(query.keyword || query.changeType || query.startDate || query.endDate)
+)
+const exportData = () => {
+    const rows = hasFilter.value ? filteredList.value : pointList
+    exportCsv('积分明细', headers, rows.map(toRow))
+}
 
 // 点击关联订单编号进入订单详情（GO 商品订单 / SO 服务订单）
 const openOrderDetail = (orderNo: string) => {
