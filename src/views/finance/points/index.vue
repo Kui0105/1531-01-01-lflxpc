@@ -15,7 +15,7 @@
                 start-placeholder="开始日期"
                 end-placeholder="结束日期"
                 unlink-panels
-                class="!w-[400px]"
+                class="!w-[260px]"
             />
             <el-button type="primary" @click="handleSearch">查询</el-button>
             <el-button @click="resetSearch">重置</el-button>
@@ -163,6 +163,7 @@ const openOrderDetail = (orderNo: string) => {
     flex-wrap: wrap;
     align-items: center;
     gap: 10px;
+    width: 400px;
     padding: 14px 18px;
     background: #fff;
     border: 1px solid #e8ebf5;
