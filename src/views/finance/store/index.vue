@@ -2,8 +2,23 @@
     <div class="store-page">
         <!-- 账户列表 -->
         <template v-if="!currentStore">
-            <el-card class="list-card" shadow="never">
-                <el-table :data="storeAccounts" style="width: 100%" :cell-style="{ padding: '12px 0' }">
+            <!-- 筛选搜索 -->
+            <div class="filter-bar">
+                <span class="filter-title"><i class="filter-dot" />筛选搜索</span>
+                <el-date-picker
+                    v-model="billMonth"
+                    type="month"
+                    value-format="YYYY-MM"
+                    placeholder="账单时间"
+                    class="!w-[200px]"
+                />
+                <el-button type="primary" @click="handleMonthSearch">查询</el-button>
+                <el-button @click="resetMonthSearch">重置</el-button>
+            </div>
+
+            <el-card class="list-card mt-4" shadow="never">
+                <el-table :data="filteredAccounts" style="width: 100%" :cell-style="{ padding: '12px 0' }">
+                    <el-table-column prop="billMonth" label="账单时间" min-width="120" align="center" />
                     <el-table-column prop="store" label="门店名称" min-width="140" align="center" />
                     <el-table-column label="本月收入" min-width="130" align="center">
                         <template #default="{ row }"><span class="value-income">¥{{ money(row.monthIncome) }}</span></template>
@@ -109,6 +124,22 @@ import { storeAccounts, storeFlows, type StoreFlow } from './data'
 const router = useRouter()
 
 const money = (n: number) => n.toFixed(2)
+
+// 筛选（账户列表 - 账单时间年月）
+const billMonth = ref('')
+const queryMonth = ref('')
+const filteredAccounts = computed(() =>
+    storeAccounts
+        .filter((item) => !queryMonth.value || item.billMonth === queryMonth.value)
+        .sort((a, b) => b.billMonth.localeCompare(a.billMonth) || a.store.localeCompare(b.store))
+)
+const handleMonthSearch = () => {
+    queryMonth.value = billMonth.value
+}
+const resetMonthSearch = () => {
+    billMonth.value = ''
+    queryMonth.value = ''
+}
 
 // 明细视图
 const currentStore = ref('')

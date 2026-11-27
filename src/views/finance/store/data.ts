@@ -8,6 +8,7 @@ export type StoreFlowType = 'pay' | 'refund' // 支付 / 退款
 
 export interface StoreAccount {
     id: number
+    billMonth: string // 账单时间（年月，如 2026-11）
     store: string // 门店名称
     monthIncome: number // 本月收入
     monthRefund: number // 本月退款
@@ -27,10 +28,16 @@ export interface StoreFlow {
 }
 
 export const storeAccounts: StoreAccount[] = [
-    { id: 1, store: '天河店', monthIncome: 38680, monthRefund: 1250, monthNet: 37430, status: 'active' },
-    { id: 2, store: '越秀店', monthIncome: 25420, monthRefund: 860, monthNet: 24560, status: 'active' },
-    { id: 3, store: '海珠店', monthIncome: 19850, monthRefund: 420, monthNet: 19430, status: 'active' },
-    { id: 4, store: '番禺店', monthIncome: 12300, monthRefund: 0, monthNet: 12300, status: 'suspended' }
+    { id: 1, billMonth: '2026-11', store: '天河店', monthIncome: 38680, monthRefund: 1250, monthNet: 37430, status: 'active' },
+    { id: 2, billMonth: '2026-11', store: '越秀店', monthIncome: 25420, monthRefund: 860, monthNet: 24560, status: 'active' },
+    { id: 3, billMonth: '2026-11', store: '海珠店', monthIncome: 19850, monthRefund: 420, monthNet: 19430, status: 'active' },
+    { id: 4, billMonth: '2026-11', store: '番禺店', monthIncome: 12300, monthRefund: 0, monthNet: 12300, status: 'suspended' },
+    { id: 5, billMonth: '2026-10', store: '天河店', monthIncome: 35200, monthRefund: 980, monthNet: 34220, status: 'active' },
+    { id: 6, billMonth: '2026-10', store: '越秀店', monthIncome: 23100, monthRefund: 620, monthNet: 22480, status: 'active' },
+    { id: 7, billMonth: '2026-10', store: '海珠店', monthIncome: 18600, monthRefund: 310, monthNet: 18290, status: 'active' },
+    { id: 8, billMonth: '2026-10', store: '番禺店', monthIncome: 10500, monthRefund: 150, monthNet: 10350, status: 'suspended' },
+    { id: 9, billMonth: '2026-09', store: '天河店', monthIncome: 31400, monthRefund: 760, monthNet: 30640, status: 'active' },
+    { id: 10, billMonth: '2026-09', store: '越秀店', monthIncome: 20800, monthRefund: 430, monthNet: 20370, status: 'active' }
 ]
 
 export const storeFlows: StoreFlow[] = [
