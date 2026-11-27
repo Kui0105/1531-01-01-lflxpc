@@ -347,6 +347,37 @@ export const TITLE_ROUTE: RouteRecordRaw = {
     ]
 }
 
+// 门店管理导航（静态注入到职称管理下方）
+export const STORE_ROUTE: RouteRecordRaw = {
+    path: '/store',
+    name: Symbol('admin-store'),
+    component: LAYOUT,
+    meta: {
+        title: '门店管理',
+        icon: 'el-icon-Shop'
+    },
+    children: [
+        {
+            path: 'list',
+            name: Symbol('admin-store-list'),
+            component: () => import('@/views/store/list/index.vue'),
+            meta: {
+                title: '门店列表',
+                icon: 'el-icon-OfficeBuilding'
+            }
+        },
+        {
+            path: 'staff',
+            name: Symbol('admin-store-staff'),
+            component: () => import('@/views/store/staff/index.vue'),
+            meta: {
+                title: '人员列表',
+                icon: 'el-icon-User'
+            }
+        }
+    ]
+}
+
 export const constantRoutes: Array<RouteRecordRaw> = [
     APPROISE_ROUTE,
     COMPLAINT_ROUTE,
@@ -357,6 +388,7 @@ export const constantRoutes: Array<RouteRecordRaw> = [
     DISTRIBUTION_ROUTE,
     FINANCE_ROUTE,
     TITLE_ROUTE,
+    STORE_ROUTE,
     {
         path: '/consumer/lists/detail',
         name: Symbol('admin-consumer-detail'),

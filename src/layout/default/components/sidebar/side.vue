@@ -16,7 +16,7 @@
 <script setup lang="ts">
 import type { RouteRecordRaw } from 'vue-router'
 
-import { APPROISE_ROUTE, COMPLAINT_ROUTE, DISTRIBUTION_ROUTE, FINANCE_ROUTE, GOODS_ROUTE, MARKET_ROUTE, ORDER_ROUTE, SERVICE_ROUTE, TITLE_ROUTE } from '@/router/routes'
+import { APPROISE_ROUTE, COMPLAINT_ROUTE, DISTRIBUTION_ROUTE, FINANCE_ROUTE, GOODS_ROUTE, MARKET_ROUTE, ORDER_ROUTE, SERVICE_ROUTE, STORE_ROUTE, TITLE_ROUTE } from '@/router/routes'
 import useAppStore from '@/stores/modules/app'
 import useSettingStore from '@/stores/modules/setting'
 import useUserStore from '@/stores/modules/user'
@@ -212,6 +212,23 @@ const routes = computed(() => {
         list.splice(insertAt, 0, {
             ...TITLE_ROUTE,
             meta: { ...TITLE_ROUTE.meta, hidden: false }
+        })
+    }
+
+    // 静态注入「门店管理」主导航（门店列表/人员列表）到职称管理下方
+    const storeParent = list.find((item) => item.path === STORE_ROUTE.path)
+    if (storeParent) {
+        const existingPaths = new Set(storeParent.children?.map((child) => child.path) || [])
+        const missingChildren = (STORE_ROUTE.children || []).filter((child) => !existingPaths.has(child.path))
+        if (missingChildren.length) {
+            storeParent.children = [...(storeParent.children || []), ...missingChildren]
+        }
+    } else if (!list.some((item) => item.children?.some((child) => child.path?.includes('store/list')))) {
+        const titleIndex = list.findIndex((item) => item.path === TITLE_ROUTE.path)
+        const insertAt = titleIndex >= 0 ? titleIndex + 1 : list.length
+        list.splice(insertAt, 0, {
+            ...STORE_ROUTE,
+            meta: { ...STORE_ROUTE.meta, hidden: false }
         })
     }
     return list
