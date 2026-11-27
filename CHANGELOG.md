@@ -1,5 +1,18 @@
 # 更新日志
 
+## v0.37.0 (2026-11-27)
+
+### 本次更新
+
+- 去掉后台访问地址前缀 `/admin`：Vite `base` 由 `/admin/` 改为 `/`，路由 `createWebHistory(import.meta.env.BASE_URL)` 自动跟随。新的访问地址为 `http://localhost:5173/`（如 `http://localhost:5173/finance/bill`），旧 `/admin/...` 地址不再使用
+- 静态路由 path 保持不带前缀（与 base `/` 匹配），无需其他改动
+
+### 说明
+
+- 修改文件：`vite.config.ts`，以及版本文件
+- 验证：类型检查通过（仅保留既有历史报错），首页资源路径确认无 `/admin` 前缀
+- 预览：http://localhost:5173/
+
 ## v0.36.2 (2026-11-27)
 
 ### 本次更新
