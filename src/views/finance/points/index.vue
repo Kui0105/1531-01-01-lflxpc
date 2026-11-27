@@ -16,6 +16,7 @@
                 end-placeholder="结束日期"
                 unlink-panels
                 class="!w-[400px]"
+                style="width: 400px"
             />
             <el-button type="primary" @click="handleSearch">查询</el-button>
             <el-button @click="resetSearch">重置</el-button>
