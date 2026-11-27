@@ -180,21 +180,22 @@ const routes = computed(() => {
     }
 
     // 静态注入「财务管理」主导航（积分明细/流水账单/佣金明细/提现记录/门店明细）到分销推广下方
-    const financeParent = list.find((item) => item.path === FINANCE_ROUTE.path)
-    if (financeParent) {
-        const existingPaths = new Set(financeParent.children?.map((child) => child.path) || [])
-        const missingChildren = (FINANCE_ROUTE.children || []).filter(
-            (child) => !existingPaths.has(child.path)
-        )
-        if (missingChildren.length) {
-            financeParent.children = [...(financeParent.children || []), ...missingChildren]
+    // 后端菜单可能已存在 /finance 项（但被隐藏或子菜单不全），此处统一用完整定义覆盖，确保正常显示
+    const financeIndex = list.findIndex((item) => item.path === FINANCE_ROUTE.path)
+    if (financeIndex >= 0) {
+        list[financeIndex] = {
+            ...FINANCE_ROUTE,
+            meta: { ...FINANCE_ROUTE.meta, hidden: false }
         }
     } else if (
         !list.some((item) => item.children?.some((child) => child.path?.includes('finance/points')))
     ) {
         const distributionIndex = list.findIndex((item) => item.path === DISTRIBUTION_ROUTE.path)
         const insertAt = distributionIndex >= 0 ? distributionIndex + 1 : list.length
-        list.splice(insertAt, 0, FINANCE_ROUTE)
+        list.splice(insertAt, 0, {
+            ...FINANCE_ROUTE,
+            meta: { ...FINANCE_ROUTE.meta, hidden: false }
+        })
     }
     return list
 })
