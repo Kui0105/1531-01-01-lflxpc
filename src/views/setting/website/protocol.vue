@@ -1,6 +1,6 @@
 <template>
-    <div class="xl:flex">
-        <el-card class="!border-none flex-1 xl:mr-4 mb-4" shadow="never">
+    <div class="protocol-grid">
+        <el-card class="protocol-card" shadow="never">
             <template #header>
                 <span class="font-medium">服务协议</span>
             </template>
@@ -12,7 +12,7 @@
 
             <editor class="mb-10" v-model="formData.service_content" height="500"></editor>
         </el-card>
-        <el-card class="!border-none flex-1 mb-4" shadow="never">
+        <el-card class="protocol-card" shadow="never">
             <template #header>
                 <span class="font-medium">隐私协议</span>
             </template>
@@ -24,7 +24,7 @@
 
             <editor class="mb-10" v-model="formData.privacy_content" height="500"></editor>
         </el-card>
-        <el-card class="!border-none flex-1 xl:mr-4 mb-4" shadow="never">
+        <el-card class="protocol-card" shadow="never">
             <template #header>
                 <span class="font-medium">康复须知</span>
             </template>
@@ -36,7 +36,7 @@
 
             <editor class="mb-10" v-model="formData.rehab_content" height="500"></editor>
         </el-card>
-        <el-card class="!border-none flex-1 mb-4" shadow="never">
+        <el-card class="protocol-card" shadow="never">
             <template #header>
                 <span class="font-medium">成长值规则</span>
             </template>
@@ -96,3 +96,34 @@ const handleProtocolEdit = async (): Promise<void> => {
 }
 protocolGet()
 </script>
+
+<style scoped lang="scss">
+.protocol-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.protocol-card {
+    border: 1px solid #e8ebf5;
+    border-radius: 8px;
+    background: #fff;
+    overflow: hidden;
+
+    // 交替浅背景，明确区分相邻卡片
+    &:nth-child(2n) {
+        background: #f9fafd;
+    }
+
+    :deep(.el-card__header) {
+        border-bottom: 1px solid #eef0f7;
+        background: inherit;
+    }
+}
+
+@media (max-width: 1280px) {
+    .protocol-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
