@@ -1,5 +1,17 @@
 # 更新日志
 
+## v0.26.7 (2026-11-27)
+
+### 本次更新
+
+- 再次修复积分明细页时间段选择框宽度：改用非 scoped 全局样式直接命中 Element Plus 真实 DOM 类 `.el-date-editor--daterange`，设 `width: 400px !important` 及两个内部 CSS 变量；同时在组件上内联 CSS 变量。绕开 scoped 属性无法透传到子组件内部元素的问题
+
+### 说明
+
+- 修改文件：`src/views/finance/points/index.vue`，以及版本文件
+- 验证：类型检查通过（仅保留既有历史报错），编译产物确认生成 400px 全局规则
+- 预览：http://localhost:5173/admin/finance/points
+
 ## v0.26.6 (2026-11-27)
 
 ### 本次更新

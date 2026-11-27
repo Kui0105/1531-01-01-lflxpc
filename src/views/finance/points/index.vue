@@ -16,6 +16,7 @@
                 end-placeholder="结束日期"
                 unlink-panels
                 class="date-range-picker"
+                style="--el-date-editor-daterange-width: 400px; --el-date-editor-width: 400px"
             />
             <el-button type="primary" @click="handleSearch">查询</el-button>
             <el-button @click="resetSearch">重置</el-button>
@@ -190,11 +191,6 @@ const openOrderDetail = (orderNo: string) => {
     border-radius: 8px;
 }
 
-// 日期范围选择框宽度（强制覆盖 Element Plus 默认 350px）
-.date-range-picker {
-    width: 400px !important;
-}
-
 .pagination-wrap {
     display: flex;
     justify-content: flex-end;
@@ -215,5 +211,16 @@ const openOrderDetail = (orderNo: string) => {
 .value-expense {
     font-weight: 600;
     color: #f56c6c;
+}
+</style>
+
+<!-- 全局样式：Element Plus 日期组件宽度由内部 CSS 变量控制，需非 scoped 命中真实 DOM -->
+<style lang="scss">
+.point-record-list {
+    .el-date-editor--daterange {
+        width: 400px !important;
+        --el-date-editor-width: 400px;
+        --el-date-editor-daterange-width: 400px;
+    }
 }
 </style>
