@@ -80,17 +80,18 @@
                     </el-col>
                     <el-col :span="24">
                         <el-form-item label="照片">
-                            <el-upload accept=".png,.jpg,.jpeg" :auto-upload="false" :show-file-list="false" :on-change="handlePhotoChange" action="#">
-                                <div v-if="form.photo" class="photo-preview">
-                                    <img :src="form.photo" class="photo-img" />
-                                    <div class="photo-mask">点击更换</div>
-                                </div>
-                                <div v-else class="photo-placeholder">
-                                    <el-icon :size="22"><Plus /></el-icon>
-                                    <div>点击上传照片</div>
-                                    <div class="photo-tip">支持 PNG/JPG，不超过 2MB</div>
-                                </div>
-                            </el-upload>
+                            <div class="photo-upload-wrap">
+                                <el-upload class="photo-uploader" accept=".png,.jpg,.jpeg" :auto-upload="false" :show-file-list="false" :on-change="handlePhotoChange" action="#">
+                                    <div v-if="form.photo" class="photo-preview">
+                                        <img :src="form.photo" class="photo-img" />
+                                        <div class="photo-mask">更换</div>
+                                    </div>
+                                    <div v-else class="photo-placeholder">
+                                        <el-icon :size="26"><Plus /></el-icon>
+                                    </div>
+                                </el-upload>
+                                <div class="photo-tip">支持 PNG/JPG，不超过 2MB</div>
+                            </div>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
@@ -378,42 +379,81 @@ const resetPerfSearch = () => { perfMonth.value = ''; queryPerfMonth.value = '' 
     }
 }
 
+.photo-upload-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.photo-uploader {
+    display: inline-block;
+    line-height: 0;
+
+    :deep(.el-upload) {
+        display: block;
+        line-height: 0;
+    }
+}
+
 .photo-preview {
     position: relative;
-    width: 80px;
-    height: 80px;
+    box-sizing: border-box;
+    width: 88px;
+    height: 88px;
     overflow: hidden;
+    border: 1px solid #e8ebf5;
     border-radius: 50%;
     cursor: pointer;
-    .photo-img { width: 100%; height: 100%; object-fit: cover; }
+    line-height: normal;
+
+    .photo-img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
     .photo-mask {
         position: absolute;
         inset: 0;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 11px;
+        font-size: 12px;
         color: #fff;
         background: rgba(0, 0, 0, 0.45);
         opacity: 0;
         transition: opacity 0.2s;
     }
-    &:hover .photo-mask { opacity: 1; }
+
+    &:hover .photo-mask {
+        opacity: 1;
+    }
 }
 
 .photo-placeholder {
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
-    width: 80px;
-    height: 80px;
+    box-sizing: border-box;
+    width: 88px;
+    height: 88px;
+    line-height: normal;
     color: #909399;
     border: 1px dashed #dcdfe6;
     border-radius: 50%;
     cursor: pointer;
-    &:hover { border-color: var(--el-color-primary); color: var(--el-color-primary); }
-    .photo-tip { margin-top: 2px; font-size: 10px; }
+
+    &:hover {
+        border-color: var(--el-color-primary);
+        color: var(--el-color-primary);
+    }
+}
+
+.photo-tip {
+    font-size: 12px;
+    color: #909399;
 }
 
 .dialog-filter {
