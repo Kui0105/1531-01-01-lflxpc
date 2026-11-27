@@ -13,15 +13,16 @@
             <el-select v-model="payMethod" placeholder="支付方式" clearable class="!w-[140px]">
                 <el-option v-for="item in payMethodOptions" :key="item" :label="item" :value="item" />
             </el-select>
-            <el-date-picker
-                v-model="dateRange"
-                type="daterange"
-                value-format="YYYY-MM-DD"
-                start-placeholder="开始日期"
-                end-placeholder="结束日期"
-                unlink-panels
-                class="!w-[260px]"
-            />
+            <div class="date-range-wrap">
+                <el-date-picker
+                    v-model="dateRange"
+                    type="daterange"
+                    value-format="YYYY-MM-DD"
+                    start-placeholder="开始日期"
+                    end-placeholder="结束日期"
+                    unlink-panels
+                />
+            </div>
             <el-button type="primary" @click="handleSearch">查询</el-button>
             <el-button @click="resetSearch">重置</el-button>
             <el-button class="ml-auto" @click="exportData">导出</el-button>
@@ -99,15 +100,6 @@
                 :page-sizes="[10, 20, 50]"
             />
         </el-card>
-
-        <!-- 功能规则说明 -->
-        <div class="rule-note">
-            <div class="rule-note-title">功能规则</div>
-            <div>门店到账：用户下单支付需选择门店，支付金额到账对应门店账户</div>
-            <div>营收口径：营收按订单实付金额统计，产值按服务核销卡金额统计，两者分开核算</div>
-            <div>第三方渠道：管理端配置单个服务项目的渠道金额单价，用于门店营收达成率统计</div>
-            <div>退款处理：同意退款则原路返还退款金额，生成退款流水并冲减对应门店账户</div>
-        </div>
     </div>
 </template>
 
@@ -296,21 +288,21 @@ const openOrderDetail = (orderNo: string) => {
     color: #f56c6c;
 }
 
-.rule-note {
-    margin-top: 16px;
-    padding: 14px 18px;
-    font-size: 13px;
-    line-height: 2;
-    color: #606266;
-    background: #f8f9fc;
-    border: 1px solid #e8ebf5;
-    border-radius: 8px;
+</style>
 
-    .rule-note-title {
-        margin-bottom: 4px;
-        font-size: 14px;
-        font-weight: 600;
-        color: #303133;
+<!-- 全局样式：Element Plus 日期组件宽度由内部 CSS 变量控制，需非 scoped 命中真实 DOM -->
+<style lang="scss">
+.bill-page {
+    .date-range-wrap {
+        width: 400px;
+        flex: 0 0 400px;
+
+        .el-date-editor--daterange,
+        .el-date-editor.el-input__wrapper {
+            width: 400px !important;
+            --el-date-editor-width: 400px;
+            --el-date-editor-daterange-width: 400px;
+        }
     }
 }
 </style>
