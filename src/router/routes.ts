@@ -378,6 +378,37 @@ export const STORE_ROUTE: RouteRecordRaw = {
     ]
 }
 
+// 内容管理导航（静态注入到门店管理下方）
+export const CONTENT_ROUTE: RouteRecordRaw = {
+    path: '/content',
+    name: Symbol('admin-content'),
+    component: LAYOUT,
+    meta: {
+        title: '内容管理',
+        icon: 'el-icon-Promotion'
+    },
+    children: [
+        {
+            path: 'ad',
+            name: Symbol('admin-content-ad'),
+            component: () => import('@/views/content/ad/index.vue'),
+            meta: {
+                title: '广告列表',
+                icon: 'el-icon-Picture'
+            }
+        },
+        {
+            path: 'notice',
+            name: Symbol('admin-content-notice'),
+            component: () => import('@/views/content/notice/index.vue'),
+            meta: {
+                title: '平台公告',
+                icon: 'el-icon-Document'
+            }
+        }
+    ]
+}
+
 export const constantRoutes: Array<RouteRecordRaw> = [
     APPROISE_ROUTE,
     COMPLAINT_ROUTE,
@@ -389,6 +420,7 @@ export const constantRoutes: Array<RouteRecordRaw> = [
     FINANCE_ROUTE,
     TITLE_ROUTE,
     STORE_ROUTE,
+    CONTENT_ROUTE,
     {
         path: '/consumer/lists/detail',
         name: Symbol('admin-consumer-detail'),
