@@ -16,7 +16,7 @@
 <script setup lang="ts">
 import type { RouteRecordRaw } from 'vue-router'
 
-import { APPROISE_ROUTE, COMPLAINT_ROUTE, CONTENT_ROUTE, DISTRIBUTION_ROUTE, FINANCE_ROUTE, GOODS_ROUTE, LAYOUT, MARKET_ROUTE, ORDER_ROUTE, SERVICE_ROUTE, STORE_ROUTE, TITLE_ROUTE } from '@/router/routes'
+import { APPROISE_ROUTE, COMPLAINT_ROUTE, CONTENT_ROUTE, DISTRIBUTION_ROUTE, FINANCE_ROUTE, GOODS_ROUTE, MARKET_ROUTE, ORDER_ROUTE, SERVICE_ROUTE, STORE_ROUTE, TITLE_ROUTE } from '@/router/routes'
 import useAppStore from '@/stores/modules/app'
 import useSettingStore from '@/stores/modules/setting'
 import useUserStore from '@/stores/modules/user'
@@ -247,58 +247,6 @@ const routes = computed(() => {
             ...CONTENT_ROUTE,
             meta: { ...CONTENT_ROUTE.meta, hidden: false }
         })
-    }
-    // 静态注入「网站设置」下的子导航：投诉类型/订单设置/运费模板
-    // 后端菜单中网站设置父项 path 可能为 /setting/website 或 title 为「网站设置」
-    const webSettingChildren: RouteRecordRaw[] = [
-        {
-            path: '/setting/website/complaint-type',
-            name: Symbol('admin-web-complaint-type'),
-            component: () => import('@/views/setting/website/complaint-type.vue'),
-            meta: { title: '投诉类型', icon: 'el-icon-ChatLineSquare' }
-        },
-        {
-            path: '/setting/website/order-setting',
-            name: Symbol('admin-web-order-setting'),
-            component: () => import('@/views/setting/website/order-setting.vue'),
-            meta: { title: '订单设置', icon: 'el-icon-Setting' }
-        },
-        {
-            path: '/setting/website/freight-template',
-            name: Symbol('admin-web-freight-template'),
-            component: () => import('@/views/setting/website/freight-template.vue'),
-            meta: { title: '运费模板', icon: 'el-icon-Truck' }
-        }
-    ]
-    let webSettingFound = false
-    for (const item of list) {
-        const isWebSetting =
-            item.path?.includes('setting/website') ||
-            item.meta?.title === '网站设置' ||
-            item.children?.some(
-                (child) =>
-                    child.path?.includes('website/protocol') ||
-                    child.path?.includes('website/information') ||
-                    child.path?.includes('website/filing')
-            )
-        if (isWebSetting && item.children) {
-            const existingPaths = new Set(item.children.map((child) => child.path))
-            for (const child of webSettingChildren) {
-                if (!existingPaths.has(child.path)) item.children.push(child)
-            }
-            webSettingFound = true
-            break
-        }
-    }
-    if (!webSettingFound) {
-        // 兜底：若菜单中未找到网站设置父项，追加一个完整父项
-        list.push({
-            path: '/setting/website',
-            name: Symbol('admin-web-setting'),
-            component: LAYOUT,
-            meta: { title: '网站设置', icon: 'el-icon-Setting' },
-            children: webSettingChildren
-        } as RouteRecordRaw)
     }
     return list
 })

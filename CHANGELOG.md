@@ -1,5 +1,22 @@
 # 更新日志
 
+## v0.36.1 (2026-11-27)
+
+### 本次更新
+
+- 修复投诉类型/订单设置/运费模板三个入口 404 及位置错误：
+  - 根因：路由表由后端菜单生成（filterAsyncRoutes），上一版只在侧边栏展示层注入，路由表无这三个路由导致 404；且错误地新建了独立的「网站设置」主菜单
+  - 改为在 `user.ts` 获取用户信息时，对后端 menu 原始数据递归注入三个子菜单（component 指向对应 vue 文件），让路由表与菜单同步生成，入口正确落在「系统设置 → 网站设置」下
+  - 增加兜底：未找到网站设置节点时，在系统设置下创建/追加网站设置分组
+  - 撤销 side.vue 里错误的主菜单注入代码
+  - 图标 Truck 在 Element Plus 中不存在，改用 Tickets
+
+### 说明
+
+- 修改文件：`src/stores/modules/user.ts`、`src/layout/default/components/sidebar/side.vue`，以及版本文件
+- 验证：类型检查通过（仅保留既有历史报错），编译返回 HTTP 200，三个页面组件文件确认存在
+- 预览：http://localhost:5173/admin/setting/website/complaint-type
+
 ## v0.36.0 (2026-11-27)
 
 ### 本次更新
