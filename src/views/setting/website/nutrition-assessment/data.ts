@@ -3,7 +3,7 @@
  * 后续可由后端接口替换
  */
 
-export type FieldType = 'radio' | 'checkbox' | 'text' // 单选 / 多选 / 填写
+export type FieldType = 'radio' | 'checkbox' | 'text' | 'date' // 单选 / 多选 / 填写 / 日期选择
 export type QuestionStatus = 'on' | 'off' // 启用 / 停用
 
 // 选项（可启用补充说明）
@@ -41,7 +41,8 @@ export interface QuestionItem {
 export const fieldTypeLabels: Record<FieldType, string> = {
     radio: '单选',
     checkbox: '多选',
-    text: '填写'
+    text: '填写',
+    date: '日期选择'
 }
 
 // 题组数据

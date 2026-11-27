@@ -103,6 +103,7 @@
                         <el-radio value="radio">单选</el-radio>
                         <el-radio value="checkbox">多选</el-radio>
                         <el-radio value="text">填写</el-radio>
+                        <el-radio value="date">日期选择</el-radio>
                     </el-radio-group>
                 </el-form-item>
                 <el-form-item label="所属题组">
@@ -117,7 +118,7 @@
                 </el-form-item>
 
                 <!-- 选项配置（单选/多选） -->
-                <el-form-item v-if="questionForm.fieldType !== 'text'" label="选择项配置">
+                <el-form-item v-if="questionForm.fieldType === 'radio' || questionForm.fieldType === 'checkbox'" label="选择项配置">
                     <div class="option-config">
                         <div v-for="(opt, index) in questionForm.options" :key="index" class="option-row">
                             <el-input v-model="opt.label" placeholder="选项文本" class="option-label" />
@@ -260,14 +261,14 @@ const openQuestionEdit = (row?: QuestionItem) => {
     questionDialogVisible.value = true
 }
 const onFieldTypeChange = (val?: string | number | boolean) => {
-    if (val === 'text') return
+    if (val === 'text' || val === 'date') return
     if (!questionForm.options.length) addOption()
 }
 const addOption = () => questionForm.options.push({ id: Date.now() + Math.random(), label: '', withRemark: false, remarkTip: '' })
 const removeOption = (index: number) => questionForm.options.splice(index, 1)
 const submitQuestion = () => {
     if (!questionForm.fieldName.trim()) { ElMessage.warning('请输入字段名称'); return }
-    if (questionForm.fieldType !== 'text') {
+    if (questionForm.fieldType === 'radio' || questionForm.fieldType === 'checkbox') {
         if (!questionForm.options.length || questionForm.options.some((o) => !o.label.trim())) {
             ElMessage.warning('请完整填写选择项')
             return
@@ -281,7 +282,9 @@ const submitQuestion = () => {
         fieldName: questionForm.fieldName.trim(),
         fieldType: questionForm.fieldType,
         groupId: questionForm.groupId,
-        options: questionForm.options.map((o) => ({ ...o })),
+        options: questionForm.fieldType === 'radio' || questionForm.fieldType === 'checkbox'
+            ? questionForm.options.map((o) => ({ ...o }))
+            : [],
         useScore: questionForm.useScore,
         required: questionForm.required,
         remark: questionForm.remark,

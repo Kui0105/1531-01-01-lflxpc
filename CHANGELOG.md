@@ -1,5 +1,17 @@
 # 更新日志
 
+## v0.40.2 (2026-11-27)
+
+### 本次更新
+
+- 营养评估题目类型增加「日期选择」（选择年月日）：FieldType 增加 date、标签为"日期选择"；新增/编辑弹窗字段类型增加该单选项；日期类型不显示选择项配置、提交时空选项；筛选下拉同步可选
+
+### 说明
+
+- 修改文件：`src/views/setting/website/nutrition-assessment/{index.vue,data.ts}`，以及版本文件
+- 验证：类型检查通过（仅保留既有历史报错），页面与数据编译返回 HTTP 200
+- 预览：http://localhost:5173/setting/website/nutrition-assessment
+
 ## v0.40.1 (2026-11-27)
 
 ### 本次更新
