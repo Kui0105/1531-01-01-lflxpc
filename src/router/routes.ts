@@ -321,6 +321,15 @@ export const FINANCE_ROUTE: RouteRecordRaw = {
                 title: '门店明细',
                 icon: 'el-icon-TrendCharts'
             }
+        },
+        {
+            path: 'performance',
+            name: Symbol('admin-finance-performance'),
+            component: () => import('@/views/finance/performance/index.vue'),
+            meta: {
+                title: '绩效账单',
+                icon: 'el-icon-DataAnalysis'
+            }
         }
     ]
 }
