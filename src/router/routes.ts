@@ -325,6 +325,28 @@ export const FINANCE_ROUTE: RouteRecordRaw = {
     ]
 }
 
+// 职称管理导航（静态注入到财务管理下方）
+export const TITLE_ROUTE: RouteRecordRaw = {
+    path: '/title',
+    name: Symbol('admin-title'),
+    component: LAYOUT,
+    meta: {
+        title: '职称管理',
+        icon: 'el-icon-Medal'
+    },
+    children: [
+        {
+            path: 'list',
+            name: Symbol('admin-title-list'),
+            component: () => import('@/views/title/list/index.vue'),
+            meta: {
+                title: '职称列表',
+                icon: 'el-icon-Postcard'
+            }
+        }
+    ]
+}
+
 export const constantRoutes: Array<RouteRecordRaw> = [
     APPROISE_ROUTE,
     COMPLAINT_ROUTE,
@@ -334,6 +356,7 @@ export const constantRoutes: Array<RouteRecordRaw> = [
     MARKET_ROUTE,
     DISTRIBUTION_ROUTE,
     FINANCE_ROUTE,
+    TITLE_ROUTE,
     {
         path: '/consumer/lists/detail',
         name: Symbol('admin-consumer-detail'),

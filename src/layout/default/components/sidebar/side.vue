@@ -16,7 +16,7 @@
 <script setup lang="ts">
 import type { RouteRecordRaw } from 'vue-router'
 
-import { APPROISE_ROUTE, COMPLAINT_ROUTE, DISTRIBUTION_ROUTE, FINANCE_ROUTE, GOODS_ROUTE, MARKET_ROUTE, ORDER_ROUTE, SERVICE_ROUTE } from '@/router/routes'
+import { APPROISE_ROUTE, COMPLAINT_ROUTE, DISTRIBUTION_ROUTE, FINANCE_ROUTE, GOODS_ROUTE, MARKET_ROUTE, ORDER_ROUTE, SERVICE_ROUTE, TITLE_ROUTE } from '@/router/routes'
 import useAppStore from '@/stores/modules/app'
 import useSettingStore from '@/stores/modules/setting'
 import useUserStore from '@/stores/modules/user'
@@ -195,6 +195,23 @@ const routes = computed(() => {
         list.splice(insertAt, 0, {
             ...FINANCE_ROUTE,
             meta: { ...FINANCE_ROUTE.meta, hidden: false }
+        })
+    }
+
+    // 静态注入「职称管理」主导航（职称列表）到财务管理下方
+    const titleParent = list.find((item) => item.path === TITLE_ROUTE.path)
+    if (titleParent) {
+        const existingPaths = new Set(titleParent.children?.map((child) => child.path) || [])
+        const missingChildren = (TITLE_ROUTE.children || []).filter((child) => !existingPaths.has(child.path))
+        if (missingChildren.length) {
+            titleParent.children = [...(titleParent.children || []), ...missingChildren]
+        }
+    } else if (!list.some((item) => item.children?.some((child) => child.path?.includes('title/list')))) {
+        const financeIndex = list.findIndex((item) => item.path === FINANCE_ROUTE.path)
+        const insertAt = financeIndex >= 0 ? financeIndex + 1 : list.length
+        list.splice(insertAt, 0, {
+            ...TITLE_ROUTE,
+            meta: { ...TITLE_ROUTE.meta, hidden: false }
         })
     }
     return list
