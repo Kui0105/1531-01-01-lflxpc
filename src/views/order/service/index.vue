@@ -8,6 +8,9 @@
             <el-select v-model="store" placeholder="门店" clearable class="!w-[130px]">
                 <el-option v-for="item in storeOptions" :key="item" :label="item" :value="item" />
             </el-select>
+            <el-select v-model="serviceName" placeholder="服务名称" clearable filterable class="!w-[160px]">
+                <el-option v-for="item in serviceNameOptions" :key="item" :label="item" :value="item" />
+            </el-select>
             <el-select v-model="orderType" placeholder="订单类型" clearable class="!w-[130px]">
                 <el-option label="评估订单" value="assess" />
                 <el-option label="服务订单" value="service" />
@@ -217,9 +220,12 @@ import type { OrderStatus, OrderType, ServiceOrderItem } from './data'
 const money = (value: number) => value.toFixed(2)
 
 const data = reactive(cloneDeep(serviceOrders))
+// 服务名称选项（从订单数据提取去重）
+const serviceNameOptions = [...new Set(serviceOrders.map((item) => item.serviceName))]
 const keyword = ref('')
 const mobile = ref('')
 const store = ref('')
+const serviceName = ref('')
 const orderType = ref('')
 const status = ref('')
 const dateRange = ref<string[]>([])
@@ -228,6 +234,7 @@ const query = reactive({
     keyword: '',
     mobile: '',
     store: '',
+    serviceName: '',
     orderType: '',
     status: '',
     startDate: '',
@@ -239,11 +246,12 @@ const filteredList = computed(() =>
         const matchKeyword = !query.keyword || item.nickname.includes(query.keyword)
         const matchMobile = !query.mobile || item.mobile.includes(query.mobile)
         const matchStore = !query.store || item.store === query.store
+        const matchServiceName = !query.serviceName || item.serviceName === query.serviceName
         const matchType = !query.orderType || item.orderType === query.orderType
         const matchStatus = query.status ? item.status === query.status : !activeTab.value || item.status === activeTab.value
         const matchStart = !query.startDate || item.orderTime.slice(0, 10) >= query.startDate
         const matchEnd = !query.endDate || item.orderTime.slice(0, 10) <= query.endDate
-        return matchKeyword && matchMobile && matchStore && matchType && matchStatus && matchStart && matchEnd
+        return matchKeyword && matchMobile && matchStore && matchServiceName && matchType && matchStatus && matchStart && matchEnd
     }).sort((a, b) => b.orderTime.localeCompare(a.orderTime))
 )
 
@@ -251,6 +259,7 @@ const handleSearch = () => {
     query.keyword = keyword.value.trim()
     query.mobile = mobile.value.trim()
     query.store = store.value
+    query.serviceName = serviceName.value
     query.orderType = orderType.value
     query.status = status.value
     query.startDate = dateRange.value?.[0] || ''
@@ -260,6 +269,7 @@ const resetSearch = () => {
     keyword.value = ''
     mobile.value = ''
     store.value = ''
+    serviceName.value = ''
     orderType.value = ''
     status.value = ''
     dateRange.value = []
