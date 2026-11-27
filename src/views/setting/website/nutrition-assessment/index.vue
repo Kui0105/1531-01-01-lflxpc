@@ -223,7 +223,7 @@ const filteredQuestions = computed(() =>
             const matchGroup = query.groupId === '' || item.groupId === query.groupId
             return matchKeyword && matchType && matchGroup
         })
-        .sort((a, b) => a.sort - b.sort)
+        .sort((a, b) => b.sort - a.sort)
 )
 const handleSearch = () => {
     query.keyword = keyword.value.trim()

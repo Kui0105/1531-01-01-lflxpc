@@ -1,5 +1,17 @@
 # 更新日志
 
+## v0.40.3 (2026-11-27)
+
+### 本次更新
+
+- 营养评估题目配置列表排序改为按排序数字倒序排列（数字越大越靠前）：`filteredQuestions` 的 `sort` 比较由 `a.sort - b.sort` 改为 `b.sort - a.sort`
+
+### 说明
+
+- 修改文件：`src/views/setting/website/nutrition-assessment/index.vue`，以及版本文件
+- 验证：类型检查通过（仅保留既有历史报错），无营养评估相关新增错误
+- 预览：http://localhost:5173/setting/website/nutrition-assessment
+
 ## v0.40.2 (2026-11-27)
 
 ### 本次更新
