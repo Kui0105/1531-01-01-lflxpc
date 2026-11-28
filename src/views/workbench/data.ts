@@ -30,6 +30,17 @@ export interface RankItem {
     amount: number
 }
 
+// 复测待办（管理端只展示，处理状态由用户端店长操作）
+export interface RetestTodo {
+    id: number
+    avatarColor: string
+    nickname: string
+    realName: string
+    retestTime: string
+    store: string
+    status: 'pending'
+}
+
 export interface OverviewData {
     stores: StoreOption[]
     platform: {
@@ -43,6 +54,7 @@ export interface OverviewData {
     }
     revenueRank: RankItem[]
     outputRank: RankItem[]
+    retestTodos: RetestTodo[]
 }
 
 export const overviewData: OverviewData = {
@@ -122,5 +134,13 @@ export const overviewData: OverviewData = {
         { rank: 3, name: '海珠店', amount: 368900 },
         { rank: 4, name: '番禺店', amount: 296300 },
         { rank: 5, name: '白云店', amount: 245800 }
+    ],
+    retestTodos: [
+        { id: 1, avatarColor: '#4A5DFF', nickname: '健康同行者', realName: '张敏', retestTime: '2026-11-28 10:00', store: '天河店', status: 'pending' },
+        { id: 2, avatarColor: '#e6a23c', nickname: '春风化雨', realName: '李强', retestTime: '2026-11-28 14:30', store: '越秀店', status: 'pending' },
+        { id: 3, avatarColor: '#67c23a', nickname: '康养达人', realName: '王芳', retestTime: '2026-11-29 09:00', store: '海珠店', status: 'pending' },
+        { id: 4, avatarColor: '#409eff', nickname: '静待花开', realName: '陈杰', retestTime: '2026-11-29 15:20', store: '天河店', status: 'pending' },
+        { id: 5, avatarColor: '#9b59b6', nickname: '阳光正好', realName: '赵慧', retestTime: '2026-11-30 11:10', store: '越秀店', status: 'pending' },
+        { id: 6, avatarColor: '#f56c6c', nickname: '安然自得', realName: '刘洋', retestTime: '2026-12-01 16:40', store: '海珠店', status: 'pending' }
     ]
 }
