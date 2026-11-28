@@ -20,20 +20,10 @@
                 <el-card class="list-card mt-4" shadow="never">
                     <el-table :data="filteredQuestions" style="width: 100%" :cell-style="{ padding: '12px 0' }">
                         <el-table-column prop="fieldName" label="字段名称" min-width="180" align="center" show-overflow-tooltip />
-                        <el-table-column label="关联服务商品" min-width="220" align="center">
+                        <el-table-column label="关联服务商品" min-width="180" align="center">
                             <template #default="{ row }">
-                                <div class="service-tags">
-                                    <el-tag
-                                        v-for="sid in row.serviceIds"
-                                        :key="sid"
-                                        size="small"
-                                        effect="plain"
-                                        class="service-tag"
-                                    >
-                                        {{ serviceProductName(sid) }}
-                                    </el-tag>
-                                    <span v-if="!row.serviceIds?.length" class="cell-sub">未关联</span>
-                                </div>
+                                <span v-if="row.serviceId">{{ serviceProductName(row.serviceId) }}</span>
+                                <span v-else class="cell-sub">未关联</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="字段类型" min-width="100" align="center">
@@ -116,17 +106,14 @@
                 </el-form-item>
                 <el-form-item label="关联服务商品">
                     <el-select
-                        v-model="questionForm.serviceIds"
-                        multiple
-                        collapse-tags
-                        collapse-tags-tooltip
-                        placeholder="请选择关联的服务商品（可多选）"
+                        v-model="questionForm.serviceId"
+                        placeholder="请选择关联的服务商品"
                         clearable
                         class="!w-full"
                     >
                         <el-option v-for="s in serviceProductOptions" :key="s.id" :label="s.name" :value="s.id" />
                     </el-select>
-                    <div class="form-tip">题目根据服务商品关联，可同时关联多个服务商品</div>
+                    <div class="form-tip">每个题目只可关联单个服务商品</div>
                 </el-form-item>
                 <el-form-item label="字段类型">
                     <el-radio-group v-model="questionForm.fieldType" @change="onFieldTypeChange">
@@ -274,7 +261,7 @@ const resetSearch = () => {
 const questionDialogVisible = ref(false)
 const questionEditId = ref<number | null>(null)
 const emptyQuestion = (): Omit<QuestionItem, 'id'> => ({
-    fieldName: '', fieldType: 'radio', serviceIds: [], groupId: undefined, options: [],
+    fieldName: '', fieldType: 'radio', serviceId: undefined, groupId: undefined, options: [],
     useScore: false, required: true, remark: '', sort: 10, status: 'on'
 })
 const questionForm = reactive({ ...emptyQuestion(), options: [] as QuestionOption[] })
@@ -284,7 +271,7 @@ const openQuestionEdit = (row?: QuestionItem) => {
     if (row) {
         Object.assign(questionForm, {
             fieldName: row.fieldName, fieldType: row.fieldType,
-            serviceIds: [...(row.serviceIds || [])],
+            serviceId: row.serviceId,
             groupId: row.groupId,
             options: row.options.map((o) => ({ ...o })),
             useScore: row.useScore, required: row.required, remark: row.remark, sort: row.sort, status: row.status
@@ -303,7 +290,7 @@ const addOption = () => questionForm.options.push({ id: Date.now() + Math.random
 const removeOption = (index: number) => questionForm.options.splice(index, 1)
 const submitQuestion = () => {
     if (!questionForm.fieldName.trim()) { ElMessage.warning('请输入字段名称'); return }
-    if (!questionForm.serviceIds.length) { ElMessage.warning('请选择关联的服务商品'); return }
+    if (!questionForm.serviceId) { ElMessage.warning('请选择关联的服务商品'); return }
     if (questionForm.fieldType === 'radio' || questionForm.fieldType === 'checkbox') {
         if (!questionForm.options.length || questionForm.options.some((o) => !o.label.trim())) {
             ElMessage.warning('请完整填写选择项')
@@ -317,7 +304,7 @@ const submitQuestion = () => {
     const payload: Omit<QuestionItem, 'id'> = {
         fieldName: questionForm.fieldName.trim(),
         fieldType: questionForm.fieldType,
-        serviceIds: [...questionForm.serviceIds],
+        serviceId: questionForm.serviceId,
         groupId: questionForm.groupId,
         options: questionForm.fieldType === 'radio' || questionForm.fieldType === 'checkbox'
             ? questionForm.options.map((o) => ({ ...o }))
@@ -429,14 +416,6 @@ const deleteGroup = (row: QuestionGroup) => {
 
 .list-card { border-radius: 8px; }
 .cell-sub { font-size: 12px; color: #909399; }
-.service-tags {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 4px;
-
-    .service-tag { max-width: 130px; }
-}
 .form-tip { margin-top: 4px; font-size: 12px; color: #909399; }
 .form-tip.inline { display: inline-block; margin: 0 0 0 10px; }
 .main-tabs { :deep(.el-tabs__header) { margin-bottom: 16px; } }

@@ -1,5 +1,20 @@
 # 更新日志
 
+## v0.43.1 (2026-11-28)
+
+### 本次更新
+
+- 营养评估题目关联服务商品由多选改为单选：单个题目只可关联单个服务商品
+  - `QuestionItem.serviceIds: number[]` 改为 `serviceId?: number`，演示数据改为单值
+  - 新增/编辑弹窗下拉去掉多选/折叠标签，改为单选下拉
+  - 列表关联列由多标签改为直接展示单个商品名称
+
+### 说明
+
+- 修改文件：`src/views/setting/website/nutrition-assessment/{index.vue,data.ts}`，以及版本文件
+- 验证：类型检查通过（仅保留既有历史报错），无相关新增错误
+- 预览：http://localhost:5173/setting/website/nutrition-assessment
+
 ## v0.43.0 (2026-11-28)
 
 ### 本次更新
