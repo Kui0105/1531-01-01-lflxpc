@@ -34,12 +34,7 @@
                     </div>
                 </template>
                 <div class="stat-grid">
-                    <div
-                        v-for="(item, index) in todayItems"
-                        :key="item.label"
-                        class="stat-item"
-                        :style="{ '--item-color': statColors[index % statColors.length] }"
-                    >
+                    <div v-for="item in todayItems" :key="item.label" class="stat-item">
                         <div class="stat-label">{{ item.label }}</div>
                         <div class="stat-value">{{ item.value }}</div>
                         <div v-if="item.sub" class="stat-sub">{{ item.sub }}</div>
@@ -54,14 +49,9 @@
                     </div>
                 </template>
                 <div class="stat-grid stat-grid--three">
-                    <div
-                        v-for="(item, index) in totalItems"
-                        :key="item.label"
-                        class="stat-item"
-                        :style="{ '--item-color': totalColors[index % totalColors.length] }"
-                    >
+                    <div v-for="item in totalItems" :key="item.label" class="stat-item">
                         <div class="stat-label">{{ item.label }}</div>
-                        <div class="stat-value">{{ item.value }}</div>
+                        <div class="stat-value stat-value--total">{{ item.value }}</div>
                     </div>
                 </div>
             </el-card>
@@ -181,9 +171,6 @@ const settingStore = useSettingStore()
 const data = reactive(cloneDeep(overviewData))
 const selectedStore = ref('')
 const loading = ref(false)
-
-const statColors = ['#f56c6c', '#e6a23c', '#67c23a', '#409eff', '#9b59b6']
-const totalColors = ['var(--el-color-primary)', '#e6a23c', '#67c23a']
 
 const formatMoney = (value: number) => `¥${value.toLocaleString('zh-CN')}`
 
@@ -337,10 +324,9 @@ onMounted(getData)
     align-items: center;
     gap: 12px;
     padding: 14px 18px;
-    background: linear-gradient(90deg, #f5f7ff 0%, #fff 60%);
-    border: 1px solid #e8ebf5;
-    border-radius: 8px;
-    box-shadow: 0 2px 12px rgba(74, 93, 255, 0.04);
+    background: #fff;
+    border: 1px solid #ebedf0;
+    border-radius: 10px;
 }
 
 .filter-title {
@@ -374,8 +360,9 @@ onMounted(getData)
 .chart-card,
 .rank-card,
 .retest-card {
-    border-radius: 8px;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+    border: 1px solid #ebedf0;
+    border-radius: 10px;
+    box-shadow: none;
 }
 
 .retest-tip {
@@ -470,28 +457,21 @@ onMounted(getData)
 }
 
 .stat-item {
-    position: relative;
-    padding: 18px 12px;
-    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 108px;
+    padding: 14px 12px;
     text-align: center;
-    background: linear-gradient(180deg, #fff 0%, #fafbfc 100%);
+    background: #fff;
     border: 1px solid #ebeef5;
     border-radius: 8px;
-    transition: border-color 0.2s, box-shadow 0.2s;
-
-    &::before {
-        position: absolute;
-        top: 0;
-        right: 0;
-        left: 0;
-        height: 3px;
-        background: var(--item-color);
-        content: '';
-    }
+    transition: background 0.2s, border-color 0.2s;
 
     &:hover {
-        border-color: var(--item-color);
-        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+        background: #fafbff;
+        border-color: #d9def5;
     }
 }
 
@@ -501,20 +481,24 @@ onMounted(getData)
 }
 
 .stat-value {
-    margin-top: 10px;
+    margin-top: 8px;
     font-size: 22px;
     font-weight: 700;
-    color: var(--item-color);
+    color: var(--el-color-primary);
     white-space: nowrap;
+}
+
+.stat-value--total {
+    font-size: 18px;
 }
 
 .stat-sub {
     display: inline-block;
-    margin-top: 8px;
+    margin-top: 6px;
     padding: 2px 10px;
     font-size: 12px;
-    color: #909399;
-    background: #f5f7fa;
+    color: #a0a6b0;
+    background: #f6f8fb;
     border-radius: 12px;
 }
 
@@ -580,17 +564,17 @@ onMounted(getData)
 
     &--1 {
         color: #fff;
-        background: linear-gradient(135deg, #ffd66b, #f5a623);
+        background: #f0a020;
     }
 
     &--2 {
         color: #fff;
-        background: linear-gradient(135deg, #d6dbe3, #a8b0bd);
+        background: #a8b0bd;
     }
 
     &--3 {
         color: #fff;
-        background: linear-gradient(135deg, #e8b48a, #cf8c5a);
+        background: #d09a6c;
     }
 }
 
