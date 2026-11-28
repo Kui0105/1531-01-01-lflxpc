@@ -252,7 +252,7 @@ const retestFiltered = computed<RetestTodo[]>(() => {
     const all = data.retestTodos || []
     const store = selectedStore.value
     const list = store ? all.filter((item) => data.stores.find((s) => s.id === store)?.name === item.store) : all
-    return [...list].sort((a, b) => a.retestTime.localeCompare(b.retestTime))
+    return [...list].sort((a, b) => b.retestTime.localeCompare(a.retestTime))
 })
 
 // 复测待办分页
