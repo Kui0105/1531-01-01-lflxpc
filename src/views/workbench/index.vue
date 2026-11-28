@@ -64,7 +64,7 @@
                 <template #header>
                     <div class="card-header">
                         <span class="header-title">复测待办</span>
-                        <span class="header-scope">待处理 {{ retestTodos.length }} 人</span>
+                        <span class="header-scope">待处理 {{ retestFiltered.length }} 人</span>
                     </div>
                 </template>
                 <div class="retest-tip">状态由用户端店长操作，管理端仅作展示</div>
@@ -92,6 +92,16 @@
                         </template>
                     </el-table-column>
                 </el-table>
+                <div class="retest-pagination">
+                    <el-pagination
+                        v-model:current-page="retestPage"
+                        :page-size="retestPageSize"
+                        :total="retestFiltered.length"
+                        layout="total, prev, pager, next"
+                        background
+                        small
+                    />
+                </div>
             </el-card>
 
             <!-- 近七日营收趋势图 -->
@@ -114,7 +124,9 @@
                         </div>
                     </div>
                 </template>
-                <v-charts style="height: 320px" :option="trendOption" :autoresize="true" />
+                <div class="chart-body">
+                    <v-charts :option="trendOption" :autoresize="true" />
+                </div>
             </el-card>
         </div>
 
@@ -236,12 +248,22 @@ const rankCards = computed(() => [
 ])
 
 // 复测待办：跟随门店筛选联动，管理端只展示不操作
-const retestTodos = computed<RetestTodo[]>(() => {
+const retestFiltered = computed<RetestTodo[]>(() => {
     const all = data.retestTodos || []
     const store = selectedStore.value
     const list = store ? all.filter((item) => data.stores.find((s) => s.id === store)?.name === item.store) : all
     return [...list].sort((a, b) => a.retestTime.localeCompare(b.retestTime))
 })
+
+// 复测待办分页
+const retestPage = ref(1)
+const retestPageSize = ref(5)
+const retestTodos = computed<RetestTodo[]>(() => {
+    const start = (retestPage.value - 1) * retestPageSize.value
+    return retestFiltered.value.slice(start, start + retestPageSize.value)
+})
+// 门店切换后回到第一页
+watch(selectedStore, () => { retestPage.value = 1 })
 
 const trendOption = computed(() => ({
     tooltip: {
@@ -363,6 +385,32 @@ onMounted(getData)
     border: 1px solid #ebedf0;
     border-radius: 10px;
     box-shadow: none;
+}
+
+// 趋势图卡片撑满与左侧等高，消除底部留白
+.chart-card {
+    display: flex;
+    flex-direction: column;
+
+    :deep(.el-card__body) {
+        flex: 1;
+        display: flex;
+        min-height: 0;
+        padding-top: 8px;
+    }
+
+    .chart-body {
+        flex: 1;
+        min-height: 320px;
+    }
+}
+
+.retest-pagination {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid #f0f2f5;
 }
 
 .retest-tip {

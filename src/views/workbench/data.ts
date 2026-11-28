@@ -141,6 +141,14 @@ export const overviewData: OverviewData = {
         { id: 3, avatarColor: '#67c23a', nickname: '康养达人', realName: '王芳', retestTime: '2026-11-29 09:00', store: '海珠店', status: 'pending' },
         { id: 4, avatarColor: '#409eff', nickname: '静待花开', realName: '陈杰', retestTime: '2026-11-29 15:20', store: '天河店', status: 'pending' },
         { id: 5, avatarColor: '#9b59b6', nickname: '阳光正好', realName: '赵慧', retestTime: '2026-11-30 11:10', store: '越秀店', status: 'pending' },
-        { id: 6, avatarColor: '#f56c6c', nickname: '安然自得', realName: '刘洋', retestTime: '2026-12-01 16:40', store: '海珠店', status: 'pending' }
+        { id: 6, avatarColor: '#f56c6c', nickname: '安然自得', realName: '刘洋', retestTime: '2026-12-01 16:40', store: '海珠店', status: 'pending' },
+        { id: 7, avatarColor: '#13ce66', nickname: '健康守护者', realName: '孙丽', retestTime: '2026-12-02 09:30', store: '天河店', status: 'pending' },
+        { id: 8, avatarColor: '#ff9d00', nickname: '元气满满', realName: '周婷', retestTime: '2026-12-02 13:15', store: '海珠店', status: 'pending' },
+        { id: 9, avatarColor: '#6b8cff', nickname: '慢养生活', realName: '吴刚', retestTime: '2026-12-03 10:20', store: '越秀店', status: 'pending' },
+        { id: 10, avatarColor: '#c0392b', nickname: '康健常伴', realName: '郑霞', retestTime: '2026-12-03 15:40', store: '天河店', status: 'pending' },
+        { id: 11, avatarColor: '#8e44ad', nickname: '舒展人生', realName: '黄磊', retestTime: '2026-12-04 08:50', store: '海珠店', status: 'pending' },
+        { id: 12, avatarColor: '#16a085', nickname: '活力每一天', realName: '林芳', retestTime: '2026-12-04 14:05', store: '越秀店', status: 'pending' },
+        { id: 13, avatarColor: '#d35400', nickname: '稳态康复', realName: '何静', retestTime: '2026-12-05 11:30', store: '天河店', status: 'pending' },
+        { id: 14, avatarColor: '#2980b9', nickname: '身心合一', realName: '高鹏', retestTime: '2026-12-05 16:20', store: '海珠店', status: 'pending' }
     ]
 }
