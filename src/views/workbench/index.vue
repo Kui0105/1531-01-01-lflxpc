@@ -67,62 +67,66 @@
             </el-card>
         </div>
 
-        <!-- 复测待办（管理端只展示，处理状态由用户端店长操作） -->
-        <el-card class="retest-card mt-4" shadow="never">
-            <template #header>
-                <div class="card-header">
-                    <span class="header-title">复测待办</span>
-                    <span class="header-scope">待处理 {{ retestTodos.length }} 人 · 状态由用户端店长操作</span>
-                </div>
-            </template>
-            <el-table :data="retestTodos" style="width: 100%" :cell-style="{ padding: '10px 0' }">
-                <el-table-column label="客户头像" min-width="120" align="center">
-                    <template #default="{ row }">
-                        <span class="retest-avatar" :style="{ background: row.avatarColor }">
-                            {{ row.nickname.charAt(0) }}
-                        </span>
-                    </template>
-                </el-table-column>
-                <el-table-column label="昵称/姓名" min-width="180" align="center">
-                    <template #default="{ row }">
-                        <div class="retest-user">
-                            <span class="retest-nickname">{{ row.nickname }}</span>
-                            <span class="retest-realname">{{ row.realName }}</span>
-                        </div>
-                    </template>
-                </el-table-column>
-                <el-table-column prop="retestTime" label="复测时间" min-width="180" align="center" />
-                <el-table-column prop="store" label="归属门店" min-width="140" align="center" />
-                <el-table-column label="状态" min-width="120" align="center">
-                    <template #default>
-                        <el-tag type="warning" size="small" effect="light">待处理</el-tag>
-                    </template>
-                </el-table-column>
-            </el-table>
-        </el-card>
-
-        <!-- 近七日营收趋势图 -->
-        <el-card class="chart-card mt-4" shadow="never">
-            <template #header>
-                <div class="card-header">
-                    <span class="header-title">近七日营收趋势图</span>
-                    <div class="chart-summary">
-                        <span class="summary-item">
-                            日均营收 <b>{{ formatMoney(trendSummary.avg) }}</b>
-                        </span>
-                        <i class="summary-divider" />
-                        <span class="summary-item">
-                            最高营收 <b class="summary-high">{{ formatMoney(trendSummary.max) }}</b>
-                        </span>
-                        <i class="summary-divider" />
-                        <span class="summary-item">
-                            最低营收 <b class="summary-low">{{ formatMoney(trendSummary.min) }}</b>
-                        </span>
+        <!-- 复测待办 + 近七日营收趋势图 并列 -->
+        <div class="lg:flex gap-4 mt-4">
+            <!-- 复测待办（管理端只展示，处理状态由用户端店长操作） -->
+            <el-card class="retest-card lg:w-2/5 mt-4 lg:mt-0" shadow="never">
+                <template #header>
+                    <div class="card-header">
+                        <span class="header-title">复测待办</span>
+                        <span class="header-scope">待处理 {{ retestTodos.length }} 人</span>
                     </div>
-                </div>
-            </template>
-            <v-charts style="height: 320px" :option="trendOption" :autoresize="true" />
-        </el-card>
+                </template>
+                <div class="retest-tip">状态由用户端店长操作，管理端仅作展示</div>
+                <el-table :data="retestTodos" style="width: 100%" :cell-style="{ padding: '8px 0' }">
+                    <el-table-column label="客户头像" min-width="70" width="70" align="center">
+                        <template #default="{ row }">
+                            <span class="retest-avatar" :style="{ background: row.avatarColor }">
+                                {{ row.nickname.charAt(0) }}
+                            </span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="昵称/姓名" min-width="110" align="center">
+                        <template #default="{ row }">
+                            <div class="retest-user">
+                                <span class="retest-nickname">{{ row.nickname }}</span>
+                                <span class="retest-realname">{{ row.realName }}</span>
+                            </div>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="retestTime" label="复测时间" min-width="140" align="center" />
+                    <el-table-column prop="store" label="归属门店" min-width="85" align="center" />
+                    <el-table-column label="状态" min-width="80" align="center">
+                        <template #default>
+                            <el-tag type="warning" size="small" effect="light">待处理</el-tag>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </el-card>
+
+            <!-- 近七日营收趋势图 -->
+            <el-card class="chart-card flex-1 mt-4 lg:mt-0" shadow="never">
+                <template #header>
+                    <div class="card-header">
+                        <span class="header-title">近七日营收趋势图</span>
+                        <div class="chart-summary">
+                            <span class="summary-item">
+                                日均营收 <b>{{ formatMoney(trendSummary.avg) }}</b>
+                            </span>
+                            <i class="summary-divider" />
+                            <span class="summary-item">
+                                最高营收 <b class="summary-high">{{ formatMoney(trendSummary.max) }}</b>
+                            </span>
+                            <i class="summary-divider" />
+                            <span class="summary-item">
+                                最低营收 <b class="summary-low">{{ formatMoney(trendSummary.min) }}</b>
+                            </span>
+                        </div>
+                    </div>
+                </template>
+                <v-charts style="height: 320px" :option="trendOption" :autoresize="true" />
+            </el-card>
+        </div>
 
         <!-- 本月排行 -->
         <div class="lg:flex gap-4 mt-4">
@@ -374,13 +378,19 @@ onMounted(getData)
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
 }
 
+.retest-tip {
+    margin-bottom: 10px;
+    font-size: 12px;
+    color: #909399;
+}
+
 .retest-avatar {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 34px;
-    height: 34px;
-    font-size: 14px;
+    width: 30px;
+    height: 30px;
+    font-size: 13px;
     font-weight: 600;
     color: #fff;
     border-radius: 50%;
