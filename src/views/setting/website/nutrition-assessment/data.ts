@@ -14,6 +14,20 @@ export interface QuestionOption {
     remarkTip: string // 补充说明提示
 }
 
+// 关联服务商品选项（题目根据服务商品关联，可关联多个）
+export interface ServiceProductOption {
+    id: number
+    name: string
+}
+
+export const serviceProductOptions: ServiceProductOption[] = [
+    { id: 1, name: '全身经络理疗' },
+    { id: 2, name: '肩颈康复评估' },
+    { id: 3, name: '腰部舒缓护理' },
+    { id: 4, name: '体态评估' },
+    { id: 5, name: '经络护理套餐' }
+]
+
 // 题组（如 神经系统-心理状况），组内题目按 1-5 分评分
 export interface QuestionGroup {
     id: number
@@ -29,6 +43,7 @@ export interface QuestionItem {
     id: number
     fieldName: string // 字段名称
     fieldType: FieldType // 字段类型
+    serviceIds: number[] // 关联的服务商品（可关联多个）
     groupId?: number // 所属题组（不填表示独立题）
     options: QuestionOption[] // 选择项（单选/多选）
     useScore: boolean // 是否按分值评分（题组内题目用）
@@ -55,7 +70,7 @@ export const questionGroups: QuestionGroup[] = [
 // 题目数据
 export const questionList: QuestionItem[] = [
     {
-        id: 1, fieldName: '您的性别', fieldType: 'radio', groupId: undefined,
+        id: 1, fieldName: '您的性别', fieldType: 'radio', serviceIds: [1, 2], groupId: undefined,
         options: [
             { id: 1, label: '男', withRemark: false, remarkTip: '' },
             { id: 2, label: '女', withRemark: false, remarkTip: '' }
@@ -63,11 +78,11 @@ export const questionList: QuestionItem[] = [
         useScore: false, required: true, remark: '基础信息', sort: 10, status: 'on'
     },
     {
-        id: 2, fieldName: '您的年龄', fieldType: 'text', groupId: undefined,
+        id: 2, fieldName: '您的年龄', fieldType: 'text', serviceIds: [1, 4], groupId: undefined,
         options: [], useScore: false, required: true, remark: '填写数字', sort: 20, status: 'on'
     },
     {
-        id: 3, fieldName: '是否存在食物过敏', fieldType: 'checkbox', groupId: undefined,
+        id: 3, fieldName: '是否存在食物过敏', fieldType: 'checkbox', serviceIds: [2, 5], groupId: undefined,
         options: [
             { id: 1, label: '海鲜', withRemark: true, remarkTip: '请说明过敏食物' },
             { id: 2, label: '坚果', withRemark: true, remarkTip: '请说明过敏食物' },
@@ -77,27 +92,27 @@ export const questionList: QuestionItem[] = [
         useScore: false, required: true, remark: '可多选', sort: 30, status: 'on'
     },
     {
-        id: 4, fieldName: '近期是否感到焦虑或紧张', fieldType: 'radio', groupId: 1,
+        id: 4, fieldName: '近期是否感到焦虑或紧张', fieldType: 'radio', serviceIds: [1, 2], groupId: 1,
         options: [], useScore: true, required: true, remark: '神经系统-心理状况，按1-5分', sort: 40, status: 'on'
     },
     {
-        id: 5, fieldName: '是否容易情绪低落', fieldType: 'radio', groupId: 1,
+        id: 5, fieldName: '是否容易情绪低落', fieldType: 'radio', serviceIds: [1, 2], groupId: 1,
         options: [], useScore: true, required: true, remark: '神经系统-心理状况，按1-5分', sort: 50, status: 'on'
     },
     {
-        id: 6, fieldName: '注意力是否容易分散', fieldType: 'radio', groupId: 1,
+        id: 6, fieldName: '注意力是否容易分散', fieldType: 'radio', serviceIds: [2], groupId: 1,
         options: [], useScore: true, required: false, remark: '神经系统-心理状况，按1-5分', sort: 60, status: 'on'
     },
     {
-        id: 7, fieldName: '入睡是否困难', fieldType: 'radio', groupId: 2,
+        id: 7, fieldName: '入睡是否困难', fieldType: 'radio', serviceIds: [3, 4], groupId: 2,
         options: [], useScore: true, required: true, remark: '神经系统-睡眠质量，按1-5分', sort: 70, status: 'on'
     },
     {
-        id: 8, fieldName: '夜间是否易醒', fieldType: 'radio', groupId: 2,
+        id: 8, fieldName: '夜间是否易醒', fieldType: 'radio', serviceIds: [3, 4], groupId: 2,
         options: [], useScore: true, required: false, remark: '神经系统-睡眠质量，按1-5分', sort: 80, status: 'off'
     },
     {
-        id: 9, fieldName: '餐后是否腹胀', fieldType: 'radio', groupId: 3,
+        id: 9, fieldName: '餐后是否腹胀', fieldType: 'radio', serviceIds: [5], groupId: 3,
         options: [], useScore: true, required: true, remark: '消化系统-消化吸收，按1-5分', sort: 90, status: 'on'
     }
 ]
