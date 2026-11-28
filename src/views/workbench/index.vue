@@ -79,7 +79,7 @@
                 </template>
                 <div class="retest-tip">状态由用户端店长操作，管理端仅作展示</div>
                 <el-table :data="retestTodos" style="width: 100%" :cell-style="{ padding: '8px 0' }">
-                    <el-table-column label="客户头像" min-width="70" width="70" align="center">
+                    <el-table-column label="头像" min-width="70" width="70" align="center">
                         <template #default="{ row }">
                             <span class="retest-avatar" :style="{ background: row.avatarColor }">
                                 {{ row.nickname.charAt(0) }}
