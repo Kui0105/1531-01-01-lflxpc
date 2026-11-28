@@ -12,6 +12,9 @@
                     <el-select v-model="groupFilter" placeholder="所属题组" clearable class="!w-[180px]">
                         <el-option v-for="g in groupOptions" :key="g.id" :label="g.label" :value="g.id" />
                     </el-select>
+                    <el-select v-model="serviceFilter" placeholder="关联服务商品" clearable class="!w-[180px]">
+                        <el-option v-for="s in usedServiceOptions" :key="s.id" :label="s.name" :value="s.id" />
+                    </el-select>
                     <el-button type="primary" @click="handleSearch">查询</el-button>
                     <el-button @click="resetSearch">重置</el-button>
                     <el-button type="primary" class="ml-auto" @click="openQuestionEdit()">新增题目</el-button>
@@ -229,19 +232,26 @@ const groupFullName = (id: number) => {
 const getGroupQuestionCount = (id: number) => questions.value.filter((q) => q.groupId === id).length
 
 const serviceProductName = (id: number) => serviceProductOptions.find((s) => s.id === id)?.name || ''
+// 已被题目关联的服务商品选项（用于筛选）
+const usedServiceOptions = computed(() => {
+    const ids = [...new Set(questions.value.map((q) => q.serviceId).filter((id): id is number => !!id))]
+    return serviceProductOptions.filter((s) => ids.includes(s.id))
+})
 
 // ===== 题目筛选 =====
 const keyword = ref('')
 const typeFilter = ref('')
 const groupFilter = ref<number | ''>('')
-const query = reactive({ keyword: '', fieldType: '', groupId: '' as number | '' })
+const serviceFilter = ref<number | ''>('')
+const query = reactive({ keyword: '', fieldType: '', groupId: '' as number | '', serviceId: '' as number | '' })
 const filteredQuestions = computed(() =>
     questions.value
         .filter((item) => {
             const matchKeyword = !query.keyword || item.fieldName.includes(query.keyword)
             const matchType = !query.fieldType || item.fieldType === query.fieldType
             const matchGroup = query.groupId === '' || item.groupId === query.groupId
-            return matchKeyword && matchType && matchGroup
+            const matchService = query.serviceId === '' || item.serviceId === query.serviceId
+            return matchKeyword && matchType && matchGroup && matchService
         })
         .sort((a, b) => b.sort - a.sort)
 )
@@ -249,12 +259,14 @@ const handleSearch = () => {
     query.keyword = keyword.value.trim()
     query.fieldType = typeFilter.value
     query.groupId = groupFilter.value
+    query.serviceId = serviceFilter.value
 }
 const resetSearch = () => {
     keyword.value = ''
     typeFilter.value = ''
     groupFilter.value = ''
-    Object.assign(query, { keyword: '', fieldType: '', groupId: '' })
+    serviceFilter.value = ''
+    Object.assign(query, { keyword: '', fieldType: '', groupId: '', serviceId: '' })
 }
 
 // ===== 题目新增/编辑 =====
