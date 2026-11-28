@@ -3,6 +3,8 @@
  * 后续可由后端接口替换
  */
 
+import { services } from '@/views/service/list/data'
+
 export type FieldType = 'radio' | 'checkbox' | 'text' | 'date' // 单选 / 多选 / 填写 / 日期选择
 export type QuestionStatus = 'on' | 'off' // 启用 / 停用
 
@@ -15,18 +17,15 @@ export interface QuestionOption {
 }
 
 // 关联服务商品选项（题目根据服务商品关联，单选）
+// 只展示评估类型（assess）的服务商品，与服务列表数据联动
 export interface ServiceProductOption {
     id: number
     name: string
 }
 
-export const serviceProductOptions: ServiceProductOption[] = [
-    { id: 1, name: '全身经络理疗' },
-    { id: 2, name: '肩颈康复评估' },
-    { id: 3, name: '腰部舒缓护理' },
-    { id: 4, name: '体态评估' },
-    { id: 5, name: '经络护理套餐' }
-]
+export const serviceProductOptions: ServiceProductOption[] = services
+    .filter((s) => s.type === 'assess')
+    .map((s) => ({ id: s.id, name: s.name }))
 
 // 题组（如 神经系统-心理状况），组内题目按 1-5 分评分
 export interface QuestionGroup {
@@ -70,7 +69,7 @@ export const questionGroups: QuestionGroup[] = [
 // 题目数据
 export const questionList: QuestionItem[] = [
     {
-        id: 1, fieldName: '您的性别', fieldType: 'radio', serviceId: 1, groupId: undefined,
+        id: 1, fieldName: '您的性别', fieldType: 'radio', serviceId: 2, groupId: undefined,
         options: [
             { id: 1, label: '男', withRemark: false, remarkTip: '' },
             { id: 2, label: '女', withRemark: false, remarkTip: '' }
@@ -92,7 +91,7 @@ export const questionList: QuestionItem[] = [
         useScore: false, required: true, remark: '可多选', sort: 30, status: 'on'
     },
     {
-        id: 4, fieldName: '近期是否感到焦虑或紧张', fieldType: 'radio', serviceId: 1, groupId: 1,
+        id: 4, fieldName: '近期是否感到焦虑或紧张', fieldType: 'radio', serviceId: 4, groupId: 1,
         options: [], useScore: true, required: true, remark: '神经系统-心理状况，按1-5分', sort: 40, status: 'on'
     },
     {
@@ -104,15 +103,15 @@ export const questionList: QuestionItem[] = [
         options: [], useScore: true, required: false, remark: '神经系统-心理状况，按1-5分', sort: 60, status: 'on'
     },
     {
-        id: 7, fieldName: '入睡是否困难', fieldType: 'radio', serviceId: 3, groupId: 2,
+        id: 7, fieldName: '入睡是否困难', fieldType: 'radio', serviceId: 4, groupId: 2,
         options: [], useScore: true, required: true, remark: '神经系统-睡眠质量，按1-5分', sort: 70, status: 'on'
     },
     {
-        id: 8, fieldName: '夜间是否易醒', fieldType: 'radio', serviceId: 3, groupId: 2,
+        id: 8, fieldName: '夜间是否易醒', fieldType: 'radio', serviceId: 4, groupId: 2,
         options: [], useScore: true, required: false, remark: '神经系统-睡眠质量，按1-5分', sort: 80, status: 'off'
     },
     {
-        id: 9, fieldName: '餐后是否腹胀', fieldType: 'radio', serviceId: 5, groupId: 3,
+        id: 9, fieldName: '餐后是否腹胀', fieldType: 'radio', serviceId: 4, groupId: 3,
         options: [], useScore: true, required: true, remark: '消化系统-消化吸收，按1-5分', sort: 90, status: 'on'
     }
 ]

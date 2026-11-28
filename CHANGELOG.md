@@ -1,5 +1,17 @@
 # 更新日志
 
+## v0.45.1 (2026-11-28)
+
+### 本次更新
+
+- 营养评估「关联服务商品」字段限制只可选择评估类型服务商品：选项改为从服务列表数据（`services`）按 `type === 'assess'` 过滤生成，与服务数据联动；演示题目关联同步调整为评估类服务（肩颈康复评估 id2 / 体态评估 id4）
+
+### 说明
+
+- 修改文件：`src/views/setting/website/nutrition-assessment/data.ts`，以及版本文件
+- 验证：类型检查通过（仅保留既有历史报错），无相关新增错误
+- 预览：http://localhost:5173/setting/website/nutrition-assessment
+
 ## v0.45.0 (2026-11-28)
 
 ### 本次更新
