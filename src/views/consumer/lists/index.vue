@@ -87,7 +87,19 @@
             <template #header>
                 <span class="header-title">康复档案 - {{ currentUser?.nickname }}</span>
             </template>
-            <div class="drawer-tip">
+            <!-- 用户基本信息 -->
+            <el-card class="archive-info-card" shadow="never">
+                <template #header>
+                    <span class="header-title">用户基本信息</span>
+                </template>
+                <div class="archive-info-grid">
+                    <div v-for="item in archiveBaseItems" :key="item.label" class="archive-info-item">
+                        <span class="archive-info-label">{{ item.label }}</span>
+                        <span class="archive-info-value">{{ item.value }}</span>
+                    </div>
+                </div>
+            </el-card>
+            <div class="drawer-tip mt-4">
                 档案类型分为评估报告、康复纪要、康复小结；评估报告为评估服务完成后生成的报告结果，
                 康复纪要为康复服务完成后康复师填写的内容，康复小结为单次服务完成时填写的内容。
             </div>
@@ -204,6 +216,29 @@ const currentUser = ref<UserItem | null>(null)
 const currentArchive = ref<ArchiveRecord | null>(null)
 const archives = computed(() => (currentUser.value ? detailData[currentUser.value.id]?.archives || [] : []))
 
+const calcAge = (birthday: string) => {
+    if (!birthday) return 0
+    const birth = new Date(birthday)
+    const now = new Date()
+    let age = now.getFullYear() - birth.getFullYear()
+    const monthDiff = now.getMonth() - birth.getMonth()
+    if (monthDiff < 0 || (monthDiff === 0 && now.getDate() < birth.getDate())) age--
+    return age
+}
+
+const archiveBaseItems = computed(() => {
+    const u = currentUser.value
+    if (!u) return []
+    return [
+        { label: '姓名', value: u.realName },
+        { label: '性别', value: u.gender },
+        { label: '年龄', value: `${calcAge(u.birthday)} 岁` },
+        { label: '身高', value: `${u.height} cm` },
+        { label: '体重', value: `${u.weight} kg` },
+        { label: '联系电话', value: u.mobile }
+    ]
+})
+
 const openArchive = (row: UserItem) => {
     currentUser.value = row
     archiveVisible.value = true
@@ -300,6 +335,33 @@ const openReport = (row: ArchiveRecord) => {
 .points {
     font-weight: 600;
     color: #e6a23c;
+}
+
+.archive-info-card {
+    border-radius: 8px;
+
+    .archive-info-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px 20px;
+    }
+
+    .archive-info-item {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .archive-info-label {
+        font-size: 12px;
+        color: #909399;
+    }
+
+    .archive-info-value {
+        font-size: 14px;
+        font-weight: 500;
+        color: #303133;
+    }
 }
 
 .drawer-tip {

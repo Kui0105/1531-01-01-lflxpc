@@ -17,6 +17,8 @@ export interface UserItem {
     realName: string
     gender: string
     birthday: string
+    height: number // 身高（cm）
+    weight: number // 体重（kg）
     source: string
 }
 
@@ -85,12 +87,12 @@ export interface UserDetailData {
 }
 
 export const users: UserItem[] = [
-    { id: 10001, avatarColor: '#4A5DFF', nickname: '健康同行者', mobile: '13800138001', level: '黄金会员', points: 2360, status: 'normal', registerTime: '2026-03-12 09:32', realName: '张敏', gender: '女', birthday: '1988-06-15', source: '微信小程序' },
-    { id: 10002, avatarColor: '#e6a23c', nickname: '春风化雨', mobile: '13800138002', level: '白银会员', points: 980, status: 'normal', registerTime: '2026-04-08 14:20', realName: '李强', gender: '男', birthday: '1979-11-02', source: '官网注册' },
-    { id: 10003, avatarColor: '#67c23a', nickname: '康养达人', mobile: '13800138003', level: '铂金会员', points: 5680, status: 'normal', registerTime: '2026-05-21 10:05', realName: '王芳', gender: '女', birthday: '1992-02-28', source: '线下门店' },
-    { id: 10004, avatarColor: '#409eff', nickname: '静待花开', mobile: '13800138004', level: '普通会员', points: 320, status: 'disabled', registerTime: '2026-06-03 16:48', realName: '陈杰', gender: '男', birthday: '1995-09-10', source: '微信小程序' },
-    { id: 10005, avatarColor: '#9b59b6', nickname: '阳光正好', mobile: '13800138005', level: '黄金会员', points: 1850, status: 'normal', registerTime: '2026-07-17 11:26', realName: '赵慧', gender: '女', birthday: '1985-04-19', source: '朋友推荐' },
-    { id: 10006, avatarColor: '#f56c6c', nickname: '安然自得', mobile: '13800138006', level: '白银会员', points: 760, status: 'normal', registerTime: '2026-08-29 15:13', realName: '刘洋', gender: '男', birthday: '1990-12-05', source: '官网注册' }
+    { id: 10001, avatarColor: '#4A5DFF', nickname: '健康同行者', mobile: '13800138001', level: '黄金会员', points: 2360, status: 'normal', registerTime: '2026-03-12 09:32', realName: '张敏', gender: '女', birthday: '1988-06-15', height: 162, weight: 54, source: '微信小程序' },
+    { id: 10002, avatarColor: '#e6a23c', nickname: '春风化雨', mobile: '13800138002', level: '白银会员', points: 980, status: 'normal', registerTime: '2026-04-08 14:20', realName: '李强', gender: '男', birthday: '1979-11-02', height: 175, weight: 72, source: '官网注册' },
+    { id: 10003, avatarColor: '#67c23a', nickname: '康养达人', mobile: '13800138003', level: '铂金会员', points: 5680, status: 'normal', registerTime: '2026-05-21 10:05', realName: '王芳', gender: '女', birthday: '1992-02-28', height: 160, weight: 52, source: '线下门店' },
+    { id: 10004, avatarColor: '#409eff', nickname: '静待花开', mobile: '13800138004', level: '普通会员', points: 320, status: 'disabled', registerTime: '2026-06-03 16:48', realName: '陈杰', gender: '男', birthday: '1995-09-10', height: 178, weight: 75, source: '微信小程序' },
+    { id: 10005, avatarColor: '#9b59b6', nickname: '阳光正好', mobile: '13800138005', level: '黄金会员', points: 1850, status: 'normal', registerTime: '2026-07-17 11:26', realName: '赵慧', gender: '女', birthday: '1985-04-19', height: 165, weight: 58, source: '朋友推荐' },
+    { id: 10006, avatarColor: '#f56c6c', nickname: '安然自得', mobile: '13800138006', level: '白银会员', points: 760, status: 'normal', registerTime: '2026-08-29 15:13', realName: '刘洋', gender: '男', birthday: '1990-12-05', height: 172, weight: 68, source: '官网注册' }
 ]
 
 const commonPoints: PointRecord[] = [
